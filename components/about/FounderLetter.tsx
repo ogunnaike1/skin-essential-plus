@@ -1,0 +1,204 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Quote } from "lucide-react";
+import Image from "next/image";
+
+export function FounderLetter(): React.ReactElement {
+  return (
+    <section className="relative py-24 sm:py-36 overflow-hidden bg-deep">
+      {/* Ambient orbs in palette colors */}
+      <div
+        className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-25 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        aria-hidden
+      />
+      <div
+        className="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 pointer-events-none"
+        style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+        aria-hidden
+      />
+
+      {/* Noise overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+        }}
+        aria-hidden
+      />
+
+      <div className="relative mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-14">
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-16 sm:mb-20 text-center"
+        >
+          <span className="eyebrow text-mauve text-[11px] block mb-5">
+            — Chapter Four
+          </span>
+          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light leading-[1.02] tracking-tight text-ivory text-balance">
+            A letter from our founder.
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* Portrait card */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-5 relative flex flex-col"
+          >
+            <div className="relative flex-1 min-h-[480px] rounded-[2rem] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.25)]">
+              <Image
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85&auto=format&fit=crop"
+                alt="Dr. Amaka Okafor, founder"
+                fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-deep/80 via-deep/20 to-transparent" />
+
+              {/* Name card overlay */}
+              <div className="absolute bottom-6 left-6 right-6">
+                <div
+                  className="rounded-2xl p-5 border"
+                  style={{
+                    background: "rgba(244, 242, 243, 0.12)",
+                    backdropFilter: "blur(20px) saturate(140%)",
+                    WebkitBackdropFilter: "blur(20px) saturate(140%)",
+                    borderColor: "rgba(244, 242, 243, 0.25)",
+                  }}
+                >
+                  <span className="eyebrow text-mauve text-[10px]">
+                    — Founder & Lead Clinician
+                  </span>
+                  <p className="mt-2 font-display text-3xl font-light text-ivory leading-tight">
+                    Dr. Amaka Okafor
+                  </p>
+                  <p className="mt-1 text-sm font-light text-ivory/70">
+                    MBBS, MSc Dermatology
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Credentials strip */}
+            <div className="mt-6 grid grid-cols-3 gap-3">
+              {[
+                { label: "Years", value: "15+", color: "#C0A9BD" },
+                { label: "Trained", value: "Paris", color: "#94A7AE" },
+                { label: "Certified", value: "AAD", color: "#F4F2F3" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-2xl p-4 border border-ivory/15"
+                  style={{ background: "rgba(244, 242, 243, 0.05)" }}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="eyebrow text-ivory/50 text-[9px]">
+                      {item.label}
+                    </span>
+                  </div>
+                  <p className="font-display text-xl font-light text-ivory">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Letter card — warm ivory/mauve gradient */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-7 relative"
+          >
+            <div
+              className="relative h-full rounded-[2rem] p-10 sm:p-12 lg:p-14 overflow-hidden border border-mauve/30 shadow-[0_30px_70px_rgba(0,0,0,0.2)]"
+              style={{
+                background:
+                  "linear-gradient(135deg, #F4F2F3 0%, #F4F2F3 40%, rgba(192,169,189,0.3) 100%)",
+              }}
+            >
+              {/* Giant quote mark */}
+              <Quote
+                className="absolute top-8 right-10 h-24 w-24 text-mauve/20"
+                strokeWidth={1}
+              />
+
+              {/* Corner palette swatch decoration */}
+              <div className="absolute top-0 left-0 flex">
+                <span className="h-1 w-16 bg-mauve" />
+                <span className="h-1 w-16 bg-sage" />
+                <span className="h-1 w-16 bg-deep" />
+              </div>
+
+              <div className="relative">
+                <span className="eyebrow text-mauve text-[10px] block mb-6">
+                  — A personal note
+                </span>
+
+                <div className="space-y-5 text-base sm:text-lg font-light text-deep/80 leading-[1.75]">
+                  <p className="font-display text-2xl sm:text-3xl font-light text-deep leading-[1.3] italic">
+                    Friend,
+                  </p>
+                  <p>
+                    When I opened our first studio in 2018, I had one quiet conviction: that beauty work could be done with the same rigor as medicine, and the same reverence as ceremony.
+                  </p>
+                  <p>
+                    I'd spent years watching my mother apply her evening serums — an unhurried, almost sacred routine. Later, in my dermatology residency, I watched protocols administered with clinical precision but zero soul. I couldn't accept that these had to be separate worlds.
+                  </p>
+                  <p>
+                    Everything we do here is an attempt to reconcile them. The microneedling that's backed by twenty clinical papers. The silence that lets your body actually integrate the work. The therapist who remembers your last session and asks about your mother.
+                  </p>
+                  <p>
+                    If you choose to sit in one of our chairs, you're trusting us with something precious. That's not a responsibility we treat lightly.
+                  </p>
+                  <p className="text-deep/90">
+                    Thank you for being here.
+                  </p>
+                </div>
+
+                {/* Signature */}
+                <div className="mt-10 pt-8 border-t border-deep/15 flex items-center justify-between">
+                  <div>
+                    <p className="font-display text-3xl sm:text-4xl italic font-light text-deep leading-none">
+                      Amaka
+                    </p>
+                    <p className="mt-3 text-xs font-sans uppercase tracking-[0.25em] text-mauve">
+                      Dr. Amaka Okafor · Founder
+                    </p>
+                  </div>
+
+                  {/* Decorative palette dots */}
+                  <div className="flex items-center gap-1.5">
+                    {["#C0A9BD", "#94A7AE", "#47676A"].map((c) => (
+                      <span
+                        key={c}
+                        className="h-2 w-2 rounded-full"
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}

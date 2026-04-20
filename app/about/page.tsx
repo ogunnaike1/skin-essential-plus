@@ -1,0 +1,37 @@
+import type { Metadata } from "next";
+
+import { AboutHero } from "../../components/about/AboutHero";
+import { FounderLetter } from "@/components/about/FounderLetter";
+import { JoinCTA } from "@/components/about/JoinCTA";
+import { Milestones } from "@/components/about/Milestones";
+import { OurStory } from "../../components/about/OurStory";
+import { Philosophy } from "../../components/about/Philosophy";
+import { TeamGrid } from "@/components/about/TeamGrid";
+import { Values } from "@/components/about/Values";
+import { Navbar } from "@/components/navbar/Navbar";
+import { Footer } from "@/components/sections/Footer";
+
+export const metadata: Metadata = {
+  title: "About Us — Our Story, Philosophy & Team",
+  description:
+    "The story, philosophy, and master artisans behind Skin Essential Plus — a sanctuary where science meets serenity.",
+};
+
+export default function AboutPage(): React.ReactElement {
+  return (
+    <>
+      <Navbar />
+      <main>
+        <AboutHero />
+        <OurStory />
+        <Philosophy />
+        <FounderLetter />
+        <TeamGrid />
+        <Values />
+        <Milestones />
+        <JoinCTA />
+      </main>
+      <Footer />
+    </>
+  );
+}
