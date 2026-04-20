@@ -42,7 +42,7 @@ export function FounderLetter(): React.ReactElement {
             — Chapter Four
           </span>
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light leading-[1.02] tracking-tight text-ivory text-balance">
-            A letter from our founder.
+            A Personal Note from Our Founder.
           </h2>
         </motion.div>
 
@@ -57,8 +57,8 @@ export function FounderLetter(): React.ReactElement {
           >
             <div className="relative flex-1 min-h-[480px] rounded-[2rem] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.25)]">
               <Image
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85&auto=format&fit=crop"
-                alt="Dr. Amaka Okafor, founder"
+                src="/ceo-skinessential.jpg"
+                alt="Dr. Amaka Okafor, founder of Skin Essential Plus"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover"
@@ -148,7 +148,7 @@ export function FounderLetter(): React.ReactElement {
 
               <div className="relative">
                 <span className="eyebrow text-mauve text-[10px] block mb-6">
-                  — A personal note
+                  — Skin Essential Plus
                 </span>
 
                 <div className="space-y-5 text-base sm:text-lg font-light text-deep/80 leading-[1.75]">
@@ -156,19 +156,16 @@ export function FounderLetter(): React.ReactElement {
                     Friend,
                   </p>
                   <p>
-                    When I opened our first studio in 2018, I had one quiet conviction: that beauty work could be done with the same rigor as medicine, and the same reverence as ceremony.
+                    My foundation in dermatology taught me early on that true beauty isn't superficial; it's a profound reflection of your internal health and self-respect.
                   </p>
                   <p>
-                    I'd spent years watching my mother apply her evening serums — an unhurried, almost sacred routine. Later, in my dermatology residency, I watched protocols administered with clinical precision but zero soul. I couldn't accept that these had to be separate worlds.
+                    When I created Skin Essential Plus, it was to move away from overly sterile medical protocols towards a more personalized, holistic approach. My time in clinical practice showed me that every person's skin is entirely unique, requiring far more than just generic rules and one-size-fits-all treatments.
                   </p>
                   <p>
-                    Everything we do here is an attempt to reconcile them. The microneedling that's backed by twenty clinical papers. The silence that lets your body actually integrate the work. The therapist who remembers your last session and asks about your mother.
-                  </p>
-                  <p>
-                    If you choose to sit in one of our chairs, you're trusting us with something precious. That's not a responsibility we treat lightly.
+                    We use our medical expertise not as a shield, but as a map—a detailed understanding of cellular health to guide you through intentional, supportive skincare routines that actually work for your daily life. Every ingredient, every formula, and every step we recommend is selected with a single purpose: to build a bridge between science and soul.
                   </p>
                   <p className="text-deep/90">
-                    Thank you for being here.
+                    Thank you for trusting us with something as precious as your skin. We do not take this lightly.
                   </p>
                 </div>
 
