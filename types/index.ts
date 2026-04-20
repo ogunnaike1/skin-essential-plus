@@ -52,3 +52,44 @@ export interface SocialImage {
   src: string;
   alt: string;
 }
+
+// ──────────────────────────────────────────────────────────────
+// Services page types
+// ──────────────────────────────────────────────────────────────
+
+export interface Employee {
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  rating: number;
+  specialties: readonly string[];
+  nextAvailable: string;
+}
+
+export interface ServiceItem {
+  id: string;
+  categoryId: string;
+  name: string;
+  tag: string;            // e.g. "Service"
+  description: string;
+  price: number;          // in NGN
+  durationMinutes: number;
+  slotsTotal: number;
+  slotsAvailable: number;
+  location: string;
+  rating: number;         // 0–5
+  reviewCount: number;
+  image: string;
+  employeeIds: readonly string[];
+  popular?: boolean;
+  isNew?: boolean;
+}
+
+export interface ServiceCategory {
+  id: string;
+  name: string;
+  tagline: string;
+  icon: LucideIcon;
+  color: "mauve" | "sage" | "deep" | "mixed";
+}
