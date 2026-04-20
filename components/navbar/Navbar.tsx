@@ -39,7 +39,7 @@ export function Navbar(): React.ReactElement {
         className={cn(
           "fixed top-0 inset-x-0 z-50 w-full transition-all duration-700 ease-cinematic",
           scrolled
-            ? "bg-ivory/95 backdrop-blur-xl shadow-[0_4px_30px_rgba(71,103,106,0.08)]"
+            ? "bg-ivory shadow-[0_4px_30px_rgba(71,103,106,0.08)]"
             : "bg-transparent"
         )}
       >

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 
 import { Navbar } from "@/components/navbar/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import {CategoryNav}  from "../../components/services/CategoryNav";
-import { ServicesCTA } from "../../components/services/ServicesCTA";
+import { ServicesCTA } from "@/components/services/ServicesCTA";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
 import { ServicesHero } from "@/components/services/ServicesHero";
 
@@ -19,7 +18,6 @@ export default function ServicesPage(): React.ReactElement {
       <Navbar />
       <main>
         <ServicesHero />
-        <CategoryNav />
         <ServicesGrid />
         <ServicesCTA />
       </main>

@@ -3,41 +3,48 @@
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  CalendarCheck,
+  Search,
+} from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-interface ServicesHeroSlide {
+interface HeroSlide {
   id: number;
   numeral: string;
   eyebrow: string;
   title: React.ReactNode;
   subtitle: string;
   image: string;
+  tag: string;
   priceFrom: string;
-  ctaLabel: string;
-  ctaHref: string;
+  href: string;
 }
 
-const SERVICES_HERO_SLIDES: readonly ServicesHeroSlide[] = [
+const HERO_SLIDES: readonly HeroSlide[] = [
   {
     id: 1,
     numeral: "01",
     eyebrow: "Signature — Skin Treatment",
     title: (
       <>
-        Skin, <em className="not-italic text-mauve">rewritten</em>.
+        Skin,{" "}
+        <em className="not-italic text-mauve">rewritten</em>.
       </>
     ),
     subtitle:
-      "Clinical protocols sculpted to your skin's unique signature — from brightening and acne clarity to regenerative PRP therapy.",
+      "Clinical protocols calibrated to your skin's unique signature — from brightening and acne clarity to regenerative PRP therapy.",
     image:
-      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=2400&q=90&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=2400&q=90&auto=format&fit=crop",
+    tag: "Clinical",
     priceFrom: "from ₦75,000",
-    ctaLabel: "Explore skin treatments",
-    ctaHref: "#skin-treatment",
+    href: "#skin-treatment",
   },
   {
     id: 2,
@@ -45,16 +52,17 @@ const SERVICES_HERO_SLIDES: readonly ServicesHeroSlide[] = [
     eyebrow: "Ritual — Spa Therapy",
     title: (
       <>
-        Stillness, <em className="not-italic text-sage">practiced</em>.
+        Stillness,{" "}
+        <em className="not-italic text-sage">practiced</em>.
       </>
     ),
     subtitle:
       "Swedish, deep tissue, aromatherapy, and body contouring — rituals designed to restore equilibrium.",
     image:
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=2400&q=90&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=2400&q=90&auto=format&fit=crop",
+    tag: "Therapy",
     priceFrom: "from ₦45,000",
-    ctaLabel: "Browse massage",
-    ctaHref: "#massage",
+    href: "#massage",
   },
   {
     id: 3,
@@ -62,16 +70,17 @@ const SERVICES_HERO_SLIDES: readonly ServicesHeroSlide[] = [
     eyebrow: "Artistry — Lash & Brow",
     title: (
       <>
-        Expression, <em className="not-italic text-mauve">elevated</em>.
+        Expression,{" "}
+        <em className="not-italic text-mauve">elevated</em>.
       </>
     ),
     subtitle:
-      "Hand-crafted lash extensions, Russian volume sets, and semi-permanent brows — each one drawn with intention.",
+      "Hand-crafted lash extensions, Russian volume sets, and semi-permanent brows — drawn with intention.",
     image:
-      "https://images.unsplash.com/photo-1583241800698-e8ab01830a07?w=2400&q=90&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=2400&q=90&auto=format&fit=crop",
+    tag: "Artistry",
     priceFrom: "from ₦22,000",
-    ctaLabel: "See lash & brow services",
-    ctaHref: "#lash-extension",
+    href: "#lash-extension",
   },
   {
     id: 4,
@@ -79,16 +88,17 @@ const SERVICES_HERO_SLIDES: readonly ServicesHeroSlide[] = [
     eyebrow: "Wellness — IV & Clinical",
     title: (
       <>
-        Luminosity, <em className="not-italic text-sage">infused</em>.
+        Luminosity,{" "}
+        <em className="not-italic text-sage">infused</em>.
       </>
     ),
     subtitle:
-      "Vitamin drips, glutathione therapy, tattoo removal, and clinical-grade treatments administered by Dr. Amaka's team.",
+      "Vitamin drips, glutathione therapy, tattoo removal, and clinical treatments administered by Dr. Amaka's team.",
     image:
-      "https://images.unsplash.com/photo-1631815588090-d1bcbe9b5e1e?w=2400&q=90&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?w=2400&q=90&auto=format&fit=crop",
+    tag: "Clinical",
     priceFrom: "from ₦65,000",
-    ctaLabel: "View clinical services",
-    ctaHref: "#iv-drips",
+    href: "#iv-drips",
   },
 ] as const;
 
@@ -138,19 +148,19 @@ export function ServicesHero(): React.ReactElement {
     return (): void => window.removeEventListener("keydown", handleKey);
   }, [scrollPrev, scrollNext]);
 
-  const activeSlide = SERVICES_HERO_SLIDES[selectedIndex] ?? SERVICES_HERO_SLIDES[0];
-  const totalSlides = SERVICES_HERO_SLIDES.length;
+  const activeSlide = HERO_SLIDES[selectedIndex] ?? HERO_SLIDES[0];
+  const totalSlides = HERO_SLIDES.length;
 
   return (
     <section
       id="top"
-      className="relative h-screen min-h-[720px] w-full overflow-hidden bg-deep"
-      aria-label="Services — featured categories"
+      className="relative h-screen min-h-[700px] w-full overflow-hidden bg-deep"
+      aria-label="Services"
     >
       {/* Image stage */}
       <div ref={emblaRef} className="absolute inset-0 h-full w-full">
         <div className="flex h-full">
-          {SERVICES_HERO_SLIDES.map((slide, idx) => (
+          {HERO_SLIDES.map((slide, idx) => (
             <div
               key={slide.id}
               className="relative flex-[0_0_100%] h-full"
@@ -176,11 +186,13 @@ export function ServicesHero(): React.ReactElement {
                   quality={92}
                 />
               </motion.div>
+
+              {/* Overlay — diagonal deep teal wash */}
               <div
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(100deg, rgba(71,103,106,0.82) 0%, rgba(71,103,106,0.55) 35%, rgba(71,103,106,0.25) 62%, transparent 100%)",
+                    "linear-gradient(100deg, rgba(71,103,106,0.82) 0%, rgba(71,103,106,0.55) 38%, rgba(71,103,106,0.2) 65%, transparent 100%)",
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-deep/60 via-transparent to-transparent" />
@@ -189,7 +201,7 @@ export function ServicesHero(): React.ReactElement {
         </div>
       </div>
 
-      {/* Orbs */}
+      {/* Ambient palette orbs */}
       <div
         className="pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-30 animate-float"
         style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
@@ -204,7 +216,7 @@ export function ServicesHero(): React.ReactElement {
         aria-hidden
       />
 
-      {/* Left meta strip */}
+      {/* Vertical meta strip — left edge */}
       <div className="hidden md:flex absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 z-20 flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-2">
           <span className="font-display text-5xl font-light text-ivory tabular-nums leading-none">
@@ -222,7 +234,7 @@ export function ServicesHero(): React.ReactElement {
         </div>
       </div>
 
-      {/* Content */}
+      {/* Content — glass panel */}
       <div className="relative z-10 h-full flex items-center px-6 sm:px-12 md:pl-28 lg:pl-36 xl:pl-44 lg:pr-16 pt-24 pb-36">
         <div className="w-full">
           <AnimatePresence mode="wait">
@@ -235,6 +247,7 @@ export function ServicesHero(): React.ReactElement {
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="max-w-xl lg:max-w-2xl"
               >
+                {/* Clean glass panel */}
                 <div
                   className="relative rounded-[1.75rem] p-7 sm:p-9 lg:p-10 border overflow-hidden"
                   style={{
@@ -246,7 +259,7 @@ export function ServicesHero(): React.ReactElement {
                       "0 20px 50px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
                 >
-                  {/* Price badge + eyebrow */}
+                  {/* Eyebrow + price */}
                   <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -259,20 +272,22 @@ export function ServicesHero(): React.ReactElement {
                         {activeSlide.eyebrow}
                       </span>
                     </div>
-                    <span className="eyebrow inline-flex px-3 py-1 rounded-full bg-ivory/95 text-deep text-[10px]">
+                    <span className="inline-flex px-3 py-1 rounded-full bg-ivory text-deep text-[10px] uppercase tracking-[0.18em] font-medium">
                       {activeSlide.priceFrom}
                     </span>
                   </motion.div>
 
+                  {/* Title */}
                   <motion.h1
                     initial={{ opacity: 0, y: 22 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                    className="font-display text-[2.5rem] sm:text-5xl lg:text-6xl font-light leading-[0.98] text-ivory tracking-[-0.02em] text-balance"
+                    className="font-display text-[2.5rem] sm:text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.98] text-ivory tracking-[-0.02em] text-balance"
                   >
                     {activeSlide.title}
                   </motion.h1>
 
+                  {/* Subtitle */}
                   <motion.p
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -290,20 +305,27 @@ export function ServicesHero(): React.ReactElement {
                     className="mt-7 flex flex-wrap items-center gap-3"
                   >
                     <a
-                      href={activeSlide.ctaHref}
-                      className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(244,242,243,0.25)] hover:shadow-[0_8px_40px_rgba(192,169,189,0.5)] transition-all duration-500"
+                      href={activeSlide.href}
+                      className="group inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(244,242,243,0.25)] hover:bg-mauve hover:text-ivory transition-colors duration-300"
                     >
-                      <span>{activeSlide.ctaLabel}</span>
-                      <span className="h-9 w-9 rounded-full bg-deep text-ivory flex items-center justify-center transition-all duration-500 group-hover:bg-mauve group-hover:rotate-[22deg]">
+                      <span>View {activeSlide.tag.toLowerCase()} services</span>
+                      <span className="h-9 w-9 rounded-full bg-deep text-ivory flex items-center justify-center group-hover:bg-ivory group-hover:text-mauve transition-colors duration-300">
                         <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                       </span>
                     </a>
                     <a
                       href="#services-grid"
-                      className="group inline-flex items-center gap-2 px-5 py-3 rounded-full border border-ivory/30 text-ivory font-sans text-[11px] uppercase tracking-[0.22em] hover:bg-ivory/10 hover:border-ivory/60 transition-all duration-500"
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-ivory/30 text-ivory font-sans text-[11px] uppercase tracking-[0.22em] hover:bg-ivory/10 hover:border-ivory/60 transition-colors duration-300"
                     >
                       <Search className="h-3.5 w-3.5" />
-                      <span>Browse all services</span>
+                      <span>Browse all</span>
+                    </a>
+                    <a
+                      href="#consultation"
+                      className="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full text-ivory/90 font-sans text-[11px] uppercase tracking-[0.22em] hover:text-mauve transition-colors duration-300"
+                    >
+                      <CalendarCheck className="h-3.5 w-3.5" />
+                      <span>Free consultation</span>
                     </a>
                   </motion.div>
                 </div>
@@ -313,11 +335,11 @@ export function ServicesHero(): React.ReactElement {
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* Bottom bar — progress indicators + nav controls */}
       <div className="absolute bottom-0 inset-x-0 z-20 px-6 sm:px-12 md:pl-28 lg:pl-36 xl:pl-44 lg:pr-16 pb-8">
         <div className="w-full flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
           <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-            {SERVICES_HERO_SLIDES.map((slide, idx) => {
+            {HERO_SLIDES.map((slide, idx) => {
               const isActive = selectedIndex === idx;
               return (
                 <button
@@ -347,7 +369,7 @@ export function ServicesHero(): React.ReactElement {
                   <div className="mt-2 flex items-center justify-between">
                     <span
                       className={cn(
-                        "font-sans text-[10px] tabular-nums tracking-[0.2em] transition-colors duration-500",
+                        "font-sans text-[10px] tabular-nums tracking-[0.2em] transition-colors duration-300",
                         isActive ? "text-ivory" : "text-ivory/40"
                       )}
                     >
@@ -355,11 +377,11 @@ export function ServicesHero(): React.ReactElement {
                     </span>
                     <span
                       className={cn(
-                        "hidden lg:block font-sans text-[10px] uppercase tracking-[0.18em] transition-colors duration-500 truncate max-w-[80px]",
+                        "hidden lg:block font-sans text-[10px] uppercase tracking-[0.18em] transition-colors duration-300 truncate max-w-[80px]",
                         isActive ? "text-mauve" : "text-ivory/30"
                       )}
                     >
-                      {slide.eyebrow.split("—")[1]?.trim().split(" ")[0] ?? ""}
+                      {slide.tag}
                     </span>
                   </div>
                 </button>
@@ -371,18 +393,18 @@ export function ServicesHero(): React.ReactElement {
             <button
               type="button"
               onClick={scrollPrev}
-              className="group h-11 w-11 rounded-full border border-ivory/25 hover:border-ivory flex items-center justify-center transition-all duration-500 hover:bg-ivory/10 backdrop-blur-md"
-              aria-label="Previous slide"
+              className="group h-11 w-11 rounded-full border border-ivory/25 hover:border-ivory flex items-center justify-center transition-colors duration-300 hover:bg-ivory/10"
+              aria-label="Previous"
             >
-              <ArrowLeft className="h-4 w-4 text-ivory transition-transform duration-500 group-hover:-translate-x-0.5" />
+              <ArrowLeft className="h-4 w-4 text-ivory transition-transform duration-300 group-hover:-translate-x-0.5" />
             </button>
             <button
               type="button"
               onClick={scrollNext}
-              className="group h-11 w-11 rounded-full border border-ivory/25 hover:border-ivory flex items-center justify-center transition-all duration-500 hover:bg-mauve hover:border-mauve backdrop-blur-md"
-              aria-label="Next slide"
+              className="group h-11 w-11 rounded-full border border-ivory/25 hover:border-mauve hover:bg-mauve flex items-center justify-center transition-colors duration-300"
+              aria-label="Next"
             >
-              <ArrowRight className="h-4 w-4 text-ivory transition-transform duration-500 group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 text-ivory transition-transform duration-300 group-hover:translate-x-0.5" />
             </button>
           </div>
         </div>
