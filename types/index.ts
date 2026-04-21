@@ -93,3 +93,60 @@ export interface ServiceCategory {
   icon: LucideIcon;
   color: "mauve" | "sage" | "deep" | "mixed";
 }
+
+// ──────────────────────────────────────────────────────────────
+// Shop page types
+// ──────────────────────────────────────────────────────────────
+
+export type ProductCategory =
+  | "cleansers"
+  | "serums"
+  | "moisturizers"
+  | "masks"
+  | "tools"
+  | "bundles"
+  | "bath-body";
+
+export interface Product {
+  id: string;
+  name: string;
+  tagline: string;
+  category: ProductCategory;
+  price: number;          // in NGN
+  originalPrice?: number; // for "on sale"
+  image: string;
+  rating: number;
+  reviewCount: number;
+  volume: string;         // e.g. "50ml", "200ml", "set of 3"
+  keyIngredient: string;  // e.g. "Vitamin C", "Retinol"
+  skinType: readonly string[]; // ["all skin", "oily", "sensitive"]
+  description: string;
+  stockStatus: "in-stock" | "low-stock" | "pre-order";
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  isExclusive?: boolean;
+  accent: "mauve" | "sage" | "deep";
+}
+
+export interface ProductCollection {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+  color: "mauve" | "sage" | "deep";
+  productCount: number;
+  href: string;
+}
+
+export interface RoutineBundle {
+  id: string;
+  name: string;
+  step: string;
+  description: string;
+  image: string;
+  productIds: readonly string[];
+  bundlePrice: number;
+  originalPrice: number;
+  accent: "mauve" | "sage" | "deep";
+}
