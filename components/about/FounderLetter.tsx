@@ -58,7 +58,7 @@ export function FounderLetter(): React.ReactElement {
             <div className="relative flex-1 min-h-[480px] rounded-[2rem] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.25)]">
               <Image
                 src="/ceo-skinessential.jpg"
-                alt="Dr. Amaka Okafor, founder of Skin Essential Plus"
+                alt="Ifeoluwa Peters Kanyinsola, founder of Skin Essential Plus"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover"
@@ -80,7 +80,7 @@ export function FounderLetter(): React.ReactElement {
                     — Founder & Lead Clinician
                   </span>
                   <p className="mt-2 font-display text-3xl font-light text-ivory leading-tight">
-                    Dr. Amaka Okafor
+                   Ifeoluwa Peters Kanyinsola
                   </p>
                   <p className="mt-1 text-sm font-light text-ivory/70">
                     MBBS, MSc Dermatology
@@ -92,8 +92,8 @@ export function FounderLetter(): React.ReactElement {
             {/* Credentials strip */}
             <div className="mt-6 grid grid-cols-3 gap-3">
               {[
-                { label: "Years", value: "15+", color: "#8A6F88" },
-                { label: "Trained", value: "Paris", color: "#4F7288" },
+                { label: "Years", value: "6+", color: "#8A6F88" },
+                { label: "Trained", value: "Lagos", color: "#4F7288" },
                 { label: "Certified", value: "AAD", color: "#F4F2F3" },
               ].map((item) => (
                 <div
@@ -173,10 +173,10 @@ export function FounderLetter(): React.ReactElement {
                 <div className="mt-10 pt-8 border-t border-deep/15 flex items-center justify-between">
                   <div>
                     <p className="font-display text-3xl sm:text-4xl italic font-light text-deep leading-none">
-                      Amaka
+                      Ifeoluwa
                     </p>
                     <p className="mt-3 text-xs font-sans uppercase tracking-[0.25em] text-mauve">
-                      Dr. Amaka Okafor · Founder
+                     Ifeoluwa Peters Kanyinsola · Founder
                     </p>
                   </div>
 

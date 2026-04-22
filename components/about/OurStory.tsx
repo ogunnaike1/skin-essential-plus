@@ -15,7 +15,7 @@ const TIMELINE: readonly TimelineEntry[] = [
     year: "2018",
     title: "A quiet beginning",
     description:
-      "Dr. Amaka Okafor opened a single-room studio in Victoria Island, convinced that skincare could be both clinical and contemplative.",
+      "Ifeoluwa Peters Kanyinsola opened a single-room studio in Victoria Island, convinced that skincare could be both clinical and contemplative.",
     color: "#8A6F88",
   },
   {

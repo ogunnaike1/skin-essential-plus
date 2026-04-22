@@ -22,7 +22,7 @@ interface TeamMember {
 const TEAM: readonly TeamMember[] = [
   {
     id: 1,
-    name: "Dr. Amaka Okafor",
+    name: "Ifeoluwa Peters Kanyinsola",
     role: "Founder & Lead Clinician",
     specialty: "Clinical dermatology",
     bio: "Fifteen years bridging evidence-based medicine and sanctuary ritual. Paris-trained, Lagos-rooted.",

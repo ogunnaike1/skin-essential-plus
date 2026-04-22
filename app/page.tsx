@@ -10,6 +10,7 @@ import { Newsletter } from "@/components/sections/Newsletter";
 import { Services } from "@/components/sections/Services";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
+import { FounderLetter } from "@/components/about/FounderLetter";
 
 export default function HomePage(): React.ReactElement {
   return (
@@ -21,6 +22,7 @@ export default function HomePage(): React.ReactElement {
         <WhyChooseUs />
         <About />
         <BeforeAfter />
+        <FounderLetter />
         <Testimonials />
         <BookingCTA />
         <Instagram />

@@ -27,8 +27,8 @@ import type {
 // ──────────────────────────────────────────────────────────────
 export const EMPLOYEES: readonly Employee[] = [
   {
-    id: "emp-amaka",
-    name: "Dr. Amaka Okafor",
+    id: "emp-Ifeoluwa",
+    name: "Ifeoluwa Peters Kanyinsola",
     role: "Lead Clinician",
     avatar:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=85&auto=format&fit=crop",
@@ -257,7 +257,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 56,
     image:
       "https://images.unsplash.com/photo-1519415387722-a1c3bbef716c?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka"],
+    employeeIds: ["emp-Ifeoluwa"],
     isNew: true,
   },
 
@@ -278,7 +278,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 234,
     image:
       "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka", "emp-nneka"],
+    employeeIds: ["emp-Ifeoluwa", "emp-nneka"],
     popular: true,
   },
   {
@@ -297,7 +297,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 67,
     image:
       "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka"],
+    employeeIds: ["emp-Ifeoluwa"],
   },
   {
     id: "af-chemicalpeel",
@@ -315,7 +315,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 98,
     image:
       "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka", "emp-nneka"],
+    employeeIds: ["emp-Ifeoluwa", "emp-nneka"],
   },
 
   // Skin Treatment (3)
@@ -335,7 +335,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 112,
     image:
       "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka", "emp-adaeze"],
+    employeeIds: ["emp-Ifeoluwa", "emp-adaeze"],
   },
   {
     id: "st-acne",
@@ -353,7 +353,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 87,
     image:
       "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka", "emp-nneka", "emp-adaeze"],
+    employeeIds: ["emp-Ifeoluwa", "emp-nneka", "emp-adaeze"],
   },
   {
     id: "st-antiaging",
@@ -371,7 +371,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 74,
     image:
       "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka"],
+    employeeIds: ["emp-Ifeoluwa"],
     popular: true,
   },
 
@@ -583,7 +583,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 78,
     image:
       "https://images.unsplash.com/photo-1631815588090-d1bcbe9b5e1e?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka", "emp-nneka"],
+    employeeIds: ["emp-Ifeoluwa", "emp-nneka"],
     popular: true,
   },
   {
@@ -602,7 +602,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 54,
     image:
       "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka", "emp-nneka"],
+    employeeIds: ["emp-Ifeoluwa", "emp-nneka"],
   },
 
   // Tattoo Removal (2)
@@ -660,7 +660,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 28,
     image:
       "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka"],
+    employeeIds: ["emp-Ifeoluwa"],
   },
   {
     id: "prp-full",
@@ -678,7 +678,7 @@ export const SERVICES_CATALOG: readonly ServiceItem[] = [
     reviewCount: 19,
     image:
       "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80&auto=format&fit=crop",
-    employeeIds: ["emp-amaka"],
+    employeeIds: ["emp-Ifeoluwa"],
     isNew: true,
   },
 

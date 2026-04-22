@@ -93,7 +93,7 @@ const HERO_SLIDES: readonly HeroSlide[] = [
       </>
     ),
     subtitle:
-      "Vitamin drips, glutathione therapy, tattoo removal, and clinical treatments administered by Dr. Amaka's team.",
+      "Vitamin drips, glutathione therapy, tattoo removal, and clinical treatments administered by Ifeoluwa's team.",
     image:
       "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?w=2400&q=90&auto=format&fit=crop",
     tag: "Clinical",
