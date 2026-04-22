@@ -211,14 +211,14 @@ export function WhyChooseUs(): React.ReactElement {
               <div
                 className="absolute -top-20 -right-20 h-64 w-64 rounded-full blur-3xl opacity-40 pointer-events-none"
                 style={{
-                  background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)",
+                  background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)",
                 }}
                 aria-hidden
               />
               <div
                 className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full blur-3xl opacity-30 pointer-events-none"
                 style={{
-                  background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)",
+                  background: "radial-gradient(circle, #4F7288 0%, transparent 70%)",
                 }}
                 aria-hidden
               />
@@ -247,10 +247,10 @@ export function WhyChooseUs(): React.ReactElement {
                   </p>
                   <div className="flex items-center gap-3">
                     {[
-                      { color: "#C0A9BD", label: "Precision" },
-                      { color: "#94A7AE", label: "Conscience" },
+                      { color: "#8A6F88", label: "Precision" },
+                      { color: "#4F7288", label: "Conscience" },
                       { color: "#F4F2F3", label: "Mastery" },
-                      { color: "#C0A9BD", label: "Intimacy" },
+                      { color: "#8A6F88", label: "Intimacy" },
                     ].map((s, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <span

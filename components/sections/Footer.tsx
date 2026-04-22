@@ -30,12 +30,12 @@ export function Footer(): React.ReactElement {
     <footer className="relative bg-gradient-deep text-ivory overflow-hidden">
       <div
         className="absolute -top-40 -left-40 h-96 w-96 rounded-full blur-3xl opacity-15 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
         className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full blur-3xl opacity-15 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
         aria-hidden
       />
       <div className="noise-overlay" />

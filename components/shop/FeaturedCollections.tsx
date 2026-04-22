@@ -62,8 +62,8 @@ export function FeaturedCollections(): React.ReactElement {
               deep: "bg-gradient-to-r from-deep to-deep-dark",
             };
             const strokeHex: Record<typeof collection.color, string> = {
-              mauve: "#C0A9BD",
-              sage: "#94A7AE",
+              mauve: "#8A6F88",
+              sage: "#4F7288",
               deep: "#47676A",
             };
 

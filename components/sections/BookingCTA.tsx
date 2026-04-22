@@ -27,13 +27,13 @@ export function BookingCTA(): React.ReactElement {
 
           <div
             className="absolute -top-40 -right-20 h-[500px] w-[500px] rounded-full blur-3xl opacity-40 animate-float"
-            style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
             aria-hidden
           />
           <div
             className="absolute -bottom-40 -left-20 h-[400px] w-[400px] rounded-full blur-3xl opacity-30 animate-float"
             style={{
-              background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)",
+              background: "radial-gradient(circle, #4F7288 0%, transparent 70%)",
               animationDelay: "3s",
             }}
             aria-hidden

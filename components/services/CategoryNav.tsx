@@ -76,7 +76,7 @@ export function CategoryNav(): React.ReactElement {
               <div
                 className="absolute -top-10 -right-10 h-32 w-32 rounded-full blur-2xl opacity-40 pointer-events-none"
                 style={{
-                  background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)",
+                  background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)",
                 }}
                 aria-hidden
               />

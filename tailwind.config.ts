@@ -10,8 +10,8 @@ const config: Config = {
       colors: {
         // Brand palette
         ivory: "#F4F2F3",
-        mauve: "#C0A9BD",
-        sage: "#94A7AE",
+        mauve: "#8A6F88",
+        sage: "#4F7288",
         deep: "#47676A",
         "deep-light": "#5A7E82",
         "deep-dark": "#354F52",
@@ -26,9 +26,9 @@ const config: Config = {
       },
       backgroundImage: {
         "gradient-hero":
-          "linear-gradient(135deg, #F4F2F3 0%, #C0A9BD 50%, #94A7AE 100%)",
+          "linear-gradient(135deg, #F4F2F3 0%, #8A6F88 50%, #4F7288 100%)",
         "gradient-mesh":
-          "radial-gradient(at 20% 10%, #C0A9BD 0, transparent 50%), radial-gradient(at 80% 90%, #94A7AE 0, transparent 50%), radial-gradient(at 50% 50%, #F4F2F3 0, transparent 70%)",
+          "radial-gradient(at 20% 10%, #8A6F88 0, transparent 50%), radial-gradient(at 80% 90%, #4F7288 0, transparent 50%), radial-gradient(at 50% 50%, #F4F2F3 0, transparent 70%)",
         "gradient-deep":
           "linear-gradient(135deg, #47676A 0%, #354F52 100%)",
       },

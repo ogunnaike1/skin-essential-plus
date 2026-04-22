@@ -29,7 +29,7 @@ const MILESTONES: readonly Milestone[] = [
     valueColor: "text-deep",
     labelColor: "text-mauve",
     sublabelColor: "text-deep/60",
-    dotColor: "#C0A9BD",
+    dotColor: "#8A6F88",
     isDark: false,
   },
   {
@@ -55,7 +55,7 @@ const MILESTONES: readonly Milestone[] = [
     valueColor: "text-deep",
     labelColor: "text-sage",
     sublabelColor: "text-deep/60",
-    dotColor: "#94A7AE",
+    dotColor: "#4F7288",
     isDark: false,
   },
   {
@@ -200,7 +200,7 @@ export function Milestones(): React.ReactElement {
     <section className="relative py-24 sm:py-36 overflow-hidden bg-ivory">
       <div
         className="absolute top-1/2 right-0 h-[500px] w-[500px] rounded-full blur-3xl opacity-15 pointer-events-none -translate-y-1/2"
-        style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
         aria-hidden
       />
 
@@ -240,12 +240,12 @@ export function Milestones(): React.ReactElement {
             {/* Orbs */}
             <div
               className="absolute -top-20 -right-20 h-80 w-80 rounded-full blur-3xl opacity-30 pointer-events-none"
-              style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
               aria-hidden
             />
             <div
               className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full blur-3xl opacity-25 pointer-events-none"
-              style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
               aria-hidden
             />
 

@@ -26,7 +26,7 @@ const PILLARS: readonly Pillar[] = [
       "Every protocol we practice is grounded in peer-reviewed dermatology. We read the studies, we verify the mechanisms, we measure the outcomes. Nothing enters our treatment rooms on the strength of marketing alone.",
     icon: FlaskConical,
     color: "bg-mauve/15",
-    accent: "#C0A9BD",
+    accent: "#8A6F88",
     dark: false,
   },
   {
@@ -50,7 +50,7 @@ const PILLARS: readonly Pillar[] = [
       "We're not here to manufacture sameness. We're here to help you recognize what was always yours — to reveal rather than remake. Every treatment begins with this question: who are you becoming?",
     icon: Target,
     color: "bg-sage/20",
-    accent: "#94A7AE",
+    accent: "#4F7288",
     dark: false,
   },
 ] as const;
@@ -178,7 +178,7 @@ export function Philosophy(): React.ReactElement {
 
           {/* Decorative color dots */}
           <div className="flex items-center justify-center gap-2 mt-10">
-            {["#C0A9BD", "#47676A", "#94A7AE"].map((c) => (
+            {["#8A6F88", "#47676A", "#4F7288"].map((c) => (
               <span
                 key={c}
                 className="h-1.5 w-1.5 rounded-full"

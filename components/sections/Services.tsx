@@ -45,7 +45,7 @@ const CARD_PALETTES: readonly CardPalette[] = [
     borderHover: "hover:border-mauve",
     glowColor: "rgba(192,169,189,0.45)",
     accent: "text-mauve",
-    accentHex: "#C0A9BD",
+    accentHex: "#8A6F88",
     titleColor: "text-deep",
     bodyColor: "text-deep/70",
     eyebrowColor: "text-mauve",
@@ -69,7 +69,7 @@ const CARD_PALETTES: readonly CardPalette[] = [
     borderHover: "hover:border-sage",
     glowColor: "rgba(148,167,174,0.55)",
     accent: "text-sage",
-    accentHex: "#94A7AE",
+    accentHex: "#4F7288",
     titleColor: "text-deep-dark",
     bodyColor: "text-deep/75",
     eyebrowColor: "text-sage",
@@ -93,7 +93,7 @@ const CARD_PALETTES: readonly CardPalette[] = [
     borderHover: "hover:border-mauve/50",
     glowColor: "rgba(71,103,106,0.6)",
     accent: "text-mauve",
-    accentHex: "#C0A9BD",
+    accentHex: "#8A6F88",
     titleColor: "text-ivory",
     bodyColor: "text-ivory/70",
     eyebrowColor: "text-mauve",
@@ -295,12 +295,12 @@ export function Services(): React.ReactElement {
       {/* Layered ambient backdrop using all four palette colors */}
       <div
         className="absolute top-20 -right-40 h-[600px] w-[600px] rounded-full blur-3xl opacity-25 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
         className="absolute bottom-20 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
@@ -326,7 +326,7 @@ export function Services(): React.ReactElement {
             transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-center justify-center gap-2 mt-8"
           >
-            {["#C0A9BD", "#94A7AE", "#47676A", "#F4F2F3"].map((c) => (
+            {["#8A6F88", "#4F7288", "#47676A", "#F4F2F3"].map((c) => (
               <span
                 key={c}
                 className="h-1.5 w-1.5 rounded-full ring-1 ring-deep/15"

@@ -39,7 +39,7 @@ const VALUES: readonly Value[] = [
     numberClass: "text-mauve/30",
     iconBg: "bg-ivory",
     iconText: "text-deep",
-    accentHex: "#C0A9BD",
+    accentHex: "#8A6F88",
     spanClass: "md:col-span-3 md:row-span-2",
     isDark: true,
   },
@@ -55,7 +55,7 @@ const VALUES: readonly Value[] = [
     numberClass: "text-mauve/40",
     iconBg: "bg-mauve",
     iconText: "text-ivory",
-    accentHex: "#C0A9BD",
+    accentHex: "#8A6F88",
     spanClass: "md:col-span-3",
     isDark: false,
   },
@@ -71,7 +71,7 @@ const VALUES: readonly Value[] = [
     numberClass: "text-sage/50",
     iconBg: "bg-sage",
     iconText: "text-ivory",
-    accentHex: "#94A7AE",
+    accentHex: "#4F7288",
     spanClass: "md:col-span-3",
     isDark: false,
   },
@@ -103,7 +103,7 @@ const VALUES: readonly Value[] = [
     numberClass: "text-mauve/40",
     iconBg: "bg-deep",
     iconText: "text-ivory",
-    accentHex: "#C0A9BD",
+    accentHex: "#8A6F88",
     spanClass: "md:col-span-3",
     isDark: false,
   },
@@ -208,7 +208,7 @@ export function Values(): React.ReactElement {
 
           {/* Decorative palette row */}
           <div className="flex items-center gap-2 mt-8">
-            {["#47676A", "#C0A9BD", "#94A7AE", "#47676A", "#C0A9BD"].map(
+            {["#47676A", "#8A6F88", "#4F7288", "#47676A", "#8A6F88"].map(
               (c, i) => (
                 <span
                   key={i}

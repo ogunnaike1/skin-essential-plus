@@ -36,13 +36,13 @@ export function JoinCTA(): React.ReactElement {
           {/* Orbs */}
           <div
             className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-40 animate-float pointer-events-none"
-            style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
             aria-hidden
           />
           <div
             className="absolute -bottom-40 right-[-8%] h-[500px] w-[500px] rounded-full blur-3xl opacity-35 animate-float pointer-events-none"
             style={{
-              background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)",
+              background: "radial-gradient(circle, #4F7288 0%, transparent 70%)",
               animationDelay: "2s",
             }}
             aria-hidden
@@ -60,8 +60,8 @@ export function JoinCTA(): React.ReactElement {
 
           {/* Palette accent strip top */}
           <div className="absolute top-0 inset-x-0 flex h-1">
-            <span className="flex-1" style={{ backgroundColor: "#C0A9BD" }} />
-            <span className="flex-1" style={{ backgroundColor: "#94A7AE" }} />
+            <span className="flex-1" style={{ backgroundColor: "#8A6F88" }} />
+            <span className="flex-1" style={{ backgroundColor: "#4F7288" }} />
             <span className="flex-1" style={{ backgroundColor: "#F4F2F3" }} />
             <span className="flex-1" style={{ backgroundColor: "#47676A" }} />
           </div>
@@ -159,12 +159,12 @@ export function JoinCTA(): React.ReactElement {
                       {
                         label: "A conversation, not a sales pitch",
                         detail: "45 minutes, complimentary",
-                        color: "#C0A9BD",
+                        color: "#8A6F88",
                       },
                       {
                         label: "A look at your skin under clinical light",
                         detail: "Honest observations, no pressure",
-                        color: "#94A7AE",
+                        color: "#4F7288",
                       },
                       {
                         label: "A ritual recommendation — or not",

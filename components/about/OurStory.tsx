@@ -16,14 +16,14 @@ const TIMELINE: readonly TimelineEntry[] = [
     title: "A quiet beginning",
     description:
       "Dr. Amaka Okafor opened a single-room studio in Victoria Island, convinced that skincare could be both clinical and contemplative.",
-    color: "#C0A9BD",
+    color: "#8A6F88",
   },
   {
     year: "2020",
     title: "The ritual takes form",
     description:
       "We developed our signature 5-stage ritual — the framework that still underpins every treatment we offer today.",
-    color: "#94A7AE",
+    color: "#4F7288",
   },
   {
     year: "2022",
@@ -37,7 +37,7 @@ const TIMELINE: readonly TimelineEntry[] = [
     title: "Redefining luxury",
     description:
       "Introduction of the Skin Essential Plus complete skincare program — a year-long journey, not a transaction.",
-    color: "#C0A9BD",
+    color: "#8A6F88",
   },
 ] as const;
 
@@ -47,7 +47,7 @@ export function OurStory(): React.ReactElement {
       {/* Palette orb */}
       <div
         className="absolute top-40 right-0 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
 

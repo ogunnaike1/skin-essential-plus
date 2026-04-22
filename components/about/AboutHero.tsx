@@ -164,13 +164,13 @@ export function AboutHero(): React.ReactElement {
       {/* Ambient orbs */}
       <div
         className="pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-30 animate-float"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
         className="pointer-events-none absolute -bottom-40 right-[-8%] h-[600px] w-[600px] rounded-full blur-3xl opacity-25 animate-float"
         style={{
-          background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)",
+          background: "radial-gradient(circle, #4F7288 0%, transparent 70%)",
           animationDelay: "3s",
         }}
         aria-hidden
@@ -256,8 +256,8 @@ export function AboutHero(): React.ReactElement {
                     className="mt-7 pt-6 border-t border-ivory/15 flex flex-wrap items-center gap-x-8 gap-y-3"
                   >
                     {[
-                      { label: "Est. 2018", color: "#C0A9BD" },
-                      { label: "Lagos, NG", color: "#94A7AE" },
+                      { label: "Est. 2018", color: "#8A6F88" },
+                      { label: "Lagos, NG", color: "#4F7288" },
                       { label: "12K+ clients", color: "#F4F2F3" },
                     ].map((m) => (
                       <div key={m.label} className="flex items-center gap-2">

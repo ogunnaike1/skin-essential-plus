@@ -53,7 +53,7 @@ const HERO_SLIDES: readonly ShopHeroSlide[] = [
     productTagline: "Luminous treatment mask",
     productPrice: 35000,
     productImage:
-      "https://images.unsplash.com/photo-1614859275264-4a9dc8a61e58?w=600&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=800&q=80&auto=format&fit=crop",
     ctaPrimary: "Shop the mask",
     ctaSecondary: "Browse all",
   },
@@ -226,13 +226,13 @@ export function ShopHero(): React.ReactElement {
       {/* Palette orbs */}
       <div
         className="pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-30 animate-float"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
         className="pointer-events-none absolute -bottom-40 right-[-8%] h-[600px] w-[600px] rounded-full blur-3xl opacity-25 animate-float"
         style={{
-          background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)",
+          background: "radial-gradient(circle, #4F7288 0%, transparent 70%)",
           animationDelay: "3s",
         }}
         aria-hidden
@@ -343,8 +343,8 @@ export function ShopHero(): React.ReactElement {
                     className="mt-8 pt-6 border-t border-ivory/15 flex flex-wrap items-center gap-x-6 gap-y-2"
                   >
                     {[
-                      { label: "Formulated in Lagos", color: "#C0A9BD" },
-                      { label: "Cruelty-free", color: "#94A7AE" },
+                      { label: "Formulated in Lagos", color: "#8A6F88" },
+                      { label: "Cruelty-free", color: "#4F7288" },
                       { label: "Free ₦50K+ shipping", color: "#F4F2F3" },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center gap-2">

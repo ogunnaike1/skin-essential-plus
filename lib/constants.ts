@@ -31,12 +31,13 @@ export const SITE = {
 } as const;
 
 export const NAV_LINKS: readonly NavLink[] = [
-  { label: "Home", href: "#top" },
-  { label: "Services", href: "#services" },
-  { label: "About Us", href: "#about" },
-  { label: "Results", href: "#results" },
-  { label: "Reviews", href: "#testimonials" },
-  { label: "Shop", href: "#shop" },
+  { label: "Home", href: "/" },
+  { label: "About Us", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Shop", href: "/shop" },
+  { label: "Results", href: "/results" },
+  { label: "Contact Us", href: "/contact" },
+
 ] as const;
 
 export const HERO_SLIDES: readonly HeroSlide[] = [

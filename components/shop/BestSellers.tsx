@@ -25,12 +25,12 @@ export function BestSellers(): React.ReactElement {
       {/* Ambient palette orbs */}
       <div
         className="absolute top-20 -left-40 h-[480px] w-[480px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
         className="absolute bottom-20 -right-40 h-[480px] w-[480px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
         aria-hidden
       />
 
@@ -83,8 +83,8 @@ export function BestSellers(): React.ReactElement {
               deep: "text-deep",
             };
             const stripeHex: Record<typeof product.accent, string> = {
-              mauve: "#C0A9BD",
-              sage: "#94A7AE",
+              mauve: "#8A6F88",
+              sage: "#4F7288",
               deep: "#47676A",
             };
 

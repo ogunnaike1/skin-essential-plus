@@ -72,7 +72,7 @@ export function About(): React.ReactElement {
 
             <div
               className="absolute -top-6 -left-6 h-32 w-32 rounded-full blur-2xl opacity-50 pointer-events-none"
-              style={{ background: "radial-gradient(circle, #C0A9BD, transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, #8A6F88, transparent 70%)" }}
               aria-hidden
             />
           </motion.div>

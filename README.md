@@ -30,8 +30,8 @@ A luxury, futuristic beauty website built with **Next.js 14 (App Router)**, **Ty
 | Token   | Hex       | Usage                        |
 | ------- | --------- | ---------------------------- |
 | `ivory` | `#F4F2F3` | Primary background           |
-| `mauve` | `#C0A9BD` | Accent, borders, glow        |
-| `sage`  | `#94A7AE` | Secondary accent             |
+| `mauve` | `#8A6F88` | Accent, borders, glow        |
+| `sage`  | `#4F7288` | Secondary accent             |
 | `deep`  | `#47676A` | Primary text, buttons, dark  |
 
 ### Typography

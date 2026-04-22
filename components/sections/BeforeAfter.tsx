@@ -99,7 +99,7 @@ export function BeforeAfter(): React.ReactElement {
     >
       <div
         className="absolute top-1/2 left-0 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 -translate-y-1/2 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #94A7AE, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #4F7288, transparent 70%)" }}
         aria-hidden
       />
 

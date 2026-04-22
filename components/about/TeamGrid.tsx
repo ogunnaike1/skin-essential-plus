@@ -31,7 +31,7 @@ const TEAM: readonly TeamMember[] = [
     cardBg: "bg-mauve/20",
     nameColor: "text-deep",
     roleColor: "text-mauve",
-    accentHex: "#C0A9BD",
+    accentHex: "#8A6F88",
     borderClass: "border-mauve/35",
     isDark: false,
   },
@@ -46,7 +46,7 @@ const TEAM: readonly TeamMember[] = [
     cardBg: "bg-sage/25",
     nameColor: "text-deep",
     roleColor: "text-sage",
-    accentHex: "#94A7AE",
+    accentHex: "#4F7288",
     borderClass: "border-sage/40",
     isDark: false,
   },
@@ -199,12 +199,12 @@ export function TeamGrid(): React.ReactElement {
       {/* Ambient orbs */}
       <div
         className="absolute top-20 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
         className="absolute bottom-20 -right-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
         aria-hidden
       />
 

@@ -10,12 +10,12 @@ export function FounderLetter(): React.ReactElement {
       {/* Ambient orbs in palette colors */}
       <div
         className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-25 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #C0A9BD 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
         aria-hidden
       />
       <div
         className="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #94A7AE 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
         aria-hidden
       />
 
@@ -92,8 +92,8 @@ export function FounderLetter(): React.ReactElement {
             {/* Credentials strip */}
             <div className="mt-6 grid grid-cols-3 gap-3">
               {[
-                { label: "Years", value: "15+", color: "#C0A9BD" },
-                { label: "Trained", value: "Paris", color: "#94A7AE" },
+                { label: "Years", value: "15+", color: "#8A6F88" },
+                { label: "Trained", value: "Paris", color: "#4F7288" },
                 { label: "Certified", value: "AAD", color: "#F4F2F3" },
               ].map((item) => (
                 <div
@@ -182,7 +182,7 @@ export function FounderLetter(): React.ReactElement {
 
                   {/* Decorative palette dots */}
                   <div className="flex items-center gap-1.5">
-                    {["#C0A9BD", "#94A7AE", "#47676A"].map((c) => (
+                    {["#8A6F88", "#4F7288", "#47676A"].map((c) => (
                       <span
                         key={c}
                         className="h-2 w-2 rounded-full"
