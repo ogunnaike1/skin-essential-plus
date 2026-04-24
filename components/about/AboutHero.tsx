@@ -183,14 +183,14 @@ export function AboutHero(): React.ReactElement {
             {activeSlide?.numeral ?? "01"}
           </span>
           <span className="h-12 w-px bg-gradient-to-b from-ivory/60 to-transparent" />
-          <span className="font-sans text-xs text-ivory/50 tabular-nums tracking-[0.2em]">
+          <span className="font-sans text-xs text-ivory/85 tabular-nums tracking-[0.2em]">
             / {String(totalSlides).padStart(2, "0")}
           </span>
         </div>
         <div className="h-16 w-px bg-ivory/15" />
         <div className="flex items-center gap-2 [writing-mode:vertical-rl] rotate-180">
-          <span className="eyebrow text-ivory/60 text-[10px]">About</span>
-          <span className="eyebrow text-mauve text-[10px]">— Skin Essential Plus</span>
+          <span className="eyebrow text-ivory/90 text-[10px]">About</span>
+          <span className="eyebrow text-ivory text-[10px]">— Skin Essential Plus</span>
         </div>
       </div>
 
@@ -210,10 +210,10 @@ export function AboutHero(): React.ReactElement {
                 <div
                   className="relative rounded-[1.75rem] p-7 sm:p-9 lg:p-10 border overflow-hidden"
                   style={{
-                    background: "rgba(244, 242, 243, 0.08)",
+                    background: "rgba(252, 251, 252, 0.08)",
                     backdropFilter: "blur(18px) saturate(130%)",
                     WebkitBackdropFilter: "blur(18px) saturate(130%)",
-                    borderColor: "rgba(244, 242, 243, 0.22)",
+                    borderColor: "rgba(252, 251, 252, 0.22)",
                     boxShadow:
                       "0 20px 50px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
@@ -225,7 +225,7 @@ export function AboutHero(): React.ReactElement {
                     className="flex items-center gap-3 mb-5"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-mauve animate-pulse-soft" />
-                    <span className="eyebrow text-mauve text-[10px]">
+                    <span className="eyebrow text-ivory text-[10px]">
                       {activeSlide.eyebrow}
                     </span>
                   </motion.div>
@@ -243,7 +243,7 @@ export function AboutHero(): React.ReactElement {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-5 text-sm sm:text-base font-light text-ivory/80 leading-[1.6] max-w-lg text-balance"
+                    className="mt-5 text-sm sm:text-base font-light text-ivory leading-[1.6] max-w-lg text-balance"
                   >
                     {activeSlide.subtitle}
                   </motion.p>
@@ -258,14 +258,14 @@ export function AboutHero(): React.ReactElement {
                     {[
                       { label: "Est. 2018", color: "#8A6F88" },
                       { label: "Lagos, NG", color: "#4F7288" },
-                      { label: "12K+ clients", color: "#F4F2F3" },
+                      { label: "12K+ clients", color: "#FCFBFC" },
                     ].map((m) => (
                       <div key={m.label} className="flex items-center gap-2">
                         <span
                           className="h-1.5 w-1.5 rounded-full"
                           style={{ backgroundColor: m.color }}
                         />
-                        <span className="text-[11px] font-light tracking-wide text-ivory/65 uppercase">
+                        <span className="text-[11px] font-light tracking-wide text-ivory/90 uppercase">
                           {m.label}
                         </span>
                       </div>
@@ -314,7 +314,7 @@ export function AboutHero(): React.ReactElement {
                     <span
                       className={cn(
                         "font-sans text-[10px] tabular-nums tracking-[0.2em] transition-colors duration-500",
-                        isActive ? "text-ivory" : "text-ivory/40"
+                        isActive ? "text-ivory" : "text-ivory"
                       )}
                     >
                       {slide.numeral}
@@ -358,7 +358,7 @@ export function AboutHero(): React.ReactElement {
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="hidden xl:flex absolute right-10 top-1/2 -translate-y-1/2 flex-col items-center gap-2 text-ivory/60"
+          className="hidden xl:flex absolute right-10 top-1/2 -translate-y-1/2 flex-col items-center gap-2 text-ivory/90"
           aria-hidden
         >
           <span className="eyebrow text-[10px]">Scroll</span>

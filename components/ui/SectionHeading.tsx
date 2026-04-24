@@ -38,7 +38,7 @@ export function SectionHeading({
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           "eyebrow mb-5",
-          isDark ? "text-mauve" : "text-deep/70"
+          isDark ? "text-mauve" : "text-deep"
         )}
       >
         — {eyebrow}
@@ -63,7 +63,7 @@ export function SectionHeading({
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
           className={cn(
             "mt-6 text-base sm:text-lg leading-relaxed font-light text-balance",
-            isDark ? "text-ivory/80" : "text-deep/70"
+            isDark ? "text-ivory" : "text-deep"
           )}
         >
           {description}

@@ -43,11 +43,11 @@ const CARD_PALETTES: readonly CardPalette[] = [
     cardBg: "bg-ivory/70",
     border: "border-mauve/30",
     borderHover: "hover:border-mauve",
-    glowColor: "rgba(192,169,189,0.45)",
+    glowColor: "rgba(138,111,136,0.45)",
     accent: "text-mauve",
     accentHex: "#8A6F88",
     titleColor: "text-deep",
-    bodyColor: "text-deep/70",
+    bodyColor: "text-deep",
     eyebrowColor: "text-mauve",
     arrowBg: "bg-transparent",
     arrowBgHover: "group-hover:bg-mauve",
@@ -67,11 +67,11 @@ const CARD_PALETTES: readonly CardPalette[] = [
     cardBg: "bg-sage/15",
     border: "border-sage/30",
     borderHover: "hover:border-sage",
-    glowColor: "rgba(148,167,174,0.55)",
+    glowColor: "rgba(79,114,136,0.55)",
     accent: "text-sage",
     accentHex: "#4F7288",
     titleColor: "text-deep-dark",
-    bodyColor: "text-deep/75",
+    bodyColor: "text-deep",
     eyebrowColor: "text-sage",
     arrowBg: "bg-transparent",
     arrowBgHover: "group-hover:bg-sage",
@@ -95,7 +95,7 @@ const CARD_PALETTES: readonly CardPalette[] = [
     accent: "text-mauve",
     accentHex: "#8A6F88",
     titleColor: "text-ivory",
-    bodyColor: "text-ivory/70",
+    bodyColor: "text-ivory",
     eyebrowColor: "text-mauve",
     arrowBg: "bg-ivory/10",
     arrowBgHover: "group-hover:bg-ivory",
@@ -115,11 +115,11 @@ const CARD_PALETTES: readonly CardPalette[] = [
     cardBg: "bg-gradient-to-br from-ivory via-mauve/20 to-sage/20",
     border: "border-deep/20",
     borderHover: "hover:border-deep",
-    glowColor: "rgba(192,169,189,0.4)",
+    glowColor: "rgba(138,111,136,0.4)",
     accent: "text-deep",
     accentHex: "#47676A",
     titleColor: "text-deep",
-    bodyColor: "text-deep/70",
+    bodyColor: "text-deep",
     eyebrowColor: "text-deep",
     arrowBg: "bg-transparent",
     arrowBgHover: "group-hover:bg-deep",
@@ -326,7 +326,7 @@ export function Services(): React.ReactElement {
             transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-center justify-center gap-2 mt-8"
           >
-            {["#8A6F88", "#4F7288", "#47676A", "#F4F2F3"].map((c) => (
+            {["#8A6F88", "#4F7288", "#47676A", "#FCFBFC"].map((c) => (
               <span
                 key={c}
                 className="h-1.5 w-1.5 rounded-full ring-1 ring-deep/15"

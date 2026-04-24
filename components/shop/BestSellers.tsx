@@ -19,7 +19,7 @@ export function BestSellers(): React.ReactElement {
       className="relative py-16 sm:py-20 overflow-hidden"
       style={{
         background:
-          "linear-gradient(180deg, #F4F2F3 0%, rgba(148,167,174,0.12) 50%, #F4F2F3 100%)",
+          "linear-gradient(180deg, #FCFBFC 0%, rgba(79,114,136,0.12) 50%, #FCFBFC 100%)",
       }}
     >
       {/* Ambient palette orbs */}
@@ -54,7 +54,7 @@ export function BestSellers(): React.ReactElement {
               Loved by{" "}
               <em className="not-italic text-mauve">thousands</em>.
             </h2>
-            <p className="mt-3 text-sm sm:text-base font-light text-deep/65 max-w-lg">
+            <p className="mt-3 text-sm sm:text-base font-light text-deep max-w-lg">
               The products our community returns to, again and again — tested by reviews, earned by results.
             </p>
           </div>
@@ -161,7 +161,7 @@ export function BestSellers(): React.ReactElement {
                     <span className="text-[11px] font-medium text-deep tabular-nums">
                       {product.rating.toFixed(1)}
                     </span>
-                    <span className="text-[11px] text-deep/50 font-light">
+                    <span className="text-[11px] text-deep font-light">
                       ({product.reviewCount})
                     </span>
                   </div>
@@ -182,7 +182,7 @@ export function BestSellers(): React.ReactElement {
                   </h3>
 
                   {/* Key ingredient + volume */}
-                  <div className="flex items-center gap-2 text-[11px] text-deep/60 font-light mb-4 mt-auto pb-4 border-b border-deep/10">
+                  <div className="flex items-center gap-2 text-[11px] text-deep font-light mb-4 mt-auto pb-4 border-b border-deep/10">
                     <span className="truncate">{product.keyIngredient}</span>
                     <span className="text-deep/20">·</span>
                     <span>{product.volume}</span>
@@ -192,7 +192,7 @@ export function BestSellers(): React.ReactElement {
                   <div className="flex items-center justify-between">
                     <div>
                       {product.originalPrice ? (
-                        <span className="text-[10px] text-deep/40 line-through mr-1.5">
+                        <span className="text-[10px] text-deep line-through mr-1.5">
                           {formatShopPrice(product.originalPrice)}
                         </span>
                       ) : null}
@@ -205,7 +205,7 @@ export function BestSellers(): React.ReactElement {
                         {formatShopPrice(product.price)}
                       </span>
                     </div>
-                    <span className="text-[10px] uppercase tracking-[0.15em] text-deep/50">
+                    <span className="text-[10px] uppercase tracking-[0.15em] text-deep">
                       View
                     </span>
                   </div>

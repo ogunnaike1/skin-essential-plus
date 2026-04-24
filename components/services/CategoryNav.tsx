@@ -90,7 +90,7 @@ export function CategoryNav(): React.ReactElement {
                 <h3 className="font-display text-xl font-light text-ivory leading-tight">
                   Our full menu
                 </h3>
-                <div className="mt-3 flex items-center gap-3 text-[10px] text-ivory/60 uppercase tracking-[0.15em]">
+                <div className="mt-3 flex items-center gap-3 text-[10px] text-ivory/90 uppercase tracking-[0.15em]">
                   <span>
                     <span className="text-ivory font-medium">
                       {SERVICE_CATEGORIES.length}
@@ -159,7 +159,7 @@ export function CategoryNav(): React.ReactElement {
                         <span
                           className={cn(
                             "font-sans text-[10px] tabular-nums tracking-[0.15em] shrink-0 transition-colors duration-300",
-                            isActive ? "text-ivory/70" : "text-deep/40"
+                            isActive ? "text-ivory" : "text-deep"
                           )}
                         >
                           {String(i + 1).padStart(2, "0")}
@@ -190,7 +190,7 @@ export function CategoryNav(): React.ReactElement {
                           <p
                             className={cn(
                               "text-[10px] font-light mt-0.5 transition-colors duration-300",
-                              isActive ? "text-ivory/70" : "text-deep/55"
+                              isActive ? "text-ivory" : "text-deep"
                             )}
                           >
                             {count} {count === 1 ? "service" : "services"}
@@ -202,7 +202,7 @@ export function CategoryNav(): React.ReactElement {
                           <span className="shrink-0 h-2 w-2 rounded-full bg-ivory animate-pulse-soft" />
                         ) : (
                           <ChevronRight
-                            className="h-3.5 w-3.5 shrink-0 text-deep/30 group-hover:text-deep/60 transition-colors duration-200"
+                            className="h-3.5 w-3.5 shrink-0 text-deep/30 group-hover:text-deep transition-colors duration-200"
                             strokeWidth={1.5}
                           />
                         )}
@@ -222,7 +222,7 @@ export function CategoryNav(): React.ReactElement {
                     All services live
                   </span>
                 </div>
-                <span className="text-[10px] uppercase tracking-[0.15em] text-ivory/80 tabular-nums">
+                <span className="text-[10px] uppercase tracking-[0.15em] text-ivory tabular-nums">
                   {SERVICES_CATALOG.length} total
                 </span>
               </div>

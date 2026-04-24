@@ -171,7 +171,7 @@ export function HeroCarousel(): React.ReactElement {
             {String(selectedIndex + 1).padStart(2, "0")}
           </span>
           <span className="h-12 w-px bg-gradient-to-b from-ivory/60 to-transparent" />
-          <span className="font-sans text-xs text-ivory/50 tabular-nums tracking-[0.2em]">
+          <span className="font-sans text-xs text-ivory/85 tabular-nums tracking-[0.2em]">
             / {String(totalSlides).padStart(2, "0")}
           </span>
         </div>
@@ -179,10 +179,10 @@ export function HeroCarousel(): React.ReactElement {
         <div className="h-16 w-px bg-ivory/15" />
 
         <div className="flex items-center gap-2 [writing-mode:vertical-rl] rotate-180">
-          <span className="eyebrow text-ivory/60 text-[10px]">
+          <span className="eyebrow text-ivory/90 text-[10px]">
             Skin Essential Plus
           </span>
-          <span className="eyebrow text-mauve text-[10px]">— est. 2024</span>
+          <span className="eyebrow text-ivory text-[10px]">— est. 2024</span>
         </div>
       </div>
 
@@ -203,10 +203,10 @@ export function HeroCarousel(): React.ReactElement {
                 <div
                   className="relative rounded-[1.75rem] p-7 sm:p-9 lg:p-10 border overflow-hidden"
                   style={{
-                    background: "rgba(244, 242, 243, 0.08)",
+                    background: "rgba(252, 251, 252, 0.08)",
                     backdropFilter: "blur(18px) saturate(130%)",
                     WebkitBackdropFilter: "blur(18px) saturate(130%)",
-                    borderColor: "rgba(244, 242, 243, 0.22)",
+                    borderColor: "rgba(252, 251, 252, 0.22)",
                     boxShadow:
                       "0 20px 50px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
@@ -223,7 +223,7 @@ export function HeroCarousel(): React.ReactElement {
                     className="flex items-center gap-3 mb-5"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-mauve animate-pulse-soft" />
-                    <span className="eyebrow text-mauve text-[10px]">
+                    <span className="eyebrow text-ivory text-[10px]">
                       {activeSlide.eyebrow}
                     </span>
                   </motion.div>
@@ -251,7 +251,7 @@ export function HeroCarousel(): React.ReactElement {
                       delay: 0.4,
                       ease: [0.16, 1, 0.3, 1],
                     }}
-                    className="mt-5 text-sm sm:text-base font-light text-ivory/80 leading-[1.6] max-w-lg text-balance"
+                    className="mt-5 text-sm sm:text-base font-light text-ivory leading-[1.6] max-w-lg text-balance"
                   >
                     {activeSlide.subtitle}
                   </motion.p>
@@ -269,7 +269,7 @@ export function HeroCarousel(): React.ReactElement {
                   >
                     <button
                       type="button"
-                      className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(244,242,243,0.25)] hover:shadow-[0_8px_40px_rgba(192,169,189,0.5)] transition-all duration-500"
+                      className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:shadow-[0_8px_40px_rgba(138,111,136,0.5)] transition-all duration-500"
                     >
                       <span>{activeSlide.ctaPrimary}</span>
                       <span className="h-9 w-9 rounded-full bg-deep text-ivory flex items-center justify-center transition-all duration-500 group-hover:bg-mauve group-hover:rotate-[22deg]">
@@ -329,7 +329,7 @@ export function HeroCarousel(): React.ReactElement {
                     <span
                       className={cn(
                         "font-sans text-[10px] tabular-nums tracking-[0.2em] transition-colors duration-500",
-                        isActive ? "text-ivory" : "text-ivory/40"
+                        isActive ? "text-ivory" : "text-ivory"
                       )}
                     >
                       {String(idx + 1).padStart(2, "0")}

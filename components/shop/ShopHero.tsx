@@ -53,7 +53,7 @@ const HERO_SLIDES: readonly ShopHeroSlide[] = [
     productTagline: "Luminous treatment mask",
     productPrice: 35000,
     productImage:
-      "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1614859275264-4a9dc8a61e58?w=600&q=85&auto=format&fit=crop",
     ctaPrimary: "Shop the mask",
     ctaSecondary: "Browse all",
   },
@@ -245,14 +245,14 @@ export function ShopHero(): React.ReactElement {
             {activeSlide?.numeral ?? "01"}
           </span>
           <span className="h-12 w-px bg-gradient-to-b from-ivory/60 to-transparent" />
-          <span className="font-sans text-xs text-ivory/50 tabular-nums tracking-[0.2em]">
+          <span className="font-sans text-xs text-ivory/85 tabular-nums tracking-[0.2em]">
             / {String(totalSlides).padStart(2, "0")}
           </span>
         </div>
         <div className="h-16 w-px bg-ivory/15" />
         <div className="flex items-center gap-2 [writing-mode:vertical-rl] rotate-180">
-          <span className="eyebrow text-ivory/60 text-[10px]">The Boutique</span>
-          <span className="eyebrow text-mauve text-[10px]">— Skin Essential +</span>
+          <span className="eyebrow text-ivory/90 text-[10px]">The Boutique</span>
+          <span className="eyebrow text-ivory text-[10px]">— Skin Essential +</span>
         </div>
       </div>
 
@@ -273,10 +273,10 @@ export function ShopHero(): React.ReactElement {
                 <div
                   className="relative rounded-[1.75rem] p-7 sm:p-9 lg:p-10 border overflow-hidden"
                   style={{
-                    background: "rgba(244, 242, 243, 0.08)",
+                    background: "rgba(252, 251, 252, 0.08)",
                     backdropFilter: "blur(18px) saturate(130%)",
                     WebkitBackdropFilter: "blur(18px) saturate(130%)",
-                    borderColor: "rgba(244, 242, 243, 0.22)",
+                    borderColor: "rgba(252, 251, 252, 0.22)",
                     boxShadow:
                       "0 20px 50px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
@@ -288,7 +288,7 @@ export function ShopHero(): React.ReactElement {
                     className="flex items-center gap-3 mb-5"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-mauve animate-pulse-soft" />
-                    <span className="eyebrow text-mauve text-[10px]">
+                    <span className="eyebrow text-ivory text-[10px]">
                       {activeSlide.eyebrow}
                     </span>
                   </motion.div>
@@ -306,7 +306,7 @@ export function ShopHero(): React.ReactElement {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-5 text-sm sm:text-base font-light text-ivory/80 leading-[1.6] max-w-lg text-balance"
+                    className="mt-5 text-sm sm:text-base font-light text-ivory leading-[1.6] max-w-lg text-balance"
                   >
                     {activeSlide.subtitle}
                   </motion.p>
@@ -319,7 +319,7 @@ export function ShopHero(): React.ReactElement {
                   >
                     <button
                       type="button"
-                      className="group inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(244,242,243,0.25)] hover:bg-mauve hover:text-ivory transition-colors duration-300"
+                      className="group inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:bg-mauve hover:text-ivory transition-colors duration-300"
                     >
                       <ShoppingBag className="h-3.5 w-3.5" />
                       <span>{activeSlide.ctaPrimary}</span>
@@ -345,14 +345,14 @@ export function ShopHero(): React.ReactElement {
                     {[
                       { label: "Formulated in Lagos", color: "#8A6F88" },
                       { label: "Cruelty-free", color: "#4F7288" },
-                      { label: "Free ₦50K+ shipping", color: "#F4F2F3" },
+                      { label: "Free ₦50K+ shipping", color: "#FCFBFC" },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center gap-2">
                         <span
                           className="h-1.5 w-1.5 rounded-full"
                           style={{ backgroundColor: item.color }}
                         />
-                        <span className="text-[11px] font-light text-ivory/70 uppercase tracking-[0.15em]">
+                        <span className="text-[11px] font-light text-ivory uppercase tracking-[0.15em]">
                           {item.label}
                         </span>
                       </div>
@@ -378,8 +378,8 @@ export function ShopHero(): React.ReactElement {
                   className="relative rounded-[1.75rem] overflow-hidden border shadow-[0_30px_70px_rgba(0,0,0,0.3)]"
                   style={{
                     background:
-                      "linear-gradient(145deg, rgba(244,242,243,0.95) 0%, rgba(244,242,243,0.98) 100%)",
-                    borderColor: "rgba(244,242,243,0.3)",
+                      "linear-gradient(145deg, rgba(252,251,252,0.95) 0%, rgba(252,251,252,0.98) 100%)",
+                    borderColor: "rgba(252,251,252,0.3)",
                   }}
                 >
                   {/* Product image */}
@@ -409,7 +409,7 @@ export function ShopHero(): React.ReactElement {
                           strokeWidth={0}
                         />
                       ))}
-                      <span className="ml-1.5 text-[10px] uppercase tracking-[0.15em] text-deep/60">
+                      <span className="ml-1.5 text-[10px] uppercase tracking-[0.15em] text-deep">
                         Hand-picked
                       </span>
                     </div>
@@ -422,7 +422,7 @@ export function ShopHero(): React.ReactElement {
 
                     <div className="flex items-baseline justify-between pt-3 border-t border-deep/10">
                       <div>
-                        <p className="eyebrow text-deep/50 text-[9px] mb-0.5">
+                        <p className="eyebrow text-deep text-[9px] mb-0.5">
                           Price
                         </p>
                         <p className="font-display text-2xl font-light text-mauve tabular-nums">
@@ -480,7 +480,7 @@ export function ShopHero(): React.ReactElement {
                     <span
                       className={cn(
                         "font-sans text-[10px] tabular-nums tracking-[0.2em] transition-colors duration-300",
-                        isActive ? "text-ivory" : "text-ivory/40"
+                        isActive ? "text-ivory" : "text-ivory"
                       )}
                     >
                       {slide.numeral}

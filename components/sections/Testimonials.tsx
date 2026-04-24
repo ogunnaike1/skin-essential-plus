@@ -41,7 +41,7 @@ export function Testimonials(): React.ReactElement {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(192,169,189,0.15) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(138,111,136,0.15) 0%, transparent 70%)",
         }}
         aria-hidden
       />

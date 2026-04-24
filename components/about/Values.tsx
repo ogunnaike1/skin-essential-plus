@@ -35,7 +35,7 @@ const VALUES: readonly Value[] = [
     icon: ShieldCheck,
     bgClass: "bg-deep",
     textClass: "text-ivory",
-    bodyClass: "text-ivory/75",
+    bodyClass: "text-ivory",
     numberClass: "text-mauve/30",
     iconBg: "bg-ivory",
     iconText: "text-deep",
@@ -51,7 +51,7 @@ const VALUES: readonly Value[] = [
     icon: Sparkles,
     bgClass: "bg-mauve/25",
     textClass: "text-deep",
-    bodyClass: "text-deep/70",
+    bodyClass: "text-deep",
     numberClass: "text-mauve/40",
     iconBg: "bg-mauve",
     iconText: "text-ivory",
@@ -67,7 +67,7 @@ const VALUES: readonly Value[] = [
     icon: Leaf,
     bgClass: "bg-sage/30",
     textClass: "text-deep",
-    bodyClass: "text-deep/70",
+    bodyClass: "text-deep",
     numberClass: "text-sage/50",
     iconBg: "bg-sage",
     iconText: "text-ivory",
@@ -83,7 +83,7 @@ const VALUES: readonly Value[] = [
     icon: Lock,
     bgClass: "bg-gradient-to-br from-ivory to-sage/20",
     textClass: "text-deep",
-    bodyClass: "text-deep/70",
+    bodyClass: "text-deep",
     numberClass: "text-deep/20",
     iconBg: "bg-deep",
     iconText: "text-ivory",
@@ -99,7 +99,7 @@ const VALUES: readonly Value[] = [
     icon: Heart,
     bgClass: "bg-gradient-to-br from-mauve/30 via-ivory to-sage/20",
     textClass: "text-deep",
-    bodyClass: "text-deep/70",
+    bodyClass: "text-deep",
     numberClass: "text-mauve/40",
     iconBg: "bg-deep",
     iconText: "text-ivory",
@@ -182,7 +182,7 @@ export function Values(): React.ReactElement {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 20% 30%, rgba(192,169,189,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 70%, rgba(148,167,174,0.15) 0%, transparent 60%)",
+            "radial-gradient(ellipse 80% 50% at 20% 30%, rgba(138,111,136,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 70%, rgba(79,114,136,0.15) 0%, transparent 60%)",
         }}
         aria-hidden
       />
@@ -202,7 +202,7 @@ export function Values(): React.ReactElement {
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light leading-[1.02] tracking-tight text-deep text-balance">
             The values we refuse to compromise on.
           </h2>
-          <p className="mt-6 text-base sm:text-lg font-light text-deep/70 leading-relaxed text-balance">
+          <p className="mt-6 text-base sm:text-lg font-light text-deep leading-relaxed text-balance">
             Not aspirational slogans — these are the five principles we'd shut the doors before bending.
           </p>
 

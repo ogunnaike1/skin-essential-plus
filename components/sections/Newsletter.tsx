@@ -22,7 +22,7 @@ export function Newsletter(): React.ReactElement {
     <section className="relative py-24 sm:py-32 section-padding overflow-hidden">
       <div
         className="absolute inset-0 pointer-events-none opacity-60"
-        style={{ background: "radial-gradient(ellipse at center, rgba(192,169,189,0.15) 0%, transparent 60%)" }}
+        style={{ background: "radial-gradient(ellipse at center, rgba(138,111,136,0.15) 0%, transparent 60%)" }}
         aria-hidden
       />
 
@@ -40,7 +40,7 @@ export function Newsletter(): React.ReactElement {
         <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light text-deep leading-[1.05] tracking-tight text-balance">
           Letters from the sanctuary.
         </h2>
-        <p className="mt-5 text-base sm:text-lg text-deep/70 font-light max-w-xl mx-auto text-balance">
+        <p className="mt-5 text-base sm:text-lg text-deep font-light max-w-xl mx-auto text-balance">
           Seasonal rituals, skin wisdom, and private invitations — delivered with intention, never excess.
         </p>
 
@@ -56,13 +56,13 @@ export function Newsletter(): React.ReactElement {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@beautifulemail.com"
-              className="flex-1 bg-transparent px-6 py-3 text-sm font-light text-deep placeholder:text-deep/40 focus:outline-none"
+              className="flex-1 bg-transparent px-6 py-3 text-sm font-light text-deep placeholder:text-deep focus:outline-none"
               aria-label="Email address"
             />
             <button
               type="submit"
               disabled={submitted}
-              className="group inline-flex items-center justify-center h-12 px-6 bg-deep text-ivory rounded-full text-[11px] uppercase tracking-[0.18em] transition-all duration-500 hover:bg-deep-dark hover:shadow-[0_0_30px_rgba(192,169,189,0.5)] disabled:opacity-80"
+              className="group inline-flex items-center justify-center h-12 px-6 bg-deep text-ivory rounded-full text-[11px] uppercase tracking-[0.18em] transition-all duration-500 hover:bg-deep-dark hover:shadow-[0_0_30px_rgba(138,111,136,0.5)] disabled:opacity-80"
             >
               {submitted ? (
                 <>
@@ -77,7 +77,7 @@ export function Newsletter(): React.ReactElement {
               )}
             </button>
           </div>
-          <p className="mt-5 text-xs text-deep/50 font-light">
+          <p className="mt-5 text-xs text-deep font-light">
             No noise. Unsubscribe whenever. We respect your inbox.
           </p>
         </form>

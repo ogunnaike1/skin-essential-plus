@@ -61,7 +61,7 @@ const TEAM: readonly TeamMember[] = [
     cardBg: "bg-deep",
     nameColor: "text-ivory",
     roleColor: "text-mauve",
-    accentHex: "#F4F2F3",
+    accentHex: "#FCFBFC",
     borderClass: "border-deep-dark",
     isDark: true,
   },
@@ -133,7 +133,7 @@ function TeamCard({ member, index }: TeamCardProps): React.ReactElement {
 
         {/* Decorative number */}
         <span
-          className="absolute top-4 right-5 font-display text-5xl font-light leading-none text-ivory/70 tracking-tighter pointer-events-none select-none"
+          className="absolute top-4 right-5 font-display text-5xl font-light leading-none text-ivory tracking-tighter pointer-events-none select-none"
           aria-hidden
         >
           0{index + 1}
@@ -183,7 +183,7 @@ function TeamCard({ member, index }: TeamCardProps): React.ReactElement {
 
         <p
           className={`text-sm font-light leading-relaxed ${
-            member.isDark ? "text-ivory/75" : "text-deep/70"
+            member.isDark ? "text-ivory" : "text-deep"
           }`}
         >
           {member.bio}
@@ -233,7 +233,7 @@ export function TeamGrid(): React.ReactElement {
             transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-4 lg:col-start-9"
           >
-            <p className="text-base font-light text-deep/70 leading-relaxed">
+            <p className="text-base font-light text-deep leading-relaxed">
               Our team is small by design. Everyone who works here has been chosen, trained, and continuously mentored — because the quality of your experience begins with the people who make it possible.
             </p>
           </motion.div>

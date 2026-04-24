@@ -124,7 +124,7 @@ export function ServiceCard({
             <Heart
               className={cn(
                 "h-3.5 w-3.5 transition-colors duration-200",
-                isFavorite ? "fill-mauve text-mauve" : "text-deep/70"
+                isFavorite ? "fill-mauve text-mauve" : "text-deep"
               )}
               strokeWidth={1.5}
             />
@@ -178,7 +178,7 @@ export function ServiceCard({
           <span className="text-[11px] font-medium text-deep tabular-nums">
             {service.rating.toFixed(1)}
           </span>
-          <span className="text-[11px] text-deep/50 font-light">
+          <span className="text-[11px] text-deep font-light">
             ({service.reviewCount})
           </span>
         </div>
@@ -189,28 +189,28 @@ export function ServiceCard({
         </h3>
 
         {/* Description */}
-        <p className="text-xs font-light text-deep/65 leading-relaxed line-clamp-2 mb-3">
+        <p className="text-xs font-light text-deep leading-relaxed line-clamp-2 mb-3">
           {service.description}
         </p>
 
         {/* Meta — inline compact row */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-deep/70 mb-3 pb-3 border-b border-deep/10">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-deep mb-3 pb-3 border-b border-deep/10">
           <span className="inline-flex items-center gap-1">
-            <Clock className="h-3 w-3 text-deep/50" strokeWidth={1.5} />
+            <Clock className="h-3 w-3 text-deep" strokeWidth={1.5} />
             <span className="font-light">
               {formatDuration(service.durationMinutes)}
             </span>
           </span>
           <span className="text-deep/20">·</span>
           <span className="inline-flex items-center gap-1">
-            <Users className="h-3 w-3 text-deep/50" strokeWidth={1.5} />
+            <Users className="h-3 w-3 text-deep" strokeWidth={1.5} />
             <span className="font-light tabular-nums">
               {service.slotsAvailable}/{service.slotsTotal}
             </span>
           </span>
           <span className="text-deep/20">·</span>
           <span className="inline-flex items-center gap-1 min-w-0">
-            <MapPin className="h-3 w-3 text-deep/50 shrink-0" strokeWidth={1.5} />
+            <MapPin className="h-3 w-3 text-deep shrink-0" strokeWidth={1.5} />
             <span className="font-light truncate">{service.location}</span>
           </span>
         </div>
@@ -227,7 +227,7 @@ export function ServiceCard({
           </p>
           <a
             href={`#details-${service.id}`}
-            className="text-[10px] uppercase tracking-[0.15em] text-deep/50 hover:text-deep transition-colors inline-flex items-center gap-1"
+            className="text-[10px] uppercase tracking-[0.15em] text-deep hover:text-deep transition-colors inline-flex items-center gap-1"
           >
             Details
             <ArrowUpRight className="h-2.5 w-2.5" strokeWidth={1.5} />
@@ -251,7 +251,7 @@ export function ServiceCard({
             className={cn(
               "flex-1 inline-flex items-center justify-center gap-1 px-2 py-2 rounded-full font-sans text-[9px] uppercase tracking-[0.15em] transition-colors duration-200 cursor-pointer border",
               isFullyBooked
-                ? "bg-deep/10 text-deep/40 cursor-not-allowed border-deep/10"
+                ? "bg-deep/10 text-deep cursor-not-allowed border-deep/10"
                 : cn(
                     accentBg[accentColor],
                     "text-ivory border-transparent hover:bg-deep-dark"

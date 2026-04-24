@@ -34,9 +34,9 @@ const TRUST_PALETTES: readonly TrustPalette[] = [
     borderHover: "hover:border-mauve",
     iconBg: "bg-mauve",
     iconText: "text-ivory",
-    iconGlow: "rgba(192,169,189,0.5)",
+    iconGlow: "rgba(138,111,136,0.5)",
     titleColor: "text-deep",
-    bodyColor: "text-deep/70",
+    bodyColor: "text-deep",
     numberColor: "text-mauve/25",
     lineColor: "bg-gradient-to-r from-mauve to-transparent",
     accent: "text-mauve",
@@ -49,9 +49,9 @@ const TRUST_PALETTES: readonly TrustPalette[] = [
     borderHover: "hover:border-sage",
     iconBg: "bg-sage",
     iconText: "text-ivory",
-    iconGlow: "rgba(148,167,174,0.55)",
+    iconGlow: "rgba(79,114,136,0.55)",
     titleColor: "text-deep-dark",
-    bodyColor: "text-deep/75",
+    bodyColor: "text-deep",
     numberColor: "text-sage/30",
     lineColor: "bg-gradient-to-r from-sage to-transparent",
     accent: "text-sage",
@@ -64,9 +64,9 @@ const TRUST_PALETTES: readonly TrustPalette[] = [
     borderHover: "hover:border-mauve/60",
     iconBg: "bg-ivory",
     iconText: "text-deep",
-    iconGlow: "rgba(244,242,243,0.4)",
+    iconGlow: "rgba(252,251,252,0.4)",
     titleColor: "text-ivory",
-    bodyColor: "text-ivory/75",
+    bodyColor: "text-ivory",
     numberColor: "text-mauve/30",
     lineColor: "bg-gradient-to-r from-mauve to-transparent",
     accent: "text-mauve",
@@ -81,7 +81,7 @@ const TRUST_PALETTES: readonly TrustPalette[] = [
     iconText: "text-ivory",
     iconGlow: "rgba(71,103,106,0.45)",
     titleColor: "text-deep",
-    bodyColor: "text-deep/70",
+    bodyColor: "text-deep",
     numberColor: "text-deep/20",
     lineColor: "bg-gradient-to-r from-deep to-transparent",
     accent: "text-deep",
@@ -191,7 +191,7 @@ export function WhyChooseUs(): React.ReactElement {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 20% 30%, rgba(192,169,189,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 70%, rgba(148,167,174,0.12) 0%, transparent 60%)",
+            "radial-gradient(ellipse 80% 50% at 20% 30%, rgba(138,111,136,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 70%, rgba(79,114,136,0.12) 0%, transparent 60%)",
         }}
         aria-hidden
       />
@@ -236,7 +236,7 @@ export function WhyChooseUs(): React.ReactElement {
                   <em className="not-italic text-mauve">sanctuary</em>.
                 </h2>
 
-                <p className="mt-6 text-base sm:text-lg text-ivory/75 font-light leading-relaxed">
+                <p className="mt-6 text-base sm:text-lg text-ivory font-light leading-relaxed">
                   Four pillars hold up every experience we craft — precision, conscience, mastery, and intimacy. Each one sculpted with the same rigor we apply to your skin.
                 </p>
 
@@ -249,7 +249,7 @@ export function WhyChooseUs(): React.ReactElement {
                     {[
                       { color: "#8A6F88", label: "Precision" },
                       { color: "#4F7288", label: "Conscience" },
-                      { color: "#F4F2F3", label: "Mastery" },
+                      { color: "#FCFBFC", label: "Mastery" },
                       { color: "#8A6F88", label: "Intimacy" },
                     ].map((s, i) => (
                       <div key={i} className="flex items-center gap-2">
@@ -257,7 +257,7 @@ export function WhyChooseUs(): React.ReactElement {
                           className="h-2 w-2 rounded-full"
                           style={{ backgroundColor: s.color }}
                         />
-                        <span className="text-[11px] text-ivory/60 font-light tracking-wide">
+                        <span className="text-[11px] text-ivory/90 font-light tracking-wide">
                           {s.label}
                         </span>
                       </div>

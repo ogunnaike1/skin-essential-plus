@@ -38,7 +38,7 @@ const PILLARS: readonly Pillar[] = [
       "Science tells us what works. Ritual is how we make it meaningful. The sequence of touch, the quality of silence, the rhythm of the hour — these aren't decoration. They're the medicine that the protocol carries.",
     icon: Flower2,
     color: "bg-deep",
-    accent: "#F4F2F3",
+    accent: "#FCFBFC",
     dark: true,
   },
   {
@@ -135,7 +135,7 @@ function PillarCard({ pillar, index }: PillarCardProps): React.ReactElement {
         {/* Body */}
         <p
           className={`text-sm sm:text-base font-light leading-[1.65] ${
-            pillar.dark ? "text-ivory/80" : "text-deep/70"
+            pillar.dark ? "text-ivory" : "text-deep"
           }`}
         >
           {pillar.description}
@@ -172,7 +172,7 @@ export function Philosophy(): React.ReactElement {
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light leading-[1.02] tracking-tight text-deep text-balance">
             Three pillars hold up everything we do.
           </h2>
-          <p className="mt-6 text-base sm:text-lg font-light text-deep/70 leading-relaxed max-w-2xl mx-auto text-balance">
+          <p className="mt-6 text-base sm:text-lg font-light text-deep leading-relaxed max-w-2xl mx-auto text-balance">
             Not a manifesto. A working philosophy — the framework we return to before every consultation, every treatment, every recommendation.
           </p>
 

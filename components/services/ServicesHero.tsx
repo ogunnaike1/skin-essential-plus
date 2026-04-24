@@ -93,7 +93,7 @@ const HERO_SLIDES: readonly HeroSlide[] = [
       </>
     ),
     subtitle:
-      "Vitamin drips, glutathione therapy, tattoo removal, and clinical treatments administered by Ifeoluwa's team.",
+      "Vitamin drips, glutathione therapy, tattoo removal, and clinical treatments administered by Dr. Amaka's team.",
     image:
       "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?w=2400&q=90&auto=format&fit=crop",
     tag: "Clinical",
@@ -223,14 +223,14 @@ export function ServicesHero(): React.ReactElement {
             {activeSlide?.numeral ?? "01"}
           </span>
           <span className="h-12 w-px bg-gradient-to-b from-ivory/60 to-transparent" />
-          <span className="font-sans text-xs text-ivory/50 tabular-nums tracking-[0.2em]">
+          <span className="font-sans text-xs text-ivory/85 tabular-nums tracking-[0.2em]">
             / {String(totalSlides).padStart(2, "0")}
           </span>
         </div>
         <div className="h-16 w-px bg-ivory/15" />
         <div className="flex items-center gap-2 [writing-mode:vertical-rl] rotate-180">
-          <span className="eyebrow text-ivory/60 text-[10px]">Services</span>
-          <span className="eyebrow text-mauve text-[10px]">— Signature Menu</span>
+          <span className="eyebrow text-ivory/90 text-[10px]">Services</span>
+          <span className="eyebrow text-ivory text-[10px]">— Signature Menu</span>
         </div>
       </div>
 
@@ -251,10 +251,10 @@ export function ServicesHero(): React.ReactElement {
                 <div
                   className="relative rounded-[1.75rem] p-7 sm:p-9 lg:p-10 border overflow-hidden"
                   style={{
-                    background: "rgba(244, 242, 243, 0.08)",
+                    background: "rgba(252, 251, 252, 0.08)",
                     backdropFilter: "blur(18px) saturate(130%)",
                     WebkitBackdropFilter: "blur(18px) saturate(130%)",
-                    borderColor: "rgba(244, 242, 243, 0.22)",
+                    borderColor: "rgba(252, 251, 252, 0.22)",
                     boxShadow:
                       "0 20px 50px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
@@ -268,7 +268,7 @@ export function ServicesHero(): React.ReactElement {
                   >
                     <div className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-mauve animate-pulse-soft" />
-                      <span className="eyebrow text-mauve text-[10px]">
+                      <span className="eyebrow text-ivory text-[10px]">
                         {activeSlide.eyebrow}
                       </span>
                     </div>
@@ -292,7 +292,7 @@ export function ServicesHero(): React.ReactElement {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-5 text-sm sm:text-base font-light text-ivory/80 leading-[1.6] max-w-lg text-balance"
+                    className="mt-5 text-sm sm:text-base font-light text-ivory leading-[1.6] max-w-lg text-balance"
                   >
                     {activeSlide.subtitle}
                   </motion.p>
@@ -306,7 +306,7 @@ export function ServicesHero(): React.ReactElement {
                   >
                     <a
                       href={activeSlide.href}
-                      className="group inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(244,242,243,0.25)] hover:bg-mauve hover:text-ivory transition-colors duration-300"
+                      className="group inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:bg-mauve hover:text-ivory transition-colors duration-300"
                     >
                       <span>View {activeSlide.tag.toLowerCase()} services</span>
                       <span className="h-9 w-9 rounded-full bg-deep text-ivory flex items-center justify-center group-hover:bg-ivory group-hover:text-mauve transition-colors duration-300">
@@ -370,7 +370,7 @@ export function ServicesHero(): React.ReactElement {
                     <span
                       className={cn(
                         "font-sans text-[10px] tabular-nums tracking-[0.2em] transition-colors duration-300",
-                        isActive ? "text-ivory" : "text-ivory/40"
+                        isActive ? "text-ivory" : "text-ivory"
                       )}
                     >
                       {slide.numeral}

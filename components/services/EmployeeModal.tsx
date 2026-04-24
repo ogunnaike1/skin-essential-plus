@@ -104,13 +104,13 @@ export function EmployeeModal({
               </h2>
 
               {/* Service quick meta */}
-              <div className="mt-4 flex flex-wrap items-center gap-4 gap-y-2 text-[13px] text-deep/70 font-light">
+              <div className="mt-4 flex flex-wrap items-center gap-4 gap-y-2 text-[13px] text-deep font-light">
                 <span className="inline-flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-deep/50" strokeWidth={1.5} />
+                  <Clock className="h-3.5 w-3.5 text-deep" strokeWidth={1.5} />
                   {formatDuration(service.durationMinutes)}
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 text-deep/50" strokeWidth={1.5} />
+                  <MapPin className="h-3.5 w-3.5 text-deep" strokeWidth={1.5} />
                   {service.location}
                 </span>
                 <span className="inline-flex items-center gap-1.5 ml-auto font-display text-lg font-light text-mauve">
@@ -123,7 +123,7 @@ export function EmployeeModal({
             <div className="flex-1 overflow-y-auto p-6 sm:p-8">
               {employees.length === 0 ? (
                 <div className="text-center py-10">
-                  <p className="text-deep/60 font-light">
+                  <p className="text-deep font-light">
                     No therapists are currently assigned to this service.
                   </p>
                 </div>
@@ -131,7 +131,7 @@ export function EmployeeModal({
                 <>
                   <div className="flex items-center gap-2 mb-5 sm:mb-6">
                     <UserCheck className="h-4 w-4 text-mauve" strokeWidth={1.5} />
-                    <span className="eyebrow text-deep/60 text-[10px]">
+                    <span className="eyebrow text-deep text-[10px]">
                       {employees.length} available therapist{employees.length > 1 ? "s" : ""}
                     </span>
                   </div>
@@ -154,7 +154,7 @@ export function EmployeeModal({
             <div className="shrink-0 p-6 sm:p-8 border-t border-deep/10 bg-gradient-to-br from-ivory to-sage/10">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex-1">
-                  <p className="text-sm font-light text-deep/70">
+                  <p className="text-sm font-light text-deep">
                     Happy with any available therapist?
                   </p>
                   <p className="eyebrow text-sage text-[10px] mt-1">
@@ -253,7 +253,7 @@ function EmployeeRow({
           <h4 className="font-display text-lg font-light text-deep leading-tight tracking-tight">
             {employee.name}
           </h4>
-          <span className="inline-flex items-center gap-0.5 text-xs text-deep/60 tabular-nums">
+          <span className="inline-flex items-center gap-0.5 text-xs text-deep tabular-nums">
             <Star className="h-3 w-3 fill-mauve text-mauve" strokeWidth={0} />
             {employee.rating.toFixed(1)}
           </span>
@@ -267,7 +267,7 @@ function EmployeeRow({
           {employee.specialties.map((sp) => (
             <span
               key={sp}
-              className="text-[10px] px-2 py-0.5 rounded-full bg-deep/5 text-deep/70 font-light border border-deep/10"
+              className="text-[10px] px-2 py-0.5 rounded-full bg-deep/5 text-deep font-light border border-deep/10"
             >
               {sp}
             </span>
@@ -275,7 +275,7 @@ function EmployeeRow({
         </div>
 
         {/* Next available */}
-        <div className="flex items-center gap-1.5 text-xs text-deep/65 font-light">
+        <div className="flex items-center gap-1.5 text-xs text-deep font-light">
           <span
             className={cn("h-1.5 w-1.5 rounded-full", accentBg[accent])}
           />

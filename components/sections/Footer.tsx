@@ -46,7 +46,7 @@ export function Footer(): React.ReactElement {
             {/* Brand column */}
             <div className="md:col-span-5">
               <Logo variant="light" size="lg" />
-              <p className="mt-6 text-sm text-ivory/70 font-light leading-relaxed max-w-sm">
+              <p className="mt-6 text-sm text-ivory font-light leading-relaxed max-w-sm">
                 {SITE.description}
               </p>
               <div className="mt-8 flex items-center gap-3">
@@ -77,7 +77,7 @@ export function Footer(): React.ReactElement {
                   <li key={link.href}>
                     <a
                       href={link.href}
-                      className="text-sm font-light text-ivory/70 hover:text-ivory transition-colors duration-300"
+                      className="text-sm font-light text-ivory hover:text-ivory transition-colors duration-300"
                     >
                       {link.label}
                     </a>
@@ -93,7 +93,7 @@ export function Footer(): React.ReactElement {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-sm font-light text-ivory/70 hover:text-ivory transition-colors duration-300"
+                      className="text-sm font-light text-ivory hover:text-ivory transition-colors duration-300"
                     >
                       {link.label}
                     </a>
@@ -104,7 +104,7 @@ export function Footer(): React.ReactElement {
 
             <div className="md:col-span-3">
               <h4 className="eyebrow text-mauve mb-5">Contact</h4>
-              <ul className="space-y-3 text-sm font-light text-ivory/70">
+              <ul className="space-y-3 text-sm font-light text-ivory">
                 <li>{SITE.address}</li>
                 <li>
                   <a
@@ -122,13 +122,13 @@ export function Footer(): React.ReactElement {
                     {SITE.email}
                   </a>
                 </li>
-                <li className="pt-2 text-ivory/50 text-xs">{SITE.hours}</li>
+                <li className="pt-2 text-ivory/85 text-xs">{SITE.hours}</li>
               </ul>
             </div>
           </div>
 
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-ivory/50 font-light">
+            <p className="text-xs text-ivory/85 font-light">
               © {new Date().getFullYear()} {SITE.name}. Crafted with intention.
             </p>
             <ul className="flex items-center gap-6">
@@ -136,7 +136,7 @@ export function Footer(): React.ReactElement {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-xs text-ivory/50 hover:text-ivory font-light tracking-wide transition-colors"
+                    className="text-xs text-ivory/85 hover:text-ivory font-light tracking-wide transition-colors"
                   >
                     {link.label}
                   </a>

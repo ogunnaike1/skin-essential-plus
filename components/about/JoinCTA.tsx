@@ -28,7 +28,7 @@ export function JoinCTA(): React.ReactElement {
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(71,103,106,0.92) 0%, rgba(71,103,106,0.75) 45%, rgba(192,169,189,0.55) 100%)",
+                  "linear-gradient(135deg, rgba(71,103,106,0.92) 0%, rgba(71,103,106,0.75) 45%, rgba(138,111,136,0.55) 100%)",
               }}
             />
           </div>
@@ -62,7 +62,7 @@ export function JoinCTA(): React.ReactElement {
           <div className="absolute top-0 inset-x-0 flex h-1">
             <span className="flex-1" style={{ backgroundColor: "#8A6F88" }} />
             <span className="flex-1" style={{ backgroundColor: "#4F7288" }} />
-            <span className="flex-1" style={{ backgroundColor: "#F4F2F3" }} />
+            <span className="flex-1" style={{ backgroundColor: "#FCFBFC" }} />
             <span className="flex-1" style={{ backgroundColor: "#47676A" }} />
           </div>
 
@@ -100,7 +100,7 @@ export function JoinCTA(): React.ReactElement {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  className="mt-7 text-base sm:text-lg font-light text-ivory/80 leading-[1.65] max-w-xl text-balance"
+                  className="mt-7 text-base sm:text-lg font-light text-ivory leading-[1.65] max-w-xl text-balance"
                 >
                   Start with a complimentary 45-minute consultation. No commitment — just a conversation about your skin, your goals, and how we might serve them.
                 </motion.p>
@@ -114,7 +114,7 @@ export function JoinCTA(): React.ReactElement {
                 >
                   <button
                     type="button"
-                    className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(244,242,243,0.25)] hover:shadow-[0_8px_40px_rgba(192,169,189,0.5)] transition-all duration-500"
+                    className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:shadow-[0_8px_40px_rgba(138,111,136,0.5)] transition-all duration-500"
                   >
                     <CalendarCheck className="h-4 w-4" />
                     <span>Book a consultation</span>
@@ -143,10 +143,10 @@ export function JoinCTA(): React.ReactElement {
                 <div
                   className="relative rounded-[1.75rem] p-8 border overflow-hidden"
                   style={{
-                    background: "rgba(244, 242, 243, 0.1)",
+                    background: "rgba(252, 251, 252, 0.1)",
                     backdropFilter: "blur(20px) saturate(140%)",
                     WebkitBackdropFilter: "blur(20px) saturate(140%)",
-                    borderColor: "rgba(244, 242, 243, 0.25)",
+                    borderColor: "rgba(252, 251, 252, 0.25)",
                     boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
                 >
@@ -169,7 +169,7 @@ export function JoinCTA(): React.ReactElement {
                       {
                         label: "A ritual recommendation — or not",
                         detail: "We'll say so if you don't need one",
-                        color: "#F4F2F3",
+                        color: "#FCFBFC",
                       },
                     ].map((item) => (
                       <li key={item.label} className="flex gap-4">
@@ -181,7 +181,7 @@ export function JoinCTA(): React.ReactElement {
                           <p className="text-sm font-light text-ivory leading-snug">
                             {item.label}
                           </p>
-                          <p className="mt-1 text-[11px] font-sans uppercase tracking-[0.2em] text-ivory/50">
+                          <p className="mt-1 text-[11px] font-sans uppercase tracking-[0.2em] text-ivory/85">
                             {item.detail}
                           </p>
                         </div>

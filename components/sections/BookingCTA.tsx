@@ -69,7 +69,7 @@ export function BookingCTA(): React.ReactElement {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-6 text-base sm:text-lg text-ivory/75 font-light max-w-2xl mx-auto text-balance"
+              className="mt-6 text-base sm:text-lg text-ivory font-light max-w-2xl mx-auto text-balance"
             >
               Reserve your first consultation today — a complimentary 45-minute ritual curated entirely around you.
             </motion.p>
@@ -83,7 +83,7 @@ export function BookingCTA(): React.ReactElement {
             >
               <button
                 type="button"
-                className="group inline-flex items-center justify-center gap-2 px-9 py-4 bg-ivory text-deep font-sans text-sm uppercase tracking-[0.2em] rounded-full shadow-[0_0_50px_rgba(244,242,243,0.35)] hover:shadow-[0_0_70px_rgba(244,242,243,0.6)] transition-all duration-500 hover:scale-[1.04] active:scale-[0.98]"
+                className="group inline-flex items-center justify-center gap-2 px-9 py-4 bg-ivory text-deep font-sans text-sm uppercase tracking-[0.2em] rounded-full shadow-[0_0_50px_rgba(252,251,252,0.35)] hover:shadow-[0_0_70px_rgba(252,251,252,0.6)] transition-all duration-500 hover:scale-[1.04] active:scale-[0.98]"
               >
                 <Calendar className="h-4 w-4" />
                 Book Complimentary Consultation

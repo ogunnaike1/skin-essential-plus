@@ -70,10 +70,10 @@ export function FounderLetter(): React.ReactElement {
                 <div
                   className="rounded-2xl p-5 border"
                   style={{
-                    background: "rgba(244, 242, 243, 0.12)",
+                    background: "rgba(252, 251, 252, 0.12)",
                     backdropFilter: "blur(20px) saturate(140%)",
                     WebkitBackdropFilter: "blur(20px) saturate(140%)",
-                    borderColor: "rgba(244, 242, 243, 0.25)",
+                    borderColor: "rgba(252, 251, 252, 0.25)",
                   }}
                 >
                   <span className="eyebrow text-mauve text-[10px]">
@@ -82,7 +82,7 @@ export function FounderLetter(): React.ReactElement {
                   <p className="mt-2 font-display text-3xl font-light text-ivory leading-tight">
                    Ifeoluwa Peters Kanyinsola
                   </p>
-                  <p className="mt-1 text-sm font-light text-ivory/70">
+                  <p className="mt-1 text-sm font-light text-ivory">
                     MBBS, MSc Dermatology
                   </p>
                 </div>
@@ -94,19 +94,19 @@ export function FounderLetter(): React.ReactElement {
               {[
                 { label: "Years", value: "6+", color: "#8A6F88" },
                 { label: "Trained", value: "Lagos", color: "#4F7288" },
-                { label: "Certified", value: "AAD", color: "#F4F2F3" },
+                { label: "Certified", value: "AAD", color: "#FCFBFC" },
               ].map((item) => (
                 <div
                   key={item.label}
                   className="rounded-2xl p-4 border border-ivory/15"
-                  style={{ background: "rgba(244, 242, 243, 0.05)" }}
+                  style={{ background: "rgba(252, 251, 252, 0.05)" }}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span
                       className="h-1.5 w-1.5 rounded-full"
                       style={{ backgroundColor: item.color }}
                     />
-                    <span className="eyebrow text-ivory/50 text-[9px]">
+                    <span className="eyebrow text-ivory/85 text-[9px]">
                       {item.label}
                     </span>
                   </div>
@@ -130,7 +130,7 @@ export function FounderLetter(): React.ReactElement {
               className="relative h-full rounded-[2rem] p-10 sm:p-12 lg:p-14 overflow-hidden border border-mauve/30 shadow-[0_30px_70px_rgba(0,0,0,0.2)]"
               style={{
                 background:
-                  "linear-gradient(135deg, #F4F2F3 0%, #F4F2F3 40%, rgba(192,169,189,0.3) 100%)",
+                  "linear-gradient(135deg, #FCFBFC 0%, #FCFBFC 40%, rgba(138,111,136,0.3) 100%)",
               }}
             >
               {/* Giant quote mark */}

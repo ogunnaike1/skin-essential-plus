@@ -22,9 +22,9 @@
   body {
     @apply bg-ivory text-deep font-sans;
     background-image:
-      radial-gradient(at 8% 12%, rgba(192, 169, 189, 0.18) 0, transparent 45%),
-      radial-gradient(at 92% 88%, rgba(148, 167, 174, 0.16) 0, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(244, 242, 243, 1) 0, transparent 70%);
+      radial-gradient(at 8% 12%, rgba(138, 111, 136, 0.18) 0, transparent 45%),
+      radial-gradient(at 92% 88%, rgba(79, 114, 136, 0.16) 0, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(252, 251, 252, 1) 0, transparent 70%);
     background-attachment: fixed;
   }
 
@@ -37,7 +37,7 @@
     width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #F4F2F3;
+    background: #FCFBFC;
   }
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #8A6F88, #4F7288);
@@ -75,7 +75,7 @@
            bg-deep text-ivory font-sans text-sm uppercase tracking-[0.18em]
            rounded-full shadow-glow-deep
            transition-all duration-500 ease-cinematic
-           hover:bg-deep-dark hover:shadow-[0_0_50px_rgba(192,169,189,0.5)]
+           hover:bg-deep-dark hover:shadow-[0_0_50px_rgba(138,111,136,0.5)]
            hover:scale-[1.03] active:scale-[0.98]
            focus:outline-none focus-visible:ring-2 focus-visible:ring-mauve focus-visible:ring-offset-2;
   }

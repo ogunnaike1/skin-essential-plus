@@ -123,7 +123,7 @@ export function ServicesGrid(): React.ReactElement {
         className="relative py-12 sm:py-16"
         style={{
           background:
-            "linear-gradient(180deg, #F4F2F3 0%, rgba(192,169,189,0.08) 50%, rgba(148,167,174,0.08) 100%)",
+            "linear-gradient(180deg, #FCFBFC 0%, rgba(138,111,136,0.08) 50%, rgba(79,114,136,0.08) 100%)",
         }}
       >
         <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-14">
@@ -132,7 +132,7 @@ export function ServicesGrid(): React.ReactElement {
             <h2 className="text-4xl font-light text-deep">
               Find your <span className="text-mauve">ritual</span>
             </h2>
-            <p className="text-sm text-deep/60 mt-2">
+            <p className="text-sm text-deep mt-2">
               {totalResults} services match
             </p>
           </div>

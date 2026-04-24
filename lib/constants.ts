@@ -37,7 +37,6 @@ export const NAV_LINKS: readonly NavLink[] = [
   { label: "Shop", href: "/shop" },
   { label: "Results", href: "/results" },
   { label: "Contact Us", href: "/contact" },
-
 ] as const;
 
 export const HERO_SLIDES: readonly HeroSlide[] = [

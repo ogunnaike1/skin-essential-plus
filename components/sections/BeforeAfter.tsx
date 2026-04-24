@@ -81,7 +81,7 @@ function Comparison({
       {/* Divider + handle */}
       <motion.div
         style={{ left: handleLeft }}
-        className="absolute top-0 bottom-0 w-px bg-ivory/90 shadow-[0_0_20px_rgba(244,242,243,0.6)] pointer-events-none"
+        className="absolute top-0 bottom-0 w-px bg-ivory/90 shadow-[0_0_20px_rgba(252,251,252,0.6)] pointer-events-none"
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-14 w-14 rounded-full bg-ivory/95 backdrop-blur-md border border-white shadow-glow flex items-center justify-center">
           <Move className="h-5 w-5 text-deep" strokeWidth={1.5} />
@@ -117,7 +117,7 @@ export function BeforeAfter(): React.ReactElement {
                 <h3 className="font-display text-xl sm:text-2xl font-light text-deep">
                   {item.label}
                 </h3>
-                <span className="hidden sm:block eyebrow text-deep/50">
+                <span className="hidden sm:block eyebrow text-deep">
                   Drag to compare →
                 </span>
               </div>

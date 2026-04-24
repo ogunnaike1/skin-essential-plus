@@ -84,7 +84,7 @@ export function About(): React.ReactElement {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="eyebrow text-deep/60 block mb-5"
+              className="eyebrow text-deep block mb-5"
             >
               — Our Story
             </motion.span>
@@ -104,7 +104,7 @@ export function About(): React.ReactElement {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-6 text-base sm:text-lg text-deep/70 font-light leading-relaxed"
+              className="mt-6 text-base sm:text-lg text-deep font-light leading-relaxed"
             >
               Born from a conviction that true beauty lives at the intersection of clinical precision and contemplative ritual, Skin Essential Plus was founded to redefine what luxury skincare could be — evidence-based, deeply personal, and unapologetically exquisite.
             </motion.p>
@@ -114,7 +114,7 @@ export function About(): React.ReactElement {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-4 text-base sm:text-lg text-deep/70 font-light leading-relaxed"
+              className="mt-4 text-base sm:text-lg text-deep font-light leading-relaxed"
             >
               Every protocol, every ingredient, every breath of ambience is considered. This is not a service — it's a philosophy.
             </motion.p>

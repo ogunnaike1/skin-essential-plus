@@ -76,7 +76,7 @@ export function OurStory(): React.ReactElement {
             transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-6 lg:col-start-7"
           >
-            <p className="text-base sm:text-lg font-light text-deep/70 leading-[1.65]">
+            <p className="text-base sm:text-lg font-light text-deep leading-[1.65]">
               What began in a single room with a borrowed treatment bed has become a sanctuary serving thousands. But our fundamental belief hasn't shifted in seven years: that genuine transformation requires patience, presence, and protocols built on science rather than trend. Here are the moments that shaped us.
             </p>
           </motion.div>
@@ -186,7 +186,7 @@ export function OurStory(): React.ReactElement {
                     <h3 className="font-display text-xl font-light text-deep leading-tight mb-2">
                       {entry.title}
                     </h3>
-                    <p className="text-sm font-light text-deep/65 leading-relaxed">
+                    <p className="text-sm font-light text-deep leading-relaxed">
                       {entry.description}
                     </p>
                   </div>

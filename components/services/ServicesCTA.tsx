@@ -34,7 +34,7 @@ export function ServicesCTA(): React.ReactElement {
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(71,103,106,0.92) 0%, rgba(71,103,106,0.78) 45%, rgba(148,167,174,0.6) 100%)",
+                  "linear-gradient(135deg, rgba(71,103,106,0.92) 0%, rgba(71,103,106,0.78) 45%, rgba(79,114,136,0.6) 100%)",
               }}
             />
           </div>
@@ -68,7 +68,7 @@ export function ServicesCTA(): React.ReactElement {
           <div className="absolute top-0 inset-x-0 flex h-1">
             <span className="flex-1" style={{ backgroundColor: "#8A6F88" }} />
             <span className="flex-1" style={{ backgroundColor: "#4F7288" }} />
-            <span className="flex-1" style={{ backgroundColor: "#F4F2F3" }} />
+            <span className="flex-1" style={{ backgroundColor: "#FCFBFC" }} />
             <span className="flex-1" style={{ backgroundColor: "#47676A" }} />
           </div>
 
@@ -105,7 +105,7 @@ export function ServicesCTA(): React.ReactElement {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  className="mt-7 text-base sm:text-lg font-light text-ivory/80 leading-[1.65] max-w-xl text-balance"
+                  className="mt-7 text-base sm:text-lg font-light text-ivory leading-[1.65] max-w-xl text-balance"
                 >
                   Share your goals and we'll compose the perfect sequence — a single treatment, a half-day escape, or a multi-month program tailored to your skin's journey.
                 </motion.p>
@@ -119,7 +119,7 @@ export function ServicesCTA(): React.ReactElement {
                 >
                   <button
                     type="button"
-                    className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(244,242,243,0.25)] hover:shadow-[0_8px_40px_rgba(192,169,189,0.5)] transition-all duration-500"
+                    className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:shadow-[0_8px_40px_rgba(138,111,136,0.5)] transition-all duration-500"
                   >
                     <CalendarCheck className="h-4 w-4" />
                     <span>Book a consultation</span>
@@ -146,13 +146,13 @@ export function ServicesCTA(): React.ReactElement {
                 >
                   <a
                     href="tel:+2348001234567"
-                    className="group inline-flex items-center gap-2 text-sm font-light text-ivory/80 hover:text-ivory transition-colors"
+                    className="group inline-flex items-center gap-2 text-sm font-light text-ivory hover:text-ivory transition-colors"
                   >
                     <Phone className="h-3.5 w-3.5 text-mauve" strokeWidth={1.5} />
                     <span>+234 800 123 4567</span>
                   </a>
                   <span className="h-3 w-px bg-ivory/20" aria-hidden />
-                  <span className="text-xs font-light text-ivory/60 uppercase tracking-[0.2em]">
+                  <span className="text-xs font-light text-ivory/90 uppercase tracking-[0.2em]">
                     Mon–Sat · 9AM – 8PM
                   </span>
                 </motion.div>
@@ -171,10 +171,10 @@ export function ServicesCTA(): React.ReactElement {
                   className="group relative rounded-[1.75rem] p-7 border overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02]"
                   style={{
                     background:
-                      "linear-gradient(135deg, rgba(192,169,189,0.35) 0%, rgba(244,242,243,0.15) 100%)",
+                      "linear-gradient(135deg, rgba(138,111,136,0.35) 0%, rgba(252,251,252,0.15) 100%)",
                     backdropFilter: "blur(20px) saturate(140%)",
                     WebkitBackdropFilter: "blur(20px) saturate(140%)",
-                    borderColor: "rgba(244, 242, 243, 0.25)",
+                    borderColor: "rgba(252, 251, 252, 0.25)",
                     boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
                 >
@@ -189,7 +189,7 @@ export function ServicesCTA(): React.ReactElement {
                   <h3 className="font-display text-2xl font-light text-ivory leading-tight mb-2">
                     The gift of stillness.
                   </h3>
-                  <p className="text-sm font-light text-ivory/75 leading-relaxed mb-4">
+                  <p className="text-sm font-light text-ivory leading-relaxed mb-4">
                     Digital gift cards from ₦25,000. Delivered instantly, valid for 12 months, usable for any service.
                   </p>
                   <span className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-mauve group-hover:text-ivory transition-colors">
@@ -203,10 +203,10 @@ export function ServicesCTA(): React.ReactElement {
                   className="group relative rounded-[1.75rem] p-7 border overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02]"
                   style={{
                     background:
-                      "linear-gradient(135deg, rgba(148,167,174,0.35) 0%, rgba(244,242,243,0.15) 100%)",
+                      "linear-gradient(135deg, rgba(79,114,136,0.35) 0%, rgba(252,251,252,0.15) 100%)",
                     backdropFilter: "blur(20px) saturate(140%)",
                     WebkitBackdropFilter: "blur(20px) saturate(140%)",
-                    borderColor: "rgba(244, 242, 243, 0.25)",
+                    borderColor: "rgba(252, 251, 252, 0.25)",
                     boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)",
                   }}
                 >
@@ -221,7 +221,7 @@ export function ServicesCTA(): React.ReactElement {
                   <h3 className="font-display text-2xl font-light text-ivory leading-tight mb-2">
                     The Essential Circle.
                   </h3>
-                  <p className="text-sm font-light text-ivory/75 leading-relaxed mb-4">
+                  <p className="text-sm font-light text-ivory leading-relaxed mb-4">
                     Monthly rituals, 20% off add-ons, priority booking, and bespoke skincare products curated for you.
                   </p>
                   <span className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-sage group-hover:text-ivory transition-colors">

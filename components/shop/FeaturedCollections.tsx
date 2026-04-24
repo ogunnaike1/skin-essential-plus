@@ -33,7 +33,7 @@ export function FeaturedCollections(): React.ReactElement {
               Curated{" "}
               <em className="not-italic text-mauve">collections</em>.
             </h2>
-            <p className="mt-3 text-sm sm:text-base font-light text-deep/65 max-w-lg">
+            <p className="mt-3 text-sm sm:text-base font-light text-deep max-w-lg">
               Three worlds of skin: daily rituals, sculpting tools, and thoughtful bundles. Every edit is hand-picked by our clinicians.
             </p>
           </div>
@@ -116,7 +116,7 @@ export function FeaturedCollections(): React.ReactElement {
 
                   {/* Bottom-aligned title stack on image */}
                   <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                    <span className="eyebrow text-ivory/80 text-[10px] block mb-2">
+                    <span className="eyebrow text-ivory text-[10px] block mb-2">
                       — {collection.subtitle}
                     </span>
                     <h3 className="font-display text-2xl sm:text-3xl font-light text-ivory leading-tight tracking-tight">
@@ -127,7 +127,7 @@ export function FeaturedCollections(): React.ReactElement {
 
                 {/* Body */}
                 <div className="p-5 sm:p-6 flex-1 flex flex-col bg-ivory">
-                  <p className="text-sm font-light text-deep/70 leading-relaxed mb-5 flex-1">
+                  <p className="text-sm font-light text-deep leading-relaxed mb-5 flex-1">
                     {collection.description}
                   </p>
 
