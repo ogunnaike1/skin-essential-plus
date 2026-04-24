@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Footer } from "@/components/sections/Footer";
 import { BestSellers } from "@/components/shop/BestSellers";
-// import { BrandStory } from "@/components/shop/BrandStory";
+import { BrandStory } from "@/components/shop/BrandStory";
 import { FeaturedCollections } from "@/components/shop/FeaturedCollections";
-// import { NewArrivals } from "@/components/shop/NewArrivals";
-// import { ProductsGrid } from "@/components/shop/ProductsGrid";
-// import { RoutineBundles } from "@/components/shop/RoutineBundles";
-// import { ShopCTA } from "@/components/shop/ShopCTA";
+import { NewArrivals } from "@/components/shop/NewArrivals";
+import { ProductsGrid } from "@/components/shop/ProductsGrid";
+import { RoutineBundles } from "@/components/shop/RoutineBundles";
+import { ShopCTA } from "@/components/shop/ShopCTA";
 import { ShopHero } from "@/components/shop/ShopHero";
 
 export const metadata: Metadata = {
@@ -25,11 +25,11 @@ export default function ShopPage(): React.ReactElement {
         <ShopHero />
         <FeaturedCollections />
         <BestSellers />
-        {/* <ProductsGrid />
+        <ProductsGrid />
         <NewArrivals />
         <RoutineBundles />
         <BrandStory />
-        <ShopCTA /> */}
+        <ShopCTA />
       </main>
       <Footer />
     </>

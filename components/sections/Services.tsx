@@ -9,129 +9,139 @@ import { SERVICES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { Service } from "@/types";
 
-/**
- * Per-card palette identity. Each card owns a distinct combination
- * so the four services feel like a set, not duplicates.
- */
 interface CardPalette {
-  cardBg: string;        // card background (tailwind class)
-  border: string;        // resting border
-  borderHover: string;   // hover border
-  glowColor: string;     // rgba value for radial halo
-  accent: string;        // tailwind color class for accent text
-  accentHex: string;     // hex for decorative elements
-  titleColor: string;    // title text class
-  bodyColor: string;     // body paragraph class
-  eyebrowColor: string;  // "Discover" label
-  arrowBg: string;       // arrow circle resting
-  arrowBgHover: string;  // arrow circle hover
+  cardBg: string;
+  border: string;
+  borderHover: string;
+  glowColor: string;
+  accent: string;
+  accentHex: string;
+  titleColor: string;
+  bodyColor: string;
+  eyebrowColor: string;
+  arrowBg: string;
+  arrowBgHover: string;
   arrowBorder: string;
   arrowText: string;
   arrowTextHover: string;
   iconBg: string;
   iconText: string;
-  overlayGradient: string; // image overlay
+  overlayGradient: string;
   priceBg: string;
   priceText: string;
   priceBorder: string;
+  accentBar: string;
+  bodyTint: string;
   isDark: boolean;
 }
 
 const CARD_PALETTES: readonly CardPalette[] = [
-  // Card 1 — Mauve blush (light)
   {
-    cardBg: "bg-ivory/70",
-    border: "border-mauve/30",
-    borderHover: "hover:border-mauve",
-    glowColor: "rgba(138,111,136,0.45)",
+    // Mauve luxe
+    cardBg: "bg-gradient-to-br from-mauve-tint via-ivory to-mauve-wash",
+    border: "border-mauve/35",
+    borderHover: "hover:border-mauve hover:shadow-glow",
+    glowColor: "rgba(138,111,136,0.50)",
     accent: "text-mauve",
     accentHex: "#8A6F88",
-    titleColor: "text-deep",
-    bodyColor: "text-deep",
+    titleColor: "text-deep-dark",
+    bodyColor: "text-deep/80",
     eyebrowColor: "text-mauve",
-    arrowBg: "bg-transparent",
+    arrowBg: "bg-white/40",
     arrowBgHover: "group-hover:bg-mauve",
-    arrowBorder: "border-mauve/40",
+    arrowBorder: "border-mauve/35",
     arrowText: "text-mauve",
     arrowTextHover: "group-hover:text-ivory",
-    iconBg: "bg-mauve",
+    iconBg: "bg-gradient-to-br from-mauve to-mauve/80",
     iconText: "text-ivory",
-    overlayGradient: "from-mauve/70 via-mauve/10 to-transparent",
-    priceBg: "bg-ivory",
-    priceText: "text-mauve",
-    priceBorder: "border-mauve/30",
-    isDark: false,
-  },
-  // Card 2 — Sage serenity (light)
-  {
-    cardBg: "bg-sage/15",
-    border: "border-sage/30",
-    borderHover: "hover:border-sage",
-    glowColor: "rgba(79,114,136,0.55)",
-    accent: "text-sage",
-    accentHex: "#4F7288",
-    titleColor: "text-deep-dark",
-    bodyColor: "text-deep",
-    eyebrowColor: "text-sage",
-    arrowBg: "bg-transparent",
-    arrowBgHover: "group-hover:bg-sage",
-    arrowBorder: "border-sage/40",
-    arrowText: "text-sage",
-    arrowTextHover: "group-hover:text-ivory",
-    iconBg: "bg-sage",
-    iconText: "text-ivory",
-    overlayGradient: "from-sage/75 via-sage/15 to-transparent",
-    priceBg: "bg-ivory",
-    priceText: "text-sage",
-    priceBorder: "border-sage/30",
-    isDark: false,
-  },
-  // Card 3 — Deep teal premium (DARK card — breaks the rhythm)
-  {
-    cardBg: "bg-deep",
-    border: "border-deep-dark",
-    borderHover: "hover:border-mauve/50",
-    glowColor: "rgba(71,103,106,0.6)",
-    accent: "text-mauve",
-    accentHex: "#8A6F88",
-    titleColor: "text-ivory",
-    bodyColor: "text-ivory",
-    eyebrowColor: "text-mauve",
-    arrowBg: "bg-ivory/10",
-    arrowBgHover: "group-hover:bg-ivory",
-    arrowBorder: "border-ivory/30",
-    arrowText: "text-ivory",
-    arrowTextHover: "group-hover:text-deep",
-    iconBg: "bg-ivory",
-    iconText: "text-deep",
-    overlayGradient: "from-deep via-deep/40 to-transparent",
+    overlayGradient:
+      "from-mauve/85 via-mauve/25 via-35% to-transparent",
     priceBg: "bg-mauve",
     priceText: "text-ivory",
     priceBorder: "border-mauve",
+    accentBar: "bg-gradient-to-r from-mauve via-mauve/70 to-sage/50",
+    bodyTint: "bg-white/45",
+    isDark: false,
+  },
+  {
+    // Sage fresh
+    cardBg: "bg-gradient-to-br from-sage-tint via-ivory to-sage-wash",
+    border: "border-sage/35",
+    borderHover: "hover:border-sage hover:shadow-glow-sage",
+    glowColor: "rgba(79,114,136,0.58)",
+    accent: "text-sage",
+    accentHex: "#4F7288",
+    titleColor: "text-deep-dark",
+    bodyColor: "text-deep/80",
+    eyebrowColor: "text-sage",
+    arrowBg: "bg-white/40",
+    arrowBgHover: "group-hover:bg-sage",
+    arrowBorder: "border-sage/35",
+    arrowText: "text-sage",
+    arrowTextHover: "group-hover:text-ivory",
+    iconBg: "bg-gradient-to-br from-sage to-deep",
+    iconText: "text-ivory",
+    overlayGradient:
+      "from-sage/85 via-sage/25 via-35% to-transparent",
+    priceBg: "bg-sage",
+    priceText: "text-ivory",
+    priceBorder: "border-sage",
+    accentBar: "bg-gradient-to-r from-sage via-deep-light to-mauve/60",
+    bodyTint: "bg-white/45",
+    isDark: false,
+  },
+  {
+    // Deep dramatic
+    cardBg: "bg-gradient-to-br from-deep via-deep-light to-deep-dark",
+    border: "border-mauve/25",
+    borderHover: "hover:border-mauve/60 hover:shadow-glow-deep",
+    glowColor: "rgba(71,103,106,0.68)",
+    accent: "text-mauve-wash",
+    accentHex: "#8A6F88",
+    titleColor: "text-ivory",
+    bodyColor: "text-ivory/80",
+    eyebrowColor: "text-mauve-wash",
+    arrowBg: "bg-ivory/10",
+    arrowBgHover: "group-hover:bg-mauve",
+    arrowBorder: "border-ivory/25",
+    arrowText: "text-ivory",
+    arrowTextHover: "group-hover:text-ivory",
+    iconBg: "bg-gradient-to-br from-ivory to-mauve-wash",
+    iconText: "text-deep",
+    overlayGradient:
+      "from-deep-dark/95 via-deep/45 via-40% to-transparent",
+    priceBg: "bg-gradient-to-r from-mauve to-forest",
+    priceText: "text-ivory",
+    priceBorder: "border-mauve/60",
+    accentBar: "bg-gradient-to-r from-mauve via-deep-light to-forest",
+    bodyTint: "bg-white/5",
     isDark: true,
   },
-  // Card 4 — Mauve-deep duotone (light)
   {
-    cardBg: "bg-gradient-to-br from-ivory via-mauve/20 to-sage/20",
+    // Multi-tone premium
+    cardBg: "bg-gradient-to-br from-ivory via-mauve-tint to-sage-tint",
     border: "border-deep/20",
-    borderHover: "hover:border-deep",
-    glowColor: "rgba(138,111,136,0.4)",
-    accent: "text-deep",
-    accentHex: "#47676A",
-    titleColor: "text-deep",
-    bodyColor: "text-deep",
-    eyebrowColor: "text-deep",
-    arrowBg: "bg-transparent",
-    arrowBgHover: "group-hover:bg-deep",
-    arrowBorder: "border-deep/40",
-    arrowText: "text-deep",
+    borderHover: "hover:border-forest hover:shadow-lift",
+    glowColor: "rgba(15,95,46,0.28)",
+    accent: "text-forest",
+    accentHex: "#0F5F2E",
+    titleColor: "text-deep-dark",
+    bodyColor: "text-deep/80",
+    eyebrowColor: "text-forest",
+    arrowBg: "bg-white/40",
+    arrowBgHover: "group-hover:bg-forest",
+    arrowBorder: "border-forest/30",
+    arrowText: "text-forest",
     arrowTextHover: "group-hover:text-ivory",
-    iconBg: "bg-deep",
+    iconBg: "bg-gradient-to-br from-forest to-deep",
     iconText: "text-ivory",
-    overlayGradient: "from-deep/80 via-deep/25 to-transparent",
-    priceBg: "bg-deep",
+    overlayGradient:
+      "from-forest/75 via-deep/20 via-35% to-transparent",
+    priceBg: "bg-gradient-to-r from-forest to-deep",
     priceText: "text-ivory",
-    priceBorder: "border-deep",
+    priceBorder: "border-forest/40",
+    accentBar: "bg-gradient-to-r from-forest via-sage to-mauve",
+    bodyTint: "bg-white/45",
     isDark: false,
   },
 ] as const;
@@ -144,8 +154,6 @@ interface ServiceCardProps {
 function ServiceCard({ service, index }: ServiceCardProps): React.ReactElement {
   const Icon = service.icon;
   const palette = CARD_PALETTES[index % CARD_PALETTES.length]!;
-
-  // Asymmetric vertical offset — cards 2 & 4 sit lower on desktop
   const offset = index % 2 === 1 ? "lg:mt-16" : "lg:mt-0";
 
   return (
@@ -160,23 +168,34 @@ function ServiceCard({ service, index }: ServiceCardProps): React.ReactElement {
       }}
       whileHover={{ y: -10 }}
       className={cn(
-        "group relative overflow-hidden rounded-[2rem] backdrop-blur-xl border-2 shadow-glass transition-all duration-700 ease-cinematic hover:shadow-lift",
+        "group relative overflow-hidden rounded-[2rem] border-2 backdrop-blur-xl shadow-glass transition-all duration-700 ease-cinematic hover:shadow-lift",
         palette.cardBg,
         palette.border,
         palette.borderHover,
         offset
       )}
     >
-      {/* Radial halo on hover — per-card color */}
+      {/* Top color accent */}
+      <div className={cn("absolute inset-x-0 top-0 h-1.5", palette.accentBar)} />
+
+      {/* Hover glow */}
       <div
-        className="absolute -inset-20 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none blur-3xl"
+        className="pointer-events-none absolute -inset-20 opacity-0 blur-3xl transition-opacity duration-1000 group-hover:opacity-100"
         style={{
-          background: `radial-gradient(circle at 50% 0%, ${palette.glowColor} 0%, transparent 55%)`,
+          background: `radial-gradient(circle at 50% 0%, ${palette.glowColor} 0%, transparent 58%)`,
         }}
         aria-hidden
       />
 
-      {/* Image + colored overlay */}
+      {/* Secondary inner wash */}
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-x-6 bottom-6 top-[42%] rounded-[1.5rem] blur-2xl opacity-50",
+          palette.bodyTint
+        )}
+        aria-hidden
+      />
+
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image
           src={service.image}
@@ -185,34 +204,39 @@ function ServiceCard({ service, index }: ServiceCardProps): React.ReactElement {
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
           className="object-cover transition-transform duration-[1.4s] ease-cinematic group-hover:scale-110"
         />
+
         <div
           className={cn(
             "absolute inset-0 bg-gradient-to-t mix-blend-multiply",
             palette.overlayGradient
           )}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+
+        {/* Floating accent orb */}
+        <div
+          className="absolute -right-8 top-8 h-24 w-24 rounded-full blur-2xl opacity-40 transition-all duration-700 group-hover:scale-125"
+          style={{ backgroundColor: palette.accentHex }}
+          aria-hidden
+        />
 
         {/* Icon tile */}
-        <div className="absolute top-5 left-5">
+        <div className="absolute left-5 top-5">
           <div
             className={cn(
-              "h-12 w-12 rounded-2xl flex items-center justify-center shadow-glass transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6",
+              "flex h-12 w-12 items-center justify-center rounded-2xl shadow-glass transition-all duration-500 group-hover:-rotate-6 group-hover:scale-110",
               palette.iconBg
             )}
           >
-            <Icon
-              className={cn("h-5 w-5", palette.iconText)}
-              strokeWidth={1.5}
-            />
+            <Icon className={cn("h-5 w-5", palette.iconText)} strokeWidth={1.5} />
           </div>
         </div>
 
         {/* Price pill */}
-        <div className="absolute top-5 right-5">
+        <div className="absolute right-5 top-5">
           <span
             className={cn(
-              "eyebrow px-3 py-1.5 rounded-full text-[10px] border backdrop-blur-md",
+              "rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] backdrop-blur-md",
               palette.priceBg,
               palette.priceText,
               palette.priceBorder
@@ -222,34 +246,31 @@ function ServiceCard({ service, index }: ServiceCardProps): React.ReactElement {
           </span>
         </div>
 
-        {/* Decorative number — bottom left of image */}
+        {/* Decorative number */}
         <span
-          className={cn(
-            "absolute bottom-4 left-5 font-display text-6xl font-light leading-none tracking-tighter opacity-40 pointer-events-none transition-opacity duration-500 group-hover:opacity-70",
-            palette.isDark ? "text-ivory" : "text-ivory"
-          )}
+          className="pointer-events-none absolute bottom-4 left-5 font-display text-6xl font-light leading-none tracking-tighter text-ivory opacity-50 transition-opacity duration-500 group-hover:opacity-80"
         >
           0{index + 1}
         </span>
       </div>
 
-      {/* Body */}
       <div className="relative p-7 sm:p-8">
         <div
           className={cn(
-            "h-px w-12 mb-5 transition-all duration-700 group-hover:w-20",
-            palette.isDark ? "bg-mauve" : "bg-deep/30"
+            "mb-5 h-px w-14 transition-all duration-700 group-hover:w-24",
+            palette.isDark ? "bg-mauve/80" : "bg-gradient-to-r from-mauve via-sage to-deep"
           )}
         />
 
         <h3
           className={cn(
-            "font-display text-2xl sm:text-3xl font-light tracking-tight",
+            "font-display text-2xl font-light tracking-tight sm:text-3xl",
             palette.titleColor
           )}
         >
           {service.title}
         </h3>
+
         <p
           className={cn(
             "mt-3 text-sm font-light leading-relaxed",
@@ -260,12 +281,11 @@ function ServiceCard({ service, index }: ServiceCardProps): React.ReactElement {
         </p>
 
         <div className="mt-7 flex items-center justify-between">
-          <span className={cn("eyebrow", palette.eyebrowColor)}>
-            Discover
-          </span>
+          <span className={cn("eyebrow", palette.eyebrowColor)}>Discover</span>
+
           <div
             className={cn(
-              "h-10 w-10 rounded-full border flex items-center justify-center transition-all duration-500",
+              "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-500 group-hover:scale-110",
               palette.arrowBg,
               palette.arrowBorder,
               palette.arrowBgHover
@@ -290,27 +310,42 @@ export function Services(): React.ReactElement {
   return (
     <section
       id="services"
-      className="relative py-24 sm:py-32 section-padding overflow-hidden"
+      className="relative overflow-hidden py-24 sm:py-32 section-padding"
     >
-      {/* Layered ambient backdrop using all four palette colors */}
+      {/* Larger colorful ambient backdrop */}
       <div
-        className="absolute top-20 -right-40 h-[600px] w-[600px] rounded-full blur-3xl opacity-25 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #8A6F88 0%, transparent 70%)" }}
+        className="pointer-events-none absolute -right-40 top-10 h-[620px] w-[620px] rounded-full blur-3xl opacity-30"
+        style={{
+          background: "radial-gradient(circle, rgba(138,111,136,0.9) 0%, rgba(138,111,136,0.18) 35%, transparent 72%)",
+        }}
         aria-hidden
       />
       <div
-        className="absolute bottom-20 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #4F7288 0%, transparent 70%)" }}
+        className="pointer-events-none absolute -left-40 bottom-10 h-[560px] w-[560px] rounded-full blur-3xl opacity-25"
+        style={{
+          background: "radial-gradient(circle, rgba(79,114,136,0.95) 0%, rgba(79,114,136,0.18) 35%, transparent 72%)",
+        }}
         aria-hidden
       />
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full blur-3xl opacity-15 pointer-events-none"
-        style={{ background: "radial-gradient(circle, #47676A 0%, transparent 70%)" }}
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-20"
+        style={{
+          background: "radial-gradient(circle, rgba(71,103,106,0.9) 0%, rgba(71,103,106,0.14) 40%, transparent 75%)",
+        }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute bottom-24 right-1/4 h-[260px] w-[260px] rounded-full blur-3xl opacity-20"
+        style={{
+          background: "radial-gradient(circle, rgba(15,95,46,0.8) 0%, rgba(15,95,46,0.12) 40%, transparent 75%)",
+        }}
         aria-hidden
       />
 
-      <div className="relative max-w-7xl mx-auto">
-        {/* Heading with decorative palette swatch row */}
+      {/* Soft mesh veil */}
+      <div className="absolute inset-0 bg-gradient-mesh opacity-20" aria-hidden />
+
+      <div className="relative mx-auto max-w-7xl">
         <div className="relative">
           <SectionHeading
             eyebrow="Signature Rituals"
@@ -318,25 +353,24 @@ export function Services(): React.ReactElement {
             description="A constellation of treatments — each one engineered, refined, and personalized to reveal your most radiant self."
           />
 
-          {/* Decorative color dot row */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center justify-center gap-2 mt-8"
+            className="mt-8 flex items-center justify-center gap-2"
           >
-            {["#8A6F88", "#4F7288", "#47676A", "#FCFBFC"].map((c) => (
+            {["#8A6F88", "#4F7288", "#47676A", "#0F5F2E", "#FCFBFC"].map((c) => (
               <span
                 key={c}
-                className="h-1.5 w-1.5 rounded-full ring-1 ring-deep/15"
+                className="h-2 w-2 rounded-full ring-1 ring-deep/15"
                 style={{ backgroundColor: c }}
               />
             ))}
           </motion.div>
         </div>
 
-        <div className="mt-16 lg:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7">
+        <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 lg:gap-7">
           {SERVICES.map((service, i) => (
             <ServiceCard key={service.id} service={service} index={i} />
           ))}
