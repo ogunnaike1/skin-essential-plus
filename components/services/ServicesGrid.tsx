@@ -234,14 +234,8 @@ export function ServicesGrid(): React.ReactElement {
                 };
 
                 return (
-                  <motion.div
+                  <div
                     key={cat.id}
-                    initial={{ opacity: 1, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.4,
-                      delay: SERVICE_CATEGORIES.indexOf(cat) * 0.06,
-                    }}
                     className={cn(
                       "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
                       isExpanded ? accentBorder[cat.color] : "border-deep/10"
@@ -289,11 +283,11 @@ export function ServicesGrid(): React.ReactElement {
                     <AnimatePresence initial={false}>
                       {isExpanded ? (
                         <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                          className="overflow-hidden"
+                          initial={{ height: 0 }}
+                          animate={{ height: "auto" }}
+                          exit={{ height: 0 }}
+                          transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                          style={{ overflow: "hidden" }}
                         >
                           <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
                             {items.map((s, idx) => (
@@ -312,7 +306,7 @@ export function ServicesGrid(): React.ReactElement {
                         </motion.div>
                       ) : null}
                     </AnimatePresence>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>

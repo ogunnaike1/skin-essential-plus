@@ -6,9 +6,13 @@ import { LoadingScreen } from "./LoadingScreen";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Simulate loading time (minimum 2 seconds for effect)
+    // Mark as ready immediately so content can load
+    setIsReady(true);
+
+    // Hide loading screen after animation completes
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2500);
@@ -21,7 +25,13 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       <AnimatePresence mode="wait">
         {isLoading && <LoadingScreen key="loading" />}
       </AnimatePresence>
-      <div style={{ opacity: isLoading ? 0 : 1, transition: "opacity 0.5s" }}>
+      {/* Render children immediately but fade in */}
+      <div 
+        style={{ 
+          opacity: isReady ? (isLoading ? 0 : 1) : 0,
+          transition: "opacity 0.5s ease-in-out"
+        }}
+      >
         {children}
       </div>
     </>

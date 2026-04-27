@@ -14,9 +14,9 @@ export function LoadingScreen() {
           clearInterval(interval);
           return 100;
         }
-        return prev + 2;
+        return prev + 4; // Faster progress
       });
-    }, 30);
+    }, 25); // Faster interval
 
     return () => clearInterval(interval);
   }, []);
@@ -28,16 +28,15 @@ export function LoadingScreen() {
       transition={{ duration: 0.5 }}
       className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gradient-to-br from-mauve via-ivory to-sage overflow-hidden"
     >
-      {/* Animated background gradient orbs - MORE VIBRANT */}
+      {/* Animated background gradient orbs - OPTIMIZED */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{
-            scale: [1, 1.4, 1],
-            x: [0, 150, 0],
-            y: [0, -80, 0],
+            scale: [1, 1.3, 1],
+            x: [0, 100, 0],
           }}
           transition={{
-            duration: 6,
+            duration: 8,
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -45,43 +44,15 @@ export function LoadingScreen() {
         />
         <motion.div
           animate={{
-            scale: [1, 1.5, 1],
-            x: [0, -120, 0],
-            y: [0, 100, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-          className="absolute bottom-0 right-0 h-[600px] w-[600px] rounded-full bg-sage/40 blur-3xl"
-        />
-        <motion.div
-          animate={{
             scale: [1, 1.3, 1],
-            x: [0, 80, 0],
-            y: [0, -60, 0],
+            x: [0, -100, 0],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 2,
           }}
-          className="absolute top-1/2 right-1/4 h-96 w-96 rounded-full bg-deep/30 blur-3xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          className="absolute top-1/4 right-1/3 h-64 w-64 rounded-full bg-mauve/25 blur-2xl"
+          className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-sage/40 blur-3xl"
         />
       </div>
 
@@ -301,92 +272,11 @@ export function LoadingScreen() {
         </motion.div>
       </div>
 
-      {/* Colorful floating particles */}
-      <motion.div
-        animate={{
-          y: [-20, 20, -20],
-          x: [-10, 10, -10],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute top-20 left-20 h-4 w-4 rounded-full bg-mauve shadow-lg shadow-mauve/50"
-      />
-      <motion.div
-        animate={{
-          y: [20, -20, 20],
-          x: [10, -10, 10],
-        }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1,
-        }}
-        className="absolute top-32 right-24 h-3 w-3 rounded-full bg-sage shadow-lg shadow-sage/50"
-      />
-      <motion.div
-        animate={{
-          y: [-15, 15, -15],
-          x: [15, -15, 15],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2,
-        }}
-        className="absolute bottom-24 left-32 h-5 w-5 rounded-full bg-deep shadow-lg shadow-deep/50"
-      />
-      <motion.div
-        animate={{
-          y: [25, -25, 25],
-          x: [-15, 15, -15],
-        }}
-        transition={{
-          duration: 9,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 3,
-        }}
-        className="absolute bottom-32 right-20 h-3 w-3 rounded-full bg-mauve shadow-lg shadow-mauve/50"
-      />
-
-      {/* Decorative corner elements - MORE COLORFUL */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-        className="absolute top-8 left-8"
-      >
-        <div className="h-16 w-16 rounded-full border-4 border-mauve/40 shadow-lg shadow-mauve/20" />
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.7, duration: 0.8 }}
-        className="absolute top-8 right-8"
-      >
-        <div className="h-12 w-12 rounded-full border-4 border-sage/40 shadow-lg shadow-sage/20" />
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.9, duration: 0.8 }}
-        className="absolute bottom-8 left-8"
-      >
-        <div className="h-14 w-14 rounded-full border-4 border-deep/40 shadow-lg shadow-deep/20" />
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.1, duration: 0.8 }}
-        className="absolute bottom-8 right-8"
-      >
-        <div className="h-20 w-20 rounded-full border-4 border-mauve/40 shadow-lg shadow-mauve/20" />
-      </motion.div>
+      {/* Decorative corner elements - OPTIMIZED */}
+      <div className="absolute top-8 left-8 h-16 w-16 rounded-full border-4 border-mauve/30" />
+      <div className="absolute top-8 right-8 h-12 w-12 rounded-full border-4 border-sage/30" />
+      <div className="absolute bottom-8 left-8 h-14 w-14 rounded-full border-4 border-deep/30" />
+      <div className="absolute bottom-8 right-8 h-20 w-20 rounded-full border-4 border-mauve/30" />
     </motion.div>
   );
 }
