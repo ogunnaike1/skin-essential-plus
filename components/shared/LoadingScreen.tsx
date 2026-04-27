@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-export function LoadingScreen() {
+interface LoadingScreenProps {
+  onComplete?: () => void;
+}
+
+export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -14,12 +18,22 @@ export function LoadingScreen() {
           clearInterval(interval);
           return 100;
         }
-        return prev + 4; // Faster progress
+        return prev + 10;
       });
-    }, 25); // Faster interval
+    }, 50);
 
     return () => clearInterval(interval);
   }, []);
+
+  // Once progress hits 100, wait for the exit animation then notify parent
+  useEffect(() => {
+    if (progress === 100) {
+      const timer = setTimeout(() => {
+        onComplete?.();
+      }, 600); // slight delay so user sees 100% before fade-out
+      return () => clearTimeout(timer);
+    }
+  }, [progress, onComplete]);
 
   return (
     <motion.div

@@ -38,6 +38,19 @@ export function ProductsGrid(): React.ReactElement {
   // Mobile accordion state
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  const handleCategoryClick = (categoryId: string) => {
+    if (expandedCategory === categoryId) {
+      // Just close if clicking the same category
+      setExpandedCategory(null);
+    } else {
+      // Close current, then open new one after a delay
+      setExpandedCategory(null);
+      setTimeout(() => {
+        setExpandedCategory(categoryId);
+      }, 100);
+    }
+  };
+
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
@@ -220,7 +233,7 @@ export function ProductsGrid(): React.ReactElement {
                   {/* Accordion header */}
                   <button
                     type="button"
-                    onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+                    onClick={() => handleCategoryClick(cat.id)}
                     className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
