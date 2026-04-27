@@ -24,8 +24,8 @@ export default function ShopPage(): React.ReactElement {
       <main>
         <ShopHero />
         <FeaturedCollections />
+         <ProductsGrid />
         <BestSellers />
-        <ProductsGrid />
         <NewArrivals />
         <RoutineBundles />
         <BrandStory />

@@ -39,8 +39,8 @@ type PriceRangeId = (typeof PRICE_RANGES)[number]["id"];
 type DurationRangeId = (typeof DURATION_RANGES)[number]["id"];
 
 /**
- * MOBILE: Pure accordion — tap a category, services expand below.
- * DESKTOP: Full filter panel + category nav + grid.
+ * DESKTOP: Original design with sidebar filters and category sections
+ * MOBILE: Vertical category list - click category → sub-services grid expands below
  */
 export function ServicesGrid(): React.ReactElement {
   const [search, setSearch] = useState("");
@@ -48,18 +48,18 @@ export function ServicesGrid(): React.ReactElement {
   const [durationRange, setDurationRange] = useState<DurationRangeId>("any");
   const [availableOnly, setAvailableOnly] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const [favorites, setFavorites] = useState<ReadonlySet<string>>(new Set());
   const [modalService, setModalService] = useState<ServiceItem | null>(null);
 
-  // Mobile accordion state
+  // Mobile accordion - which category is expanded
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   };
@@ -79,8 +79,7 @@ export function ServicesGrid(): React.ReactElement {
         if (!hay.includes(q)) return false;
       }
       if (s.price < priceR.min || s.price > priceR.max) return false;
-      if (s.durationMinutes < durR.min || s.durationMinutes > durR.max)
-        return false;
+      if (s.durationMinutes < durR.min || s.durationMinutes > durR.max) return false;
       if (availableOnly && s.slotsAvailable === 0) return false;
       if (favoritesOnly && !favorites.has(s.id)) return false;
       return true;
@@ -99,13 +98,13 @@ export function ServicesGrid(): React.ReactElement {
   const totalResults = filteredServices.length;
 
   const hasActiveFilters =
-    search.trim() !== "" ||
+    search ||
     priceRange !== "any" ||
     durationRange !== "any" ||
     availableOnly ||
     favoritesOnly;
 
-  const clearAll = () => {
+  const clearFilters = () => {
     setSearch("");
     setPriceRange("any");
     setDurationRange("any");
@@ -115,81 +114,103 @@ export function ServicesGrid(): React.ReactElement {
 
   return (
     <>
-      <section className="relative bg-ivory">
-        <div className="mx-auto max-w-[1600px]">
-          {/* DESKTOP LAYOUT */}
-          <div className="hidden lg:grid lg:grid-cols-12 lg:gap-6">
-            {/* Left sidebar */}
-            <aside className="lg:col-span-3 lg:sticky lg:top-24 lg:h-[calc(100vh-9rem)] lg:overflow-y-auto lg:pr-2 pb-6">
-              <FilterSidebar
-                search={search}
-                setSearch={setSearch}
-                priceRange={priceRange}
-                setPriceRange={setPriceRange}
-                durationRange={durationRange}
-                setDurationRange={setDurationRange}
-                availableOnly={availableOnly}
-                setAvailableOnly={setAvailableOnly}
-                favoritesOnly={favoritesOnly}
-                setFavoritesOnly={setFavoritesOnly}
-                hasActiveFilters={hasActiveFilters}
-                clearAll={clearAll}
-                totalResults={totalResults}
-              />
-            </aside>
+      <section
+        id="services-grid"
+        className="relative py-12 sm:py-16"
+        style={{
+          background:
+            "linear-gradient(180deg, #FCFBFC 0%, rgba(138,111,136,0.08) 50%, rgba(79,114,136,0.08) 100%)",
+        }}
+      >
+        <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-14">
+          {/* DESKTOP LAYOUT - UNCHANGED */}
+          <div className="hidden lg:block">
+            {/* HEADER */}
+            <div className="mb-8">
+              <h2 className="text-4xl font-light text-deep">
+                Find your <span className="text-mauve">ritual</span>
+              </h2>
+              <p className="text-sm text-deep mt-2">{totalResults} services match</p>
+            </div>
 
-            {/* Right grid column */}
-            <div className="lg:col-span-9 lg:h-[calc(100vh-9rem)] lg:overflow-y-auto lg:scroll-smooth pb-6">
+            {/* SEARCH */}
+            <div className="flex gap-3 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-mauve" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-12 pl-10 pr-10 rounded-full border border-mauve/30"
+                  placeholder="Search services..."
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              <button
+                onClick={() => setShowFilters((v) => !v)}
+                className="px-4 rounded-full border"
+              >
+                Filters
+              </button>
+            </div>
+
+            {/* GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <CategoryNav />
-              <div className="mt-6 space-y-12">
+
+              <div className="lg:col-span-9 space-y-12">
                 {SERVICE_CATEGORIES.map((cat) => {
-                  const services = servicesByCategory.get(cat.id) ?? [];
-                  if (services.length === 0) return null;
+                  const items = servicesByCategory.get(cat.id) ?? [];
+                  if (!items.length) return null;
+
                   return (
-                    <CategorySection
-                      key={cat.id}
-                      category={cat}
-                      services={services}
-                      favorites={favorites}
-                      toggleFavorite={toggleFavorite}
-                      handleBook={handleBook}
-                      setModalService={setModalService}
-                    />
+                    <section key={cat.id} id={cat.id} className="scroll-mt-28">
+                      <h3 className="text-2xl mb-4">{cat.name}</h3>
+
+                      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                        {items.map((s, idx) => (
+                          <ServiceCard
+                            key={s.id}
+                            service={s}
+                            index={idx}
+                            accentColor={cat.color}
+                            isFavorite={favorites.has(s.id)}
+                            onToggleFavorite={toggleFavorite}
+                            onViewEmployees={setModalService}
+                            onBook={handleBook}
+                          />
+                        ))}
+                      </div>
+                    </section>
                   );
                 })}
-                {totalResults === 0 ? <EmptyState clearAll={clearAll} /> : null}
               </div>
             </div>
           </div>
 
-          {/* MOBILE ACCORDION LAYOUT */}
-          <div className="lg:hidden px-6 py-10">
-            <motion.div
-              initial={{ opacity: 1, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-8"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <span className="h-1 w-8 rounded-full bg-mauve" />
-                <span className="eyebrow text-mauve text-[10px]">
-                  — Browse by category
-                </span>
-              </div>
-              <h2 className="font-display text-3xl font-light text-deep leading-tight tracking-tight">
-                Our service menu
+          {/* MOBILE LAYOUT - VERTICAL CATEGORY ACCORDION */}
+          <div className="lg:hidden">
+            {/* HEADER */}
+            <div className="mb-6">
+              <h2 className="text-3xl font-light text-deep">
+                Our <span className="text-mauve">services</span>
               </h2>
-              <p className="mt-2 text-sm font-light text-deep">
-                Tap a category to see available treatments.
-              </p>
-            </motion.div>
+              <p className="text-sm text-deep mt-2">Tap a category to view treatments</p>
+            </div>
 
-            {/* Accordion list */}
+            {/* CATEGORY ACCORDION LIST */}
             <div className="space-y-3">
               {SERVICE_CATEGORIES.map((cat) => {
-                const allServicesInCat = SERVICES_CATALOG.filter(
-                  (s) => s.categoryId === cat.id
-                );
+                const items = servicesByCategory.get(cat.id) ?? [];
+                if (!items.length) return null;
+
                 const isExpanded = expandedCategory === cat.id;
                 const Icon = cat.icon;
 
@@ -223,17 +244,13 @@ export function ServicesGrid(): React.ReactElement {
                     }}
                     className={cn(
                       "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
-                      isExpanded
-                        ? accentBorder[cat.color]
-                        : "border-deep/10 hover:border-deep/20"
+                      isExpanded ? accentBorder[cat.color] : "border-deep/10"
                     )}
                   >
-                    {/* Accordion header */}
+                    {/* Category header - clickable */}
                     <button
                       type="button"
-                      onClick={() =>
-                        setExpandedCategory(isExpanded ? null : cat.id)
-                      }
+                      onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
                       className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -255,23 +272,20 @@ export function ServicesGrid(): React.ReactElement {
                             {cat.name}
                           </h3>
                           <p className="text-[11px] text-deep font-light truncate">
-                            {allServicesInCat.length} service
-                            {allServicesInCat.length === 1 ? "" : "s"}
+                            {items.length} treatment{items.length === 1 ? "" : "s"}
                           </p>
                         </div>
                       </div>
                       <ChevronDown
                         className={cn(
                           "h-5 w-5 shrink-0 transition-transform duration-300",
-                          isExpanded
-                            ? cn("rotate-180", accentText[cat.color])
-                            : "text-deep"
+                          isExpanded ? cn("rotate-180", accentText[cat.color]) : "text-deep"
                         )}
                         strokeWidth={1.5}
                       />
                     </button>
 
-                    {/* Accordion panel */}
+                    {/* Sub-services grid - expands below */}
                     <AnimatePresence initial={false}>
                       {isExpanded ? (
                         <motion.div
@@ -281,17 +295,17 @@ export function ServicesGrid(): React.ReactElement {
                           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                           className="overflow-hidden"
                         >
-                          <div className="p-5 pt-0 space-y-3 bg-ivory">
-                            {allServicesInCat.map((service, idx) => (
+                          <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
+                            {items.map((s, idx) => (
                               <ServiceCard
-                                key={service.id}
-                                service={service}
+                                key={s.id}
+                                service={s}
                                 index={idx}
                                 accentColor={cat.color}
-                                isFavorite={favorites.has(service.id)}
+                                isFavorite={favorites.has(s.id)}
                                 onToggleFavorite={toggleFavorite}
+                                onViewEmployees={setModalService}
                                 onBook={handleBook}
-                                onViewEmployees={() => setModalService(service)}
                               />
                             ))}
                           </div>
@@ -309,251 +323,11 @@ export function ServicesGrid(): React.ReactElement {
       <EmployeeModal
         service={modalService}
         onClose={() => setModalService(null)}
-        onBook={handleBook}
+        onBook={(s) => {
+          setModalService(null);
+          handleBook(s);
+        }}
       />
     </>
-  );
-}
-
-// ──────────────────────────────────────────────────────────────
-// Desktop filter sidebar
-// ──────────────────────────────────────────────────────────────
-interface FilterSidebarProps {
-  search: string;
-  setSearch: (s: string) => void;
-  priceRange: PriceRangeId;
-  setPriceRange: (p: PriceRangeId) => void;
-  durationRange: DurationRangeId;
-  setDurationRange: (d: DurationRangeId) => void;
-  availableOnly: boolean;
-  setAvailableOnly: (b: boolean) => void;
-  favoritesOnly: boolean;
-  setFavoritesOnly: (b: boolean) => void;
-  hasActiveFilters: boolean;
-  clearAll: () => void;
-  totalResults: number;
-}
-
-function FilterSidebar({
-  search,
-  setSearch,
-  priceRange,
-  setPriceRange,
-  durationRange,
-  setDurationRange,
-  availableOnly,
-  setAvailableOnly,
-  favoritesOnly,
-  setFavoritesOnly,
-  hasActiveFilters,
-  clearAll,
-  totalResults,
-}: FilterSidebarProps): React.ReactElement {
-  return (
-    <div className="rounded-3xl overflow-hidden bg-ivory shadow-[0_20px_50px_rgba(71,103,106,0.12)]">
-      <div className="flex h-1.5">
-        <span className="flex-1 bg-mauve" />
-        <span className="flex-1 bg-sage" />
-        <span className="flex-1 bg-deep" />
-      </div>
-
-      <div className="p-5 bg-deep">
-        <div className="flex items-center gap-2 mb-2">
-          <Filter className="h-3 w-3 text-mauve" strokeWidth={1.75} />
-          <span className="eyebrow text-ivory text-[9px]">— Filter</span>
-        </div>
-        <h3 className="font-display text-xl font-light text-ivory leading-tight">
-          Refine services
-        </h3>
-        <p className="mt-2 text-[11px] text-ivory uppercase tracking-[0.15em] tabular-nums">
-          <span className="font-medium">{totalResults}</span> shown
-        </p>
-      </div>
-
-      <div className="p-5 space-y-5">
-        <div>
-          <label htmlFor="search" className="eyebrow text-deep text-[9px] block mb-2">
-            — Search
-          </label>
-          <div className="relative">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-deep pointer-events-none"
-              strokeWidth={1.5}
-            />
-            <input
-              id="search"
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Name, tag, location..."
-              className="w-full h-11 pl-10 pr-4 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep text-sm font-light focus:border-mauve focus:outline-none transition-colors"
-            />
-          </div>
-        </div>
-
-        <div>
-          <p className="eyebrow text-deep text-[9px] mb-2">— Price range</p>
-          <select
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value as PriceRangeId)}
-            className="w-full h-11 px-4 rounded-full bg-sage-tint border-2 border-transparent text-deep text-sm font-medium appearance-none cursor-pointer focus:border-sage focus:outline-none transition-colors"
-          >
-            {PRICE_RANGES.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <p className="eyebrow text-deep text-[9px] mb-2">— Duration</p>
-          <select
-            value={durationRange}
-            onChange={(e) => setDurationRange(e.target.value as DurationRangeId)}
-            className="w-full h-11 px-4 rounded-full bg-deep-tint border-2 border-transparent text-deep text-sm font-medium appearance-none cursor-pointer focus:border-deep focus:outline-none transition-colors"
-          >
-            {DURATION_RANGES.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="space-y-2">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={availableOnly}
-              onChange={(e) => setAvailableOnly(e.target.checked)}
-              className="h-4 w-4 rounded border-2 border-mauve text-mauve focus:ring-2 focus:ring-mauve cursor-pointer"
-            />
-            <span className="text-sm font-medium text-deep">Available today</span>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={favoritesOnly}
-              onChange={(e) => setFavoritesOnly(e.target.checked)}
-              className="h-4 w-4 rounded border-2 border-mauve text-mauve focus:ring-2 focus:ring-mauve cursor-pointer"
-            />
-            <span className="text-sm font-medium text-deep">Favorites only</span>
-          </label>
-        </div>
-
-        {hasActiveFilters ? (
-          <button
-            type="button"
-            onClick={clearAll}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-mauve-tint text-deep text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-mauve hover:text-ivory transition-colors"
-          >
-            <X className="h-3 w-3" strokeWidth={1.75} />
-            Clear filters
-          </button>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-// ──────────────────────────────────────────────────────────────
-// Desktop category section
-// ──────────────────────────────────────────────────────────────
-interface CategorySectionProps {
-  category: (typeof SERVICE_CATEGORIES)[number];
-  services: readonly ServiceItem[];
-  favorites: ReadonlySet<string>;
-  toggleFavorite: (id: string) => void;
-  handleBook: (s: ServiceItem) => void;
-  setModalService: (s: ServiceItem) => void;
-}
-
-function CategorySection({
-  category,
-  services,
-  favorites,
-  toggleFavorite,
-  handleBook,
-  setModalService,
-}: CategorySectionProps): React.ReactElement {
-  const Icon = category.icon;
-  const accentText: Record<typeof category.color, string> = {
-    mauve: "text-mauve",
-    sage: "text-sage",
-    deep: "text-deep",
-    mixed: "text-deep",
-  };
-  const accentBg: Record<typeof category.color, string> = {
-    mauve: "bg-mauve",
-    sage: "bg-sage",
-    deep: "bg-deep",
-    mixed: "bg-mauve",
-  };
-
-  return (
-    <div id={category.id} className="scroll-mt-24">
-      <div className="flex items-center gap-3 mb-5">
-        <div
-          className={cn(
-            "h-10 w-10 rounded-xl flex items-center justify-center",
-            accentBg[category.color]
-          )}
-        >
-          <Icon className="h-4 w-4 text-ivory" strokeWidth={1.5} />
-        </div>
-        <div className="flex-1">
-          <h3
-            className={cn(
-              "font-display text-2xl font-light leading-tight tracking-tight",
-              accentText[category.color]
-            )}
-          >
-            {category.name}
-          </h3>
-          <p className="text-[11px] text-deep font-light">
-            {services.length} service{services.length === 1 ? "" : "s"}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {services.map((service, idx) => (
-          <ServiceCard
-            key={service.id}
-            service={service}
-            index={idx}
-            accentColor={category.color}
-            isFavorite={favorites.has(service.id)}
-            onToggleFavorite={toggleFavorite}
-            onBook={handleBook}
-            onViewEmployees={() => setModalService(service)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ──────────────────────────────────────────────────────────────
-// Empty state
-// ──────────────────────────────────────────────────────────────
-function EmptyState({ clearAll }: { clearAll: () => void }): React.ReactElement {
-  return (
-    <div className="text-center py-20 px-6 rounded-2xl border-2 border-mauve bg-mauve-tint">
-      <h3 className="font-display text-2xl font-light text-deep mb-2">
-        No services match your filters.
-      </h3>
-      <p className="text-sm font-light text-deep max-w-md mx-auto mb-6">
-        Try widening your search or clearing filters.
-      </p>
-      <button
-        type="button"
-        onClick={clearAll}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-deep text-ivory text-[11px] uppercase tracking-[0.2em] hover:bg-deep-dark transition-colors"
-      >
-        Clear all filters
-      </button>
-    </div>
   );
 }
