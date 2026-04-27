@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 
-import { Navbar } from "@/components/navbar/Navbar";
-import { Footer } from "@/components/sections/Footer";
 import { BestSellers } from "@/components/shop/BestSellers";
 import { BrandStory } from "@/components/shop/BrandStory";
 import { FeaturedCollections } from "@/components/shop/FeaturedCollections";
@@ -20,7 +18,6 @@ export const metadata: Metadata = {
 export default function ShopPage(): React.ReactElement {
   return (
     <>
-      <Navbar />
       <main>
         <ShopHero />
         <FeaturedCollections />
@@ -31,7 +28,6 @@ export default function ShopPage(): React.ReactElement {
         <BrandStory />
         <ShopCTA />
       </main>
-      <Footer />
     </>
   );
 }

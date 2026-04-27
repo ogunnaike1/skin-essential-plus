@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Navbar } from "@/components/navbar/Navbar";
+import { Footer } from "@/components/sections/Footer";
 import {
   Cormorant_Garamond,
   Manrope,
@@ -63,7 +65,9 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${playfair.variable} ${manrope.variable}`}
     >
+      <Navbar />
       <body className="min-h-screen overflow-x-hidden">{children}</body>
+       <Footer />
     </html>
   );
 }
