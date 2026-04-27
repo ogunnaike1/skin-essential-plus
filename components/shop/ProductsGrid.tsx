@@ -128,7 +128,7 @@ export function ProductsGrid(): React.ReactElement {
           </motion.div>
 
           {/* Fixed-height grid wrapper with independent scroll */}
-          <div className="grid grid-cols-12 gap-8 h-[calc(100vh-20rem)]">
+          <div className="grid grid-cols-12 gap-8 h-[calc(100vh-12rem)]">
             {/* Sidebar — fills parent height, internal scroll */}
             <aside className="col-span-3 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
               <FilterPanel
@@ -478,11 +478,11 @@ function ProductCard({
         delay: (index % 3) * 0.05,
         ease: [0.16, 1, 0.3, 1],
       }}
-      className="group relative flex flex-col rounded-2xl bg-ivory border-2 border-deep/15 overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-deep hover:shadow-[0_12px_30px_rgba(71,103,106,0.12)]"
+      className="group relative flex flex-col rounded-xl bg-ivory border-2 border-deep/15 overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-deep hover:shadow-[0_12px_30px_rgba(71,103,106,0.12)]"
     >
       <div className={cn("h-0.5 w-full shrink-0", accentBg[product.accent])} />
 
-      <div className="relative aspect-square overflow-hidden bg-deep-tint">
+      <div className="relative aspect-[4/3] overflow-hidden bg-deep-tint">
         <Image
           src={product.image}
           alt={product.name}
@@ -491,25 +491,25 @@ function ProductCard({
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
           {product.isNew ? (
-            <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-sage text-ivory text-[9px] uppercase tracking-[0.15em] font-medium shadow-sm">
+            <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-sage text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
               New
             </span>
           ) : null}
           {product.isBestSeller ? (
-            <span className="inline-flex self-start items-center gap-1 px-2 py-0.5 rounded-full bg-mauve text-ivory text-[9px] uppercase tracking-[0.15em] font-medium shadow-sm">
-              <Sparkles className="h-2.5 w-2.5" strokeWidth={1.75} />
+            <span className="inline-flex self-start items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-mauve text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
+              <Sparkles className="h-2 w-2" strokeWidth={1.75} />
               Bestseller
             </span>
           ) : null}
           {product.isExclusive ? (
-            <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-deep text-ivory text-[9px] uppercase tracking-[0.15em] font-medium shadow-sm">
+            <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-deep text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
               Exclusive
             </span>
           ) : null}
           {hasDiscount ? (
-            <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-ivory text-mauve text-[9px] uppercase tracking-[0.15em] font-semibold shadow-sm tabular-nums">
+            <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-ivory text-mauve text-[8px] uppercase tracking-[0.15em] font-semibold shadow-sm tabular-nums">
               −{discountPercent}%
             </span>
           ) : null}
@@ -520,11 +520,11 @@ function ProductCard({
           onClick={() => onToggleFavorite(product.id)}
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           aria-pressed={isFavorite}
-          className="absolute top-3 right-3 z-10 h-8 w-8 rounded-full bg-ivory flex items-center justify-center transition-colors duration-200 hover:bg-mauve-tint shadow-sm"
+          className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full bg-ivory flex items-center justify-center transition-colors duration-200 hover:bg-mauve-tint shadow-sm"
         >
           <Heart
             className={cn(
-              "h-3.5 w-3.5 transition-colors duration-200",
+              "h-3 w-3 transition-colors duration-200",
               isFavorite ? "fill-mauve text-mauve" : "text-deep"
             )}
             strokeWidth={1.5}
@@ -535,43 +535,43 @@ function ProductCard({
           type="button"
           aria-label={`Add ${product.name} to cart`}
           className={cn(
-            "absolute bottom-3 right-3 z-10 h-10 w-10 rounded-full flex items-center justify-center text-ivory opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-sm",
+            "absolute bottom-2 right-2 z-10 h-8 w-8 rounded-full flex items-center justify-center text-ivory opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-sm",
             accentBg[product.accent]
           )}
         >
-          <ShoppingBag className="h-4 w-4" strokeWidth={1.75} />
+          <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.75} />
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col p-4 bg-ivory">
-        <div className="flex items-center gap-1.5 mb-2">
+      <div className="flex-1 flex flex-col p-3 bg-ivory">
+        <div className="flex items-center gap-1 mb-1.5">
           <div className="flex items-center gap-px">
             {Array.from({ length: 5 }).map((_, idx) => (
               <Star
                 key={idx}
                 className={cn(
-                  "h-2.5 w-2.5",
+                  "h-2 w-2",
                   idx < Math.round(product.rating) ? "fill-mauve text-mauve" : "text-deep/20"
                 )}
                 strokeWidth={0}
               />
             ))}
           </div>
-          <span className="text-[11px] font-medium text-deep tabular-nums">
+          <span className="text-[10px] font-medium text-deep tabular-nums">
             {product.rating.toFixed(1)}
           </span>
-          <span className="text-[11px] text-deep font-light">({product.reviewCount})</span>
+          <span className="text-[10px] text-deep font-light">({product.reviewCount})</span>
         </div>
 
-        <p className={cn("eyebrow text-[9px] mb-1", accentText[product.accent])}>
+        <p className={cn("eyebrow text-[8px] mb-1", accentText[product.accent])}>
           {product.tagline}
         </p>
 
-        <h3 className="font-display text-base sm:text-lg font-light text-deep leading-tight tracking-tight mb-2 line-clamp-2">
+        <h3 className="font-display text-sm font-light text-deep leading-tight tracking-tight mb-1.5 line-clamp-2">
           {product.name}
         </h3>
 
-        <div className="flex items-center gap-2 text-[11px] text-deep font-light mb-3">
+        <div className="flex items-center gap-2 text-[10px] text-deep font-light mb-2">
           <span className="truncate">{product.keyIngredient}</span>
           <span className="text-deep/30">·</span>
           <span>{product.volume}</span>
@@ -580,13 +580,13 @@ function ProductCard({
         {(isLowStock || isPreOrder) && (
           <div
             className={cn(
-              "inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.15em] font-medium mb-3",
+              "inline-flex items-center gap-1 self-start px-1.5 py-0.5 rounded-full text-[8px] uppercase tracking-[0.15em] font-medium mb-2",
               isLowStock ? "bg-mauve-tint text-mauve" : "bg-sage-tint text-sage"
             )}
           >
             <span
               className={cn(
-                "h-1.5 w-1.5 rounded-full animate-pulse-soft",
+                "h-1 w-1 rounded-full animate-pulse-soft",
                 isLowStock ? "bg-mauve" : "bg-sage"
               )}
             />
@@ -594,23 +594,23 @@ function ProductCard({
           </div>
         )}
 
-        <div className="mt-auto pt-3 border-t border-deep/10 flex items-baseline justify-between">
-          <div className="flex items-baseline gap-2">
+        <div className="mt-auto pt-2 border-t border-deep/10 flex items-baseline justify-between">
+          <div className="flex items-baseline gap-1.5">
             {hasDiscount ? (
-              <span className="text-[11px] text-deep/50 line-through tabular-nums">
+              <span className="text-[10px] text-deep/50 line-through tabular-nums">
                 {formatShopPrice(product.originalPrice!)}
               </span>
             ) : null}
-            <span className={cn("font-display text-xl font-light tabular-nums", accentText[product.accent])}>
+            <span className={cn("font-display text-lg font-light tabular-nums", accentText[product.accent])}>
               {formatShopPrice(product.price)}
             </span>
           </div>
           <a
             href={`#product-${product.id}`}
-            className="text-[10px] uppercase tracking-[0.15em] text-deep hover:text-mauve transition-colors inline-flex items-center gap-1"
+            className="text-[9px] uppercase tracking-[0.15em] text-deep hover:text-mauve transition-colors inline-flex items-center gap-0.5"
           >
             Details
-            <ArrowUpRight className="h-2.5 w-2.5" strokeWidth={1.5} />
+            <ArrowUpRight className="h-2 w-2" strokeWidth={1.5} />
           </a>
         </div>
       </div>
