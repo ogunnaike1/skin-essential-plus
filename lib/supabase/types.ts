@@ -47,7 +47,9 @@ export interface Service {
   tag: string;
   rating: number;               // ← Should be here
   review_count: number;         // ← Should be here
-  popular: boolean;             // ← Should be here
+  popular: boolean;   
+  category?: string; 
+  duration?: string;          // ← Should be here
   created_at: string;
   updated_at: string;
 }
@@ -71,6 +73,7 @@ export interface Product {
   is_new?: boolean;
   is_bestseller?: boolean;
   is_exclusive?: boolean;
+  is_new_arrival?: boolean;
   created_at: string;
   updated_at: string;
 }

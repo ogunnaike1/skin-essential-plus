@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { BestSellers } from "@/components/shop/BestSellers";
 import { BrandStory } from "@/components/shop/BrandStory";
-import { FeaturedCollections } from "@/components/shop/FeaturedCollections";
 import { NewArrivals } from "@/components/shop/NewArrivals";
 import { ProductsGrid } from "@/components/shop/ProductsGrid";
 import { RoutineBundles } from "@/components/shop/RoutineBundles";
@@ -20,7 +19,6 @@ export default function ShopPage(): React.ReactElement {
     <>
       <main>
         <ShopHero />
-        <FeaturedCollections />
          <ProductsGrid />
         <BestSellers />
         <NewArrivals />

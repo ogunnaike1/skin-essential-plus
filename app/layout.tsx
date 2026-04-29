@@ -4,9 +4,11 @@ import {
   Manrope,
   Playfair_Display,
 } from "next/font/google";
+import Script from "next/script";
 
 import { SITE } from "@/lib/constants";
 import { ConditionalLayout } from "@/components/shared/ConditionalLayout";
+import { CartProvider } from "@/app/contexts/CartContext";
 
 import "./globals.css";
 
@@ -65,7 +67,13 @@ export default function RootLayout({
       className={`${cormorant.variable} ${playfair.variable} ${manrope.variable}`}
     >
       <body className="min-h-screen overflow-x-hidden">
-        <ConditionalLayout>{children}</ConditionalLayout>
+        {/* Paystack Script for Payment Integration */}
+        <Script src="https://js.paystack.co/v1/inline.js" strategy="lazyOnload" />
+        
+        {/* Cart Provider - Wraps entire app for cart state */}
+        <CartProvider>
+          <ConditionalLayout>{children}</ConditionalLayout>
+        </CartProvider>
       </body>
     </html>
   );

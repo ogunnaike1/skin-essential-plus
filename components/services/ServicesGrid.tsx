@@ -13,6 +13,7 @@ import { useMemo, useState, useEffect } from "react";
 import { CategoryNav } from "@/components/services/CategoryNav";
 import { EmployeeModal } from "@/components/services/EmployeeModal";
 import { ServiceCard } from "./ServicesCard";
+import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
 import {
   SERVICE_CATEGORIES,
 } from "@/lib/services-data";
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 import type { ServiceItem } from "@/types";
 import { getPublicServices } from "@/lib/supabase/public-services-api";
 import { transformServicesToItems } from "@/lib/supabase/transform-services";
+import type { Service } from "@/lib/supabase/types";
 
 const PRICE_RANGES = [
   { id: "any", label: "Any price", min: 0, max: Infinity },
@@ -58,8 +60,13 @@ export function ServicesGrid(): React.ReactElement {
   // Mobile accordion - which category is expanded
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  // Booking modal state
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedServiceForBooking, setSelectedServiceForBooking] = useState<Service | null>(null);
+
   // Supabase data state
   const [services, setServices] = useState<ServiceItem[]>([]);
+  const [rawServices, setRawServices] = useState<Service[]>([]); // Store raw Service objects
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,6 +80,7 @@ export function ServicesGrid(): React.ReactElement {
       setLoading(true);
       setError(null);
       const data = await getPublicServices();
+      setRawServices(data); // Store raw services
       const transformedServices = transformServicesToItems(data);
       setServices(transformedServices);
     } catch (err) {
@@ -105,7 +113,16 @@ export function ServicesGrid(): React.ReactElement {
   };
 
   const handleBook = (service: ServiceItem) => {
-    alert(`Starting booking for: ${service.name}`);
+    // Find the raw Service object that matches this ServiceItem
+    const rawService = rawServices.find(s => s.id === service.id);
+    
+    if (rawService) {
+      setSelectedServiceForBooking(rawService);
+      setShowBookingModal(true);
+    } else {
+      console.error('Could not find raw service for booking');
+      alert('Unable to open booking. Please try again.');
+    }
   };
 
   const filteredServices = useMemo(() => {
@@ -400,6 +417,7 @@ export function ServicesGrid(): React.ReactElement {
         </div>
       </section>
 
+      {/* Employee Modal */}
       <EmployeeModal
         service={modalService}
         onClose={() => setModalService(null)}
@@ -407,6 +425,16 @@ export function ServicesGrid(): React.ReactElement {
           setModalService(null);
           handleBook(s);
         }}
+      />
+
+      {/* Booking Modal */}
+      <BookAppointmentModal
+        isOpen={showBookingModal}
+        onClose={() => {
+          setShowBookingModal(false);
+          setSelectedServiceForBooking(null);
+        }}
+        preselectedService={selectedServiceForBooking}
       />
     </>
   );

@@ -23,6 +23,8 @@ import { cn } from "@/lib/utils";
 import type { ProductCategory } from "@/types";
 import { getPublicProducts } from "@/lib/supabase/products-api";
 import type { Product as SupabaseProduct } from "@/lib/supabase/types";
+import { useCart } from "@/app/contexts/CartContext";
+import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
 type StockFilter = "all" | "in-stock" | "on-sale";
 type SortOption = "featured" | "price-low" | "price-high" | "rating";
@@ -45,6 +47,9 @@ export function ProductsGrid(): React.ReactElement {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Success notification for favorites and cart
+  const { notification, showSuccess, hideSuccess } = useSuccessNotification();
+
   // Load products from Supabase
   useEffect(() => {
     loadProducts();
@@ -66,10 +71,8 @@ export function ProductsGrid(): React.ReactElement {
 
   const handleCategoryClick = (categoryId: string) => {
     if (expandedCategory === categoryId) {
-      // Just close if clicking the same category
       setExpandedCategory(null);
     } else {
-      // Close current, then open new one after a delay
       setExpandedCategory(null);
       setTimeout(() => {
         setExpandedCategory(categoryId);
@@ -77,11 +80,17 @@ export function ProductsGrid(): React.ReactElement {
     }
   };
 
-  const toggleFavorite = (id: string) => {
+  const toggleFavorite = (id: string, productName: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+        showSuccess("favorite-added", {
+          message: `${productName} saved to your favorites`
+        });
+      }
       return next;
     });
   };
@@ -124,229 +133,239 @@ export function ProductsGrid(): React.ReactElement {
   };
 
   return (
-    <section id="products-grid" className="relative bg-ivory">
-      <div className="mx-auto max-w-[1600px]">
-        {/* DESKTOP LAYOUT */}
-        <div className="hidden lg:block px-6 sm:px-10 lg:px-14 py-16 sm:py-20">
-          <motion.div
-            initial={{ opacity: 1, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-10 sm:mb-14 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5"
-          >
-            <div>
+    <>
+      <section id="products-grid" className="relative bg-ivory">
+        <div className="mx-auto max-w-[1600px]">
+          {/* DESKTOP LAYOUT */}
+          <div className="hidden lg:block px-6 sm:px-10 lg:px-14 py-16 sm:py-20">
+            <motion.div
+              initial={{ opacity: 1, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-10 sm:mb-14 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="h-1 w-8 rounded-full bg-mauve" />
+                  <span className="h-1 w-8 rounded-full bg-sage" />
+                  <span className="h-1 w-8 rounded-full bg-deep" />
+                </div>
+                <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-light text-deep leading-tight tracking-tight">
+                  The full <em className="not-italic text-mauve">library</em>.
+                </h2>
+                <p className="mt-3 text-sm sm:text-base font-light text-deep max-w-lg">
+                  {loading ? 'Loading products...' : `Browse ${products.length} clinician-approved products across ${PRODUCT_CATEGORIES.length} categories.`}
+                </p>
+              </div>
+
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortOption)}
+                  className="h-11 pl-4 pr-10 rounded-full bg-ivory border-2 border-mauve text-deep text-[11px] uppercase tracking-[0.15em] font-medium appearance-none cursor-pointer focus:border-deep focus:outline-none transition-colors"
+                  aria-label="Sort products"
+                >
+                  <option value="featured">Featured</option>
+                  <option value="price-low">Price: low to high</option>
+                  <option value="price-high">Price: high to low</option>
+                  <option value="rating">Top rated</option>
+                </select>
+                <ArrowUpRight className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-mauve rotate-90 pointer-events-none" />
+              </div>
+            </motion.div>
+
+            {/* Fixed-height grid wrapper with independent scroll */}
+            <div className="grid grid-cols-12 gap-8 h-[calc(100vh-12rem)]">
+              {/* Sidebar — fills parent height, internal scroll */}
+              <aside className="col-span-3 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
+                <FilterPanel
+                  activeCategory={activeCategory}
+                  setActiveCategory={setActiveCategory}
+                  stockFilter={stockFilter}
+                  setStockFilter={setStockFilter}
+                  hasActiveFilters={hasActiveFilters}
+                  clearAll={clearAll}
+                  productCount={filteredProducts.length}
+                />
+              </aside>
+
+              {/* Product grid — fills parent height, scrolls independently */}
+              <div className="col-span-9 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
+                {loading ? (
+                  <div className="flex items-center justify-center py-20">
+                    <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-20">
+                    <p className="text-deep mb-4">{error}</p>
+                    <button
+                      onClick={loadProducts}
+                      className="px-6 py-3 rounded-full bg-mauve text-ivory hover:bg-mauve-dark transition-colors"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : filteredProducts.length === 0 ? (
+                  <EmptyState clearAll={clearAll} />
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5 pb-6">
+                    {filteredProducts.map((product, i) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        index={i}
+                        isFavorite={favorites.has(product.id)}
+                        onToggleFavorite={toggleFavorite}
+                        showSuccess={showSuccess}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* MOBILE ACCORDION LAYOUT */}
+          <div className="lg:hidden px-6 py-10">
+            <motion.div
+              initial={{ opacity: 1, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-8"
+            >
               <div className="flex items-center gap-2 mb-3">
                 <span className="h-1 w-8 rounded-full bg-mauve" />
-                <span className="h-1 w-8 rounded-full bg-sage" />
-                <span className="h-1 w-8 rounded-full bg-deep" />
+                <span className="eyebrow text-mauve text-[10px]">
+                  — Browse by category
+                </span>
               </div>
-              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-light text-deep leading-tight tracking-tight">
-                The full <em className="not-italic text-mauve">library</em>.
+              <h2 className="font-display text-3xl font-light text-deep leading-tight tracking-tight">
+                Shop the collection
               </h2>
-              <p className="mt-3 text-sm sm:text-base font-light text-deep max-w-lg">
-                {loading ? 'Loading products...' : `Browse ${products.length} clinician-approved products across ${PRODUCT_CATEGORIES.length} categories.`}
+              <p className="mt-2 text-sm font-light text-deep">
+                Tap a category to see products.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="relative">
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortOption)}
-                className="h-11 pl-4 pr-10 rounded-full bg-ivory border-2 border-mauve text-deep text-[11px] uppercase tracking-[0.15em] font-medium appearance-none cursor-pointer focus:border-deep focus:outline-none transition-colors"
-                aria-label="Sort products"
-              >
-                <option value="featured">Featured</option>
-                <option value="price-low">Price: low to high</option>
-                <option value="price-high">Price: high to low</option>
-                <option value="rating">Top rated</option>
-              </select>
-              <ArrowUpRight className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-mauve rotate-90 pointer-events-none" />
-            </div>
-          </motion.div>
-
-          {/* Fixed-height grid wrapper with independent scroll */}
-          <div className="grid grid-cols-12 gap-8 h-[calc(100vh-12rem)]">
-            {/* Sidebar — fills parent height, internal scroll */}
-            <aside className="col-span-3 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
-              <FilterPanel
-                activeCategory={activeCategory}
-                setActiveCategory={setActiveCategory}
-                stockFilter={stockFilter}
-                setStockFilter={setStockFilter}
-                hasActiveFilters={hasActiveFilters}
-                clearAll={clearAll}
-                productCount={filteredProducts.length}
-              />
-            </aside>
-
-            {/* Product grid — fills parent height, scrolls independently */}
-            <div className="col-span-9 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
+            {/* Accordion list */}
+            <div className="space-y-3">
               {loading ? (
                 <div className="flex items-center justify-center py-20">
                   <Loader2 className="h-8 w-8 animate-spin text-mauve" />
                 </div>
-              ) : error ? (
-                <div className="text-center py-20">
-                  <p className="text-deep mb-4">{error}</p>
-                  <button
-                    onClick={loadProducts}
-                    className="px-6 py-3 rounded-full bg-mauve text-ivory hover:bg-mauve-dark transition-colors"
-                  >
-                    Retry
-                  </button>
-                </div>
-              ) : filteredProducts.length === 0 ? (
-                <EmptyState clearAll={clearAll} />
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5 pb-6">
-                  {filteredProducts.map((product, i) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      index={i}
-                      isFavorite={favorites.has(product.id)}
-                      onToggleFavorite={toggleFavorite}
-                    />
-                  ))}
-                </div>
+                PRODUCT_CATEGORIES.map((cat) => {
+                  const allProductsInCat = products.filter((p) => p.category === cat.id);
+                  if (allProductsInCat.length === 0) return null;
+                  
+                  const isExpanded = expandedCategory === cat.id;
+
+                const accentBg: Record<typeof cat.color, string> = {
+                  mauve: "bg-mauve",
+                  sage: "bg-sage",
+                  deep: "bg-deep",
+                };
+                const accentText: Record<typeof cat.color, string> = {
+                  mauve: "text-mauve",
+                  sage: "text-sage",
+                  deep: "text-deep",
+                };
+                const accentBorder: Record<typeof cat.color, string> = {
+                  mauve: "border-mauve",
+                  sage: "border-sage",
+                  deep: "border-deep",
+                };
+
+                return (
+                  <div
+                    key={cat.id}
+                    className={cn(
+                      "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
+                      isExpanded
+                        ? accentBorder[cat.color]
+                        : "border-deep/10 hover:border-deep/20"
+                    )}
+                  >
+                    {/* Accordion header */}
+                    <button
+                      type="button"
+                      onClick={() => handleCategoryClick(cat.id)}
+                      className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div
+                          className={cn(
+                            "shrink-0 h-11 w-11 rounded-xl flex items-center justify-center",
+                            accentBg[cat.color]
+                          )}
+                        >
+                          <Sparkles className="h-5 w-5 text-ivory" strokeWidth={1.5} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3
+                            className={cn(
+                              "font-display text-xl font-light leading-tight tracking-tight",
+                              isExpanded ? accentText[cat.color] : "text-deep"
+                            )}
+                          >
+                            {cat.label}
+                          </h3>
+                          <p className="text-[11px] text-deep font-light truncate">
+                            {allProductsInCat.length} product
+                            {allProductsInCat.length === 1 ? "" : "s"}
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronDown
+                        className={cn(
+                          "h-5 w-5 shrink-0 transition-transform duration-300",
+                          isExpanded ? cn("rotate-180", accentText[cat.color]) : "text-deep"
+                        )}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+
+                    {/* Accordion panel */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded ? (
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: "auto" }}
+                          exit={{ height: 0 }}
+                          transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                          style={{ overflow: "hidden" }}
+                        >
+                          <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
+                            {allProductsInCat.map((product, idx) => (
+                              <ProductCard
+                                key={product.id}
+                                product={product}
+                                index={idx}
+                                isFavorite={favorites.has(product.id)}
+                                onToggleFavorite={toggleFavorite}
+                                showSuccess={showSuccess}
+                              />
+                            ))}
+                          </div>
+                        </motion.div>
+                      ) : null}
+                    </AnimatePresence>
+                  </div>
+                );
+              })
               )}
             </div>
           </div>
         </div>
+      </section>
 
-        {/* MOBILE ACCORDION LAYOUT */}
-        <div className="lg:hidden px-6 py-10">
-          <motion.div
-            initial={{ opacity: 1, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-8"
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="h-1 w-8 rounded-full bg-mauve" />
-              <span className="eyebrow text-mauve text-[10px]">
-                — Browse by category
-              </span>
-            </div>
-            <h2 className="font-display text-3xl font-light text-deep leading-tight tracking-tight">
-              Shop the collection
-            </h2>
-            <p className="mt-2 text-sm font-light text-deep">
-              Tap a category to see products.
-            </p>
-          </motion.div>
-
-          {/* Accordion list */}
-          <div className="space-y-3">
-            {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-mauve" />
-              </div>
-            ) : (
-              PRODUCT_CATEGORIES.map((cat) => {
-                const allProductsInCat = products.filter((p) => p.category === cat.id);
-                if (allProductsInCat.length === 0) return null;
-                
-                const isExpanded = expandedCategory === cat.id;
-
-              const accentBg: Record<typeof cat.color, string> = {
-                mauve: "bg-mauve",
-                sage: "bg-sage",
-                deep: "bg-deep",
-              };
-              const accentText: Record<typeof cat.color, string> = {
-                mauve: "text-mauve",
-                sage: "text-sage",
-                deep: "text-deep",
-              };
-              const accentBorder: Record<typeof cat.color, string> = {
-                mauve: "border-mauve",
-                sage: "border-sage",
-                deep: "border-deep",
-              };
-
-              return (
-                <div
-                  key={cat.id}
-                  className={cn(
-                    "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
-                    isExpanded
-                      ? accentBorder[cat.color]
-                      : "border-deep/10 hover:border-deep/20"
-                  )}
-                >
-                  {/* Accordion header */}
-                  <button
-                    type="button"
-                    onClick={() => handleCategoryClick(cat.id)}
-                    className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div
-                        className={cn(
-                          "shrink-0 h-11 w-11 rounded-xl flex items-center justify-center",
-                          accentBg[cat.color]
-                        )}
-                      >
-                        <Sparkles className="h-5 w-5 text-ivory" strokeWidth={1.5} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3
-                          className={cn(
-                            "font-display text-xl font-light leading-tight tracking-tight",
-                            isExpanded ? accentText[cat.color] : "text-deep"
-                          )}
-                        >
-                          {cat.label}
-                        </h3>
-                        <p className="text-[11px] text-deep font-light truncate">
-                          {allProductsInCat.length} product
-                          {allProductsInCat.length === 1 ? "" : "s"}
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronDown
-                      className={cn(
-                        "h-5 w-5 shrink-0 transition-transform duration-300",
-                        isExpanded ? cn("rotate-180", accentText[cat.color]) : "text-deep"
-                      )}
-                      strokeWidth={1.5}
-                    />
-                  </button>
-
-                  {/* Accordion panel */}
-                  <AnimatePresence initial={false}>
-                    {isExpanded ? (
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: "auto" }}
-                        exit={{ height: 0 }}
-                        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
-                        style={{ overflow: "hidden" }}
-                      >
-                        <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
-                          {allProductsInCat.map((product, idx) => (
-                            <ProductCard
-                              key={product.id}
-                              product={product}
-                              index={idx}
-                              isFavorite={favorites.has(product.id)}
-                              onToggleFavorite={toggleFavorite}
-                            />
-                          ))}
-                        </div>
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
-                </div>
-              );
-            })
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
+      {/* Success Notification - Single instance for entire grid */}
+      <SuccessNotification
+        {...notification}
+        onClose={hideSuccess}
+      />
+    </>
   );
 }
 
@@ -489,13 +508,14 @@ function FilterPanel({
 }
 
 // ──────────────────────────────────────────────────────────────
-// Product Card
+// Product Card - WITH ADD TO CART
 // ──────────────────────────────────────────────────────────────
 interface ProductCardProps {
   product: SupabaseProduct;
   index: number;
   isFavorite: boolean;
-  onToggleFavorite: (id: string) => void;
+  onToggleFavorite: (id: string, productName: string) => void;
+  showSuccess: (type: any, options: any) => void;
 }
 
 function ProductCard({
@@ -503,7 +523,10 @@ function ProductCard({
   index,
   isFavorite,
   onToggleFavorite,
+  showSuccess,
 }: ProductCardProps): React.ReactElement {
+  const { addToCart } = useCart();
+  
   const isLowStock = product.stock_status === "low-stock";
   const isPreOrder = product.stock_status === "pre-order";
   const hasDiscount = product.original_price !== undefined;
@@ -520,6 +543,15 @@ function ProductCard({
     mauve: "text-mauve",
     sage: "text-sage",
     deep: "text-deep",
+  };
+
+  // Add to cart handler
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product);
+    showSuccess("cart-added", {
+      message: `${product.name} added to your cart`
+    });
   };
 
   return (
@@ -577,7 +609,7 @@ function ProductCard({
 
         <button
           type="button"
-          onClick={() => onToggleFavorite(product.id)}
+          onClick={() => onToggleFavorite(product.id, product.name)}
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           aria-pressed={isFavorite}
           className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full bg-ivory flex items-center justify-center transition-colors duration-200 hover:bg-mauve-tint shadow-sm"
@@ -591,15 +623,18 @@ function ProductCard({
           />
         </button>
 
+        {/* ADD TO CART BUTTON */}
         <button
           type="button"
+          onClick={handleAddToCart}
           aria-label={`Add ${product.name} to cart`}
           className={cn(
-            "absolute bottom-2 right-2 z-10 h-8 w-8 rounded-full flex items-center justify-center text-ivory opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-sm",
+            "absolute bottom-2 right-2 z-10 px-3 py-2 rounded-full flex items-center justify-center gap-1.5 text-ivory opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-lg",
             accentBg[product.accent]
           )}
         >
           <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.75} />
+          <span className="text-[10px] font-medium uppercase tracking-wider">Add to Cart</span>
         </button>
       </div>
 

@@ -8,6 +8,7 @@ import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
 import { Logo } from "@/components/ui/Logo";
 import { NAV_LINKS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { CartIcon } from "@/components/cart/CartIcon";
 
 export function Navbar(): React.ReactElement {
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -118,18 +119,15 @@ export function Navbar(): React.ReactElement {
 
             {/* Right cluster */}
             <div className="flex items-center gap-2 sm:gap-3">
-              <button
-                type="button"
-                aria-label="Shop"
+              {/* Cart Icon - Desktop & Mobile */}
+              <div
                 className={cn(
-                  "hidden h-10 w-10 items-center justify-center rounded-full border transition-all duration-500 md:inline-flex",
-                  scrolled
-                    ? "border-deep/20 text-deep hover:border-deep hover:bg-deep hover:text-ivory"
-                    : "border-ivory/40 text-ivory hover:border-ivory hover:bg-ivory hover:text-deep"
+                  "transition-colors duration-500",
+                  scrolled ? "text-deep" : "text-ivory"
                 )}
               >
-                <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
-              </button>
+                <CartIcon />
+              </div>
 
               <span
                 className={cn(
