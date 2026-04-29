@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import { Navbar } from "@/components/navbar/Navbar";
-import { Footer } from "@/components/sections/Footer";
-import { ClientLayout } from "@/components/shared/ClientLayout";
 import {
   Cormorant_Garamond,
   Manrope,
@@ -9,6 +6,7 @@ import {
 } from "next/font/google";
 
 import { SITE } from "@/lib/constants";
+import { ConditionalLayout } from "@/components/shared/ConditionalLayout";
 
 import "./globals.css";
 
@@ -66,11 +64,9 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${playfair.variable} ${manrope.variable}`}
     >
-      <Navbar />
       <body className="min-h-screen overflow-x-hidden">
-        <ClientLayout>{children}</ClientLayout>
+        <ConditionalLayout>{children}</ConditionalLayout>
       </body>
-      <Footer />
     </html>
   );
 }

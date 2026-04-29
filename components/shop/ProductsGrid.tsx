@@ -10,17 +10,19 @@ import {
   Sparkles,
   Star,
   X,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import {
   PRODUCT_CATEGORIES,
-  PRODUCTS,
   formatShopPrice,
 } from "@/lib/shop-data";
 import { cn } from "@/lib/utils";
-import type { Product, ProductCategory } from "@/types";
+import type { ProductCategory } from "@/types";
+import { getPublicProducts } from "@/lib/supabase/products-api";
+import type { Product as SupabaseProduct } from "@/lib/supabase/types";
 
 type StockFilter = "all" | "in-stock" | "on-sale";
 type SortOption = "featured" | "price-low" | "price-high" | "rating";
@@ -37,6 +39,30 @@ export function ProductsGrid(): React.ReactElement {
 
   // Mobile accordion state
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  // Supabase products state
+  const [products, setProducts] = useState<SupabaseProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load products from Supabase
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getPublicProducts();
+      setProducts(data);
+    } catch (err) {
+      console.error('Error loading products:', err);
+      setError('Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCategoryClick = (categoryId: string) => {
     if (expandedCategory === categoryId) {
@@ -61,16 +87,16 @@ export function ProductsGrid(): React.ReactElement {
   };
 
   const filteredProducts = useMemo(() => {
-    let list = [...PRODUCTS];
+    let list = [...products];
 
     if (activeCategory !== "all") {
       list = list.filter((p) => p.category === activeCategory);
     }
 
     if (stockFilter === "in-stock") {
-      list = list.filter((p) => p.stockStatus === "in-stock");
+      list = list.filter((p) => p.stock_status === "in-stock");
     } else if (stockFilter === "on-sale") {
-      list = list.filter((p) => p.originalPrice !== undefined);
+      list = list.filter((p) => p.original_price !== undefined);
     }
 
     switch (sort) {
@@ -84,11 +110,11 @@ export function ProductsGrid(): React.ReactElement {
         list.sort((a, b) => b.rating - a.rating);
         break;
       default:
-        list.sort((a, b) => Number(b.isBestSeller ?? 0) - Number(a.isBestSeller ?? 0));
+        list.sort((a, b) => Number(b.is_bestseller ?? 0) - Number(a.is_bestseller ?? 0));
     }
 
     return list;
-  }, [activeCategory, stockFilter, sort]);
+  }, [activeCategory, stockFilter, sort, products]);
 
   const hasActiveFilters = activeCategory !== "all" || stockFilter !== "all";
   const clearAll = () => {
@@ -119,8 +145,7 @@ export function ProductsGrid(): React.ReactElement {
                 The full <em className="not-italic text-mauve">library</em>.
               </h2>
               <p className="mt-3 text-sm sm:text-base font-light text-deep max-w-lg">
-                Browse {PRODUCTS.length} clinician-approved products across{" "}
-                {PRODUCT_CATEGORIES.length} categories.
+                {loading ? 'Loading products...' : `Browse ${products.length} clinician-approved products across ${PRODUCT_CATEGORIES.length} categories.`}
               </p>
             </div>
 
@@ -157,7 +182,21 @@ export function ProductsGrid(): React.ReactElement {
 
             {/* Product grid — fills parent height, scrolls independently */}
             <div className="col-span-9 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
-              {filteredProducts.length === 0 ? (
+              {loading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+                </div>
+              ) : error ? (
+                <div className="text-center py-20">
+                  <p className="text-deep mb-4">{error}</p>
+                  <button
+                    onClick={loadProducts}
+                    className="px-6 py-3 rounded-full bg-mauve text-ivory hover:bg-mauve-dark transition-colors"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : filteredProducts.length === 0 ? (
                 <EmptyState clearAll={clearAll} />
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5 pb-6">
@@ -200,9 +239,16 @@ export function ProductsGrid(): React.ReactElement {
 
           {/* Accordion list */}
           <div className="space-y-3">
-            {PRODUCT_CATEGORIES.map((cat) => {
-              const allProductsInCat = PRODUCTS.filter((p) => p.category === cat.id);
-              const isExpanded = expandedCategory === cat.id;
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+              </div>
+            ) : (
+              PRODUCT_CATEGORIES.map((cat) => {
+                const allProductsInCat = products.filter((p) => p.category === cat.id);
+                if (allProductsInCat.length === 0) return null;
+                
+                const isExpanded = expandedCategory === cat.id;
 
               const accentBg: Record<typeof cat.color, string> = {
                 mauve: "bg-mauve",
@@ -295,7 +341,8 @@ export function ProductsGrid(): React.ReactElement {
                   </AnimatePresence>
                 </div>
               );
-            })}
+            })
+            )}
           </div>
         </div>
       </div>
@@ -445,7 +492,7 @@ function FilterPanel({
 // Product Card
 // ──────────────────────────────────────────────────────────────
 interface ProductCardProps {
-  product: Product;
+  product: SupabaseProduct;
   index: number;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
@@ -457,11 +504,11 @@ function ProductCard({
   isFavorite,
   onToggleFavorite,
 }: ProductCardProps): React.ReactElement {
-  const isLowStock = product.stockStatus === "low-stock";
-  const isPreOrder = product.stockStatus === "pre-order";
-  const hasDiscount = product.originalPrice !== undefined;
+  const isLowStock = product.stock_status === "low-stock";
+  const isPreOrder = product.stock_status === "pre-order";
+  const hasDiscount = product.original_price !== undefined;
   const discountPercent = hasDiscount
-    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
+    ? Math.round(((product.original_price! - product.price) / product.original_price!) * 100)
     : 0;
 
   const accentBg: Record<typeof product.accent, string> = {
@@ -490,27 +537,33 @@ function ProductCard({
       <div className={cn("h-0.5 w-full shrink-0", accentBg[product.accent])} />
 
       <div className="relative aspect-[4/3] overflow-hidden bg-deep-tint">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {product.image_url ? (
+          <Image
+            src={product.image_url}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-mauve-tint">
+            <Sparkles className="h-12 w-12 text-mauve" strokeWidth={1.5} />
+          </div>
+        )}
 
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-          {product.isNew ? (
+          {product.is_new ? (
             <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-sage text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
               New
             </span>
           ) : null}
-          {product.isBestSeller ? (
+          {product.is_bestseller ? (
             <span className="inline-flex self-start items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-mauve text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
               <Sparkles className="h-2 w-2" strokeWidth={1.75} />
               Bestseller
             </span>
           ) : null}
-          {product.isExclusive ? (
+          {product.is_exclusive ? (
             <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-deep text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
               Exclusive
             </span>
@@ -567,7 +620,7 @@ function ProductCard({
           <span className="text-[10px] font-medium text-deep tabular-nums">
             {product.rating.toFixed(1)}
           </span>
-          <span className="text-[10px] text-deep font-light">({product.reviewCount})</span>
+          <span className="text-[10px] text-deep font-light">({product.review_count})</span>
         </div>
 
         <p className={cn("eyebrow text-[8px] mb-1", accentText[product.accent])}>
@@ -579,7 +632,7 @@ function ProductCard({
         </h3>
 
         <div className="flex items-center gap-2 text-[10px] text-deep font-light mb-2">
-          <span className="truncate">{product.keyIngredient}</span>
+          <span className="truncate">{product.key_ingredient}</span>
           <span className="text-deep/30">·</span>
           <span>{product.volume}</span>
         </div>
@@ -605,7 +658,7 @@ function ProductCard({
           <div className="flex items-baseline gap-1.5">
             {hasDiscount ? (
               <span className="text-[10px] text-deep/50 line-through tabular-nums">
-                {formatShopPrice(product.originalPrice!)}
+                {formatShopPrice(product.original_price!)}
               </span>
             ) : null}
             <span className={cn("font-display text-lg font-light tabular-nums", accentText[product.accent])}>

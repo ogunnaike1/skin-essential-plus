@@ -6,18 +6,20 @@ import {
   Filter,
   Search,
   X,
+  Loader2,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import { CategoryNav } from "@/components/services/CategoryNav";
 import { EmployeeModal } from "@/components/services/EmployeeModal";
 import { ServiceCard } from "./ServicesCard";
 import {
   SERVICE_CATEGORIES,
-  SERVICES_CATALOG,
 } from "@/lib/services-data";
 import { cn } from "@/lib/utils";
 import type { ServiceItem } from "@/types";
+import { getPublicServices } from "@/lib/supabase/public-services-api";
+import { transformServicesToItems } from "@/lib/supabase/transform-services";
 
 const PRICE_RANGES = [
   { id: "any", label: "Any price", min: 0, max: Infinity },
@@ -56,6 +58,44 @@ export function ServicesGrid(): React.ReactElement {
   // Mobile accordion - which category is expanded
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  // Supabase data state
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load services from Supabase on mount
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  const loadServices = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getPublicServices();
+      const transformedServices = transformServicesToItems(data);
+      setServices(transformedServices);
+    } catch (err) {
+      console.error('Error loading services:', err);
+      setError('Failed to load services. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCategoryClick = (categoryId: string) => {
+    if (expandedCategory === categoryId) {
+      // Just close if clicking the same category
+      setExpandedCategory(null);
+    } else {
+      // Close current, then open new one after a delay
+      setExpandedCategory(null);
+      setTimeout(() => {
+        setExpandedCategory(categoryId);
+      }, 100);
+    }
+  };
+
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev);
@@ -73,7 +113,7 @@ export function ServicesGrid(): React.ReactElement {
     const durR = DURATION_RANGES.find((r) => r.id === durationRange)!;
     const q = search.trim().toLowerCase();
 
-    return SERVICES_CATALOG.filter((s) => {
+    return services.filter((s) => {
       if (q) {
         const hay = `${s.name} ${s.description} ${s.tag} ${s.location}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -84,7 +124,7 @@ export function ServicesGrid(): React.ReactElement {
       if (favoritesOnly && !favorites.has(s.id)) return false;
       return true;
     });
-  }, [search, priceRange, durationRange, availableOnly, favoritesOnly, favorites]);
+  }, [search, priceRange, durationRange, availableOnly, favoritesOnly, favorites, services]);
 
   const servicesByCategory = useMemo(() => {
     const map = new Map<string, ServiceItem[]>();
@@ -130,7 +170,9 @@ export function ServicesGrid(): React.ReactElement {
               <h2 className="text-4xl font-light text-deep">
                 Find your <span className="text-mauve">ritual</span>
               </h2>
-              <p className="text-sm text-deep mt-2">{totalResults} services match</p>
+              <p className="text-sm text-deep mt-2">
+                {loading ? 'Loading services...' : `${totalResults} services match`}
+              </p>
             </div>
 
             {/* SEARCH */}
@@ -142,6 +184,7 @@ export function ServicesGrid(): React.ReactElement {
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full h-12 pl-10 pr-10 rounded-full border border-mauve/30"
                   placeholder="Search services..."
+                  disabled={loading}
                 />
                 {search && (
                   <button
@@ -156,43 +199,64 @@ export function ServicesGrid(): React.ReactElement {
               <button
                 onClick={() => setShowFilters((v) => !v)}
                 className="px-4 rounded-full border"
+                disabled={loading}
               >
                 Filters
               </button>
             </div>
 
-            {/* GRID */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <CategoryNav />
-
-              <div className="lg:col-span-9 space-y-12">
-                {SERVICE_CATEGORIES.map((cat) => {
-                  const items = servicesByCategory.get(cat.id) ?? [];
-                  if (!items.length) return null;
-
-                  return (
-                    <section key={cat.id} id={cat.id} className="scroll-mt-28">
-                      <h3 className="text-2xl mb-4">{cat.name}</h3>
-
-                      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {items.map((s, idx) => (
-                          <ServiceCard
-                            key={s.id}
-                            service={s}
-                            index={idx}
-                            accentColor={cat.color}
-                            isFavorite={favorites.has(s.id)}
-                            onToggleFavorite={toggleFavorite}
-                            onViewEmployees={setModalService}
-                            onBook={handleBook}
-                          />
-                        ))}
-                      </div>
-                    </section>
-                  );
-                })}
+            {/* ERROR STATE */}
+            {error && (
+              <div className="mb-6 p-4 rounded-2xl bg-mauve-tint border-2 border-mauve">
+                <p className="text-deep text-sm">{error}</p>
+                <button
+                  onClick={loadServices}
+                  className="mt-2 px-4 py-2 rounded-full bg-mauve text-ivory text-sm hover:bg-mauve-dark transition-colors"
+                >
+                  Retry
+                </button>
               </div>
-            </div>
+            )}
+
+            {/* LOADING STATE */}
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+              </div>
+            ) : (
+              /* GRID */
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <CategoryNav />
+
+                <div className="lg:col-span-9 space-y-12">
+                  {SERVICE_CATEGORIES.map((cat) => {
+                    const items = servicesByCategory.get(cat.id) ?? [];
+                    if (!items.length) return null;
+
+                    return (
+                      <section key={cat.id} id={cat.id} className="scroll-mt-28">
+                        <h3 className="text-2xl mb-4">{cat.name}</h3>
+
+                        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                          {items.map((s, idx) => (
+                            <ServiceCard
+                              key={s.id}
+                              service={s}
+                              index={idx}
+                              accentColor={cat.color}
+                              isFavorite={favorites.has(s.id)}
+                              onToggleFavorite={toggleFavorite}
+                              onViewEmployees={setModalService}
+                              onBook={handleBook}
+                            />
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* MOBILE LAYOUT - VERTICAL CATEGORY ACCORDION */}
@@ -202,114 +266,136 @@ export function ServicesGrid(): React.ReactElement {
               <h2 className="text-3xl font-light text-deep">
                 Our <span className="text-mauve">services</span>
               </h2>
-              <p className="text-sm text-deep mt-2">Tap a category to view treatments</p>
+              <p className="text-sm text-deep mt-2">
+                {loading ? 'Loading...' : 'Tap a category to view treatments'}
+              </p>
             </div>
 
-            {/* CATEGORY ACCORDION LIST */}
-            <div className="space-y-3">
-              {SERVICE_CATEGORIES.map((cat) => {
-                const items = servicesByCategory.get(cat.id) ?? [];
-                if (!items.length) return null;
+            {/* ERROR STATE */}
+            {error && (
+              <div className="mb-6 p-4 rounded-2xl bg-mauve-tint border-2 border-mauve">
+                <p className="text-deep text-sm">{error}</p>
+                <button
+                  onClick={loadServices}
+                  className="mt-2 px-4 py-2 rounded-full bg-mauve text-ivory text-sm hover:bg-mauve-dark transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
 
-                const isExpanded = expandedCategory === cat.id;
-                const Icon = cat.icon;
+            {/* LOADING STATE */}
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+              </div>
+            ) : (
+              /* CATEGORY ACCORDION LIST */
+              <div className="space-y-3">
+                {SERVICE_CATEGORIES.map((cat) => {
+                  const items = servicesByCategory.get(cat.id) ?? [];
+                  if (!items.length) return null;
 
-                const accentBg: Record<typeof cat.color, string> = {
-                  mauve: "bg-mauve",
-                  sage: "bg-sage",
-                  deep: "bg-deep",
-                  mixed: "bg-mauve",
-                };
-                const accentText: Record<typeof cat.color, string> = {
-                  mauve: "text-mauve",
-                  sage: "text-sage",
-                  deep: "text-deep",
-                  mixed: "text-deep",
-                };
-                const accentBorder: Record<typeof cat.color, string> = {
-                  mauve: "border-mauve",
-                  sage: "border-sage",
-                  deep: "border-deep",
-                  mixed: "border-deep",
-                };
+                  const isExpanded = expandedCategory === cat.id;
+                  const Icon = cat.icon;
 
-                return (
-                  <div
-                    key={cat.id}
-                    className={cn(
-                      "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
-                      isExpanded ? accentBorder[cat.color] : "border-deep/10"
-                    )}
-                  >
-                    {/* Category header - clickable */}
-                    <button
-                      type="button"
-                      onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
-                      className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
+                  const accentBg: Record<typeof cat.color, string> = {
+                    mauve: "bg-mauve",
+                    sage: "bg-sage",
+                    deep: "bg-deep",
+                    mixed: "bg-mauve",
+                  };
+                  const accentText: Record<typeof cat.color, string> = {
+                    mauve: "text-mauve",
+                    sage: "text-sage",
+                    deep: "text-deep",
+                    mixed: "text-deep",
+                  };
+                  const accentBorder: Record<typeof cat.color, string> = {
+                    mauve: "border-mauve",
+                    sage: "border-sage",
+                    deep: "border-deep",
+                    mixed: "border-deep",
+                  };
+
+                  return (
+                    <div
+                      key={cat.id}
+                      className={cn(
+                        "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
+                        isExpanded ? accentBorder[cat.color] : "border-deep/10"
+                      )}
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div
-                          className={cn(
-                            "shrink-0 h-11 w-11 rounded-xl flex items-center justify-center",
-                            accentBg[cat.color]
-                          )}
-                        >
-                          <Icon className="h-5 w-5 text-ivory" strokeWidth={1.5} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3
+                      {/* Category header - clickable */}
+                      <button
+                        type="button"
+                        onClick={() => handleCategoryClick(cat.id)}
+                        className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div
                             className={cn(
-                              "font-display text-xl font-light leading-tight tracking-tight",
-                              isExpanded ? accentText[cat.color] : "text-deep"
+                              "shrink-0 h-11 w-11 rounded-xl flex items-center justify-center",
+                              accentBg[cat.color]
                             )}
                           >
-                            {cat.name}
-                          </h3>
-                          <p className="text-[11px] text-deep font-light truncate">
-                            {items.length} treatment{items.length === 1 ? "" : "s"}
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronDown
-                        className={cn(
-                          "h-5 w-5 shrink-0 transition-transform duration-300",
-                          isExpanded ? cn("rotate-180", accentText[cat.color]) : "text-deep"
-                        )}
-                        strokeWidth={1.5}
-                      />
-                    </button>
-
-                    {/* Sub-services grid - expands below */}
-                    <AnimatePresence initial={false}>
-                      {isExpanded ? (
-                        <motion.div
-                          initial={{ height: 0 }}
-                          animate={{ height: "auto" }}
-                          exit={{ height: 0 }}
-                          transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
-                          style={{ overflow: "hidden" }}
-                        >
-                          <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
-                            {items.map((s, idx) => (
-                              <ServiceCard
-                                key={s.id}
-                                service={s}
-                                index={idx}
-                                accentColor={cat.color}
-                                isFavorite={favorites.has(s.id)}
-                                onToggleFavorite={toggleFavorite}
-                                onViewEmployees={setModalService}
-                                onBook={handleBook}
-                              />
-                            ))}
+                            <Icon className="h-5 w-5 text-ivory" strokeWidth={1.5} />
                           </div>
-                        </motion.div>
-                      ) : null}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-            </div>
+                          <div className="flex-1 min-w-0">
+                            <h3
+                              className={cn(
+                                "font-display text-xl font-light leading-tight tracking-tight",
+                                isExpanded ? accentText[cat.color] : "text-deep"
+                              )}
+                            >
+                              {cat.name}
+                            </h3>
+                            <p className="text-[11px] text-deep font-light truncate">
+                              {items.length} treatment{items.length === 1 ? "" : "s"}
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronDown
+                          className={cn(
+                            "h-5 w-5 shrink-0 transition-transform duration-300",
+                            isExpanded ? cn("rotate-180", accentText[cat.color]) : "text-deep"
+                          )}
+                          strokeWidth={1.5}
+                        />
+                      </button>
+
+                      {/* Sub-services grid - expands below */}
+                      <AnimatePresence initial={false}>
+                        {isExpanded ? (
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: "auto" }}
+                            exit={{ height: 0 }}
+                            transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
+                              {items.map((s, idx) => (
+                                <ServiceCard
+                                  key={s.id}
+                                  service={s}
+                                  index={idx}
+                                  accentColor={cat.color}
+                                  isFavorite={favorites.has(s.id)}
+                                  onToggleFavorite={toggleFavorite}
+                                  onViewEmployees={setModalService}
+                                  onBook={handleBook}
+                                />
+                              ))}
+                            </div>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </section>

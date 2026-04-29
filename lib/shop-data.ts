@@ -35,7 +35,7 @@ export const COLLECTIONS: readonly ProductCollection[] = [
     description:
       "Morning to evening — the full regimen designed by our clinicians for daily glow.",
     image:
-      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=1600&q=90&auto=format&fit=crop",
     color: "mauve",
     productCount: 6,
     href: "#daily-ritual",
@@ -47,7 +47,7 @@ export const COLLECTIONS: readonly ProductCollection[] = [
     description:
       "Gua sha, jade rollers, LED masks — the sculpting tools that elevate every ritual.",
     image:
-      "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=800&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=1600&q=90&auto=format&fit=crop",
     color: "sage",
     productCount: 8,
     href: "#tools",
@@ -467,7 +467,8 @@ export const ROUTINE_BUNDLES: readonly RoutineBundle[] = [
 // ──────────────────────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────────────────────
-export function formatShopPrice(ngn: number): string {
+export function formatShopPrice(ngn: number | null | undefined): string {
+  if (ngn == null) return "₦0";
   return `₦${ngn.toLocaleString("en-NG")}`;
 }
 
