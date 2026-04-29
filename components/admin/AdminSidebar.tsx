@@ -10,6 +10,7 @@ import {
   Users,
   Settings,
   LogOut,
+  Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +29,11 @@ const navItems = [
     label: "Products",
     href: "/admin/products",
     icon: ShoppingBag,
+  },
+  {
+    label: "Bundles",
+    href: "/admin/bundles",
+    icon: Package,
   },
   {
     label: "Appointments",
