@@ -45,7 +45,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
     description: "",
     stock: 0,
     stock_status: "in-stock" as "in-stock" | "low-stock" | "pre-order" | "out-of-stock",
-    is_new: false,
+    is_new_arrival: false,  // ← CHANGED from is_new
     is_bestseller: false,
     is_exclusive: false,
     accent: "mauve" as "mauve" | "sage" | "deep",
@@ -67,7 +67,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
         description: editProduct.description,
         stock: editProduct.stock,
         stock_status: editProduct.stock_status,
-        is_new: editProduct.is_new || false,
+        is_new_arrival: editProduct.is_new_arrival || false,  // ← CHANGED
         is_bestseller: editProduct.is_bestseller || false,
         is_exclusive: editProduct.is_exclusive || false,
         accent: editProduct.accent,
@@ -88,7 +88,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
         description: "",
         stock: 0,
         stock_status: "in-stock",
-        is_new: false,
+        is_new_arrival: false,  // ← CHANGED
         is_bestseller: false,
         is_exclusive: false,
         accent: "mauve",
@@ -362,18 +362,20 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
               />
             </div>
 
-            {/* Toggles */}
-            <div className="space-y-3">
+            {/* Featured Options - UPDATED SECTION */}
+            <div className="space-y-3 p-4 rounded-xl bg-mauve-tint/30 border border-mauve/20">
+              <p className="text-sm font-medium text-deep mb-3">Featured Options</p>
+              
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
-                  id="is_new"
-                  checked={formData.is_new}
-                  onChange={(e) => setFormData({ ...formData, is_new: e.target.checked })}
-                  className="h-5 w-5 rounded border-2 border-deep/20 text-mauve focus:ring-mauve"
+                  id="is_new_arrival"
+                  checked={formData.is_new_arrival}
+                  onChange={(e) => setFormData({ ...formData, is_new_arrival: e.target.checked })}
+                  className="h-5 w-5 rounded border-2 border-deep/20 text-sage focus:ring-sage"
                 />
-                <label htmlFor="is_new" className="text-sm font-medium text-deep">
-                  Mark as NEW
+                <label htmlFor="is_new_arrival" className="text-sm font-medium text-deep cursor-pointer">
+                  ⭐ Mark as NEW ARRIVAL (shows on homepage)
                 </label>
               </div>
 
@@ -385,8 +387,8 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
                   onChange={(e) => setFormData({ ...formData, is_bestseller: e.target.checked })}
                   className="h-5 w-5 rounded border-2 border-deep/20 text-mauve focus:ring-mauve"
                 />
-                <label htmlFor="is_bestseller" className="text-sm font-medium text-deep">
-                  Mark as BESTSELLER
+                <label htmlFor="is_bestseller" className="text-sm font-medium text-deep cursor-pointer">
+                  🏆 Mark as BESTSELLER (shows on homepage)
                 </label>
               </div>
 
@@ -396,10 +398,10 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
                   id="is_exclusive"
                   checked={formData.is_exclusive}
                   onChange={(e) => setFormData({ ...formData, is_exclusive: e.target.checked })}
-                  className="h-5 w-5 rounded border-2 border-deep/20 text-mauve focus:ring-mauve"
+                  className="h-5 w-5 rounded border-2 border-deep/20 text-deep focus:ring-deep"
                 />
-                <label htmlFor="is_exclusive" className="text-sm font-medium text-deep">
-                  Mark as EXCLUSIVE
+                <label htmlFor="is_exclusive" className="text-sm font-medium text-deep cursor-pointer">
+                  💎 Mark as EXCLUSIVE
                 </label>
               </div>
             </div>

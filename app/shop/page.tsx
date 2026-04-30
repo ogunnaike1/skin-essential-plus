@@ -20,8 +20,8 @@ export default function ShopPage(): React.ReactElement {
       <main>
         <ShopHero />
          <ProductsGrid />
+         <NewArrivals />
         <BestSellers />
-        <NewArrivals />
         <RoutineBundles />
         <BrandStory />
         <ShopCTA />

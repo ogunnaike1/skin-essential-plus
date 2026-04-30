@@ -122,7 +122,7 @@ export function ServicesCTA(): React.ReactElement {
                     className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:shadow-[0_8px_40px_rgba(138,111,136,0.5)] transition-all duration-500"
                   >
                     <CalendarCheck className="h-4 w-4" />
-                    <span>Book a consultation</span>
+                    <span>Book an Appointment</span>
                     <span className="h-9 w-9 rounded-full bg-deep text-ivory flex items-center justify-center transition-all duration-500 group-hover:bg-mauve group-hover:rotate-[22deg]">
                       <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                     </span>

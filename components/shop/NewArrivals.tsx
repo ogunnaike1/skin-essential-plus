@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, ShoppingBag, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
-import { getPublicProducts } from "@/lib/supabase/products-api";
+import { getNewArrivals } from "@/lib/supabase/products-api";
 import type { Product } from "@/lib/supabase/types";
 import { formatShopPrice } from "@/lib/shop-data";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ import { SuccessNotification, useSuccessNotification } from "@/components/shared
 
 /**
  * Just-landed row — horizontal scroll of new products on a dark mauve band.
- * Fetches products marked as is_new_arrival from Supabase.
+ * Fetches products marked as is_new_arrival from Supabase dynamically.
  */
 export function NewArrivals(): React.ReactElement {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -30,10 +30,8 @@ export function NewArrivals(): React.ReactElement {
   const loadNewArrivals = async () => {
     try {
       setLoading(true);
-      const allProducts = await getPublicProducts();
-      // Filter products marked as new arrivals
-      const newArrivals = allProducts.filter(p => p.is_new_arrival).slice(0, 6);
-      setProducts(newArrivals);
+      const data = await getNewArrivals(6); // Get up to 6 new arrivals
+      setProducts(data);
     } catch (error) {
       console.error('Error loading new arrivals:', error);
     } finally {
@@ -94,7 +92,7 @@ export function NewArrivals(): React.ReactElement {
               </h2>
               <p className="mt-3 text-sm sm:text-base font-light text-ivory max-w-lg">
                 New arrivals selected by our clinicians —{" "}
-                {products.length} products worth knowing about this season.
+                {products.length} product{products.length !== 1 ? 's' : ''} worth knowing about this season.
               </p>
             </div>
 

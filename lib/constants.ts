@@ -35,7 +35,7 @@ export const NAV_LINKS: readonly NavLink[] = [
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Shop", href: "/shop" },
-  { label: "Results", href: "/results" },
+  { label: "Gallery", href: "/gallery" },
   { label: "Contact Us", href: "/contact" },
 ] as const;
 
@@ -48,7 +48,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
       "Precision skin therapies tailored to your unique biology — where advanced science meets timeless beauty rituals.",
     image:
       "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1920&q=85&auto=format&fit=crop",
-    ctaPrimary: "Book a Consultation",
+    ctaPrimary: "Book an Appointment",
     ctaSecondary: "Explore Services",
   },
   {

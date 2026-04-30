@@ -12,6 +12,43 @@ export async function getProducts() {
   return data as Product[];
 }
 
+// Get public products (for shop page)
+export async function getPublicProducts() {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as Product[];
+}
+
+// Get new arrivals (products marked as is_new_arrival = true)
+export async function getNewArrivals(limit: number = 6) {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_new_arrival', true)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data as Product[];
+}
+
+// Get bestsellers (products marked as is_bestseller = true)
+export async function getBestSellers(limit: number = 4) {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_bestseller', true)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data as Product[];
+}
+
 // Create product
 export async function createProduct(product: Omit<Product, 'id' | 'created_at' | 'updated_at'>) {
   const { data, error } = await supabase
@@ -71,15 +108,4 @@ export async function uploadProductImage(file: File, productId: string) {
     .getPublicUrl(filePath);
 
   return publicUrl;
-}
-
-// Get public products (for shop page) - NO .eq('available', true)
-export async function getPublicProducts() {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return data as Product[];
 }
