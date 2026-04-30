@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
-  Gift,
   Mail,
   Package,
   Sparkles,
   Truck,
+  AlertCircle,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -15,9 +15,9 @@ import { cn } from "@/lib/utils";
 
 const PERKS = [
   {
-    icon: Gift,
-    label: "Free sample kit",
-    detail: "3 curated mini-sizes to try",
+    icon: Sparkles,
+    label: "First access",
+    detail: "Be first to try new formulations",
   },
   {
     icon: Truck,
@@ -26,20 +26,55 @@ const PERKS = [
   },
   {
     icon: Package,
-    label: "Ritual guidance",
-    detail: "Personal routine from our clinicians",
+    label: "Personal guidance",
+    detail: "Skincare routine from our clinicians",
   },
 ];
 
 export function ShopCTA(): React.ReactElement {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
-    setSubmitted(true);
-    // User would wire this up to their backend
+
+    setStatus('loading');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to subscribe');
+      }
+
+      setStatus('success');
+      setEmail('');
+
+      // Reset success state after 5 seconds
+      setTimeout(() => {
+        setStatus('idle');
+      }, 5000);
+    } catch (error: any) {
+      setStatus('error');
+      setErrorMessage(error.message || 'Something went wrong. Please try again.');
+
+      // Reset error state after 5 seconds
+      setTimeout(() => {
+        setStatus('idle');
+        setErrorMessage('');
+      }, 5000);
+    }
   };
 
   return (
@@ -92,7 +127,7 @@ export function ShopCTA(): React.ReactElement {
                 >
                   <Sparkles className="h-3 w-3 text-ivory" strokeWidth={1.75} />
                   <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-ivory">
-                    Welcome gift inside
+                    Exclusive member perks
                   </span>
                 </motion.div>
 
@@ -114,7 +149,7 @@ export function ShopCTA(): React.ReactElement {
                   transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
                   className="mt-7 text-base sm:text-lg font-light text-ivory leading-[1.65] max-w-xl text-balance"
                 >
-                  Be the first to hear about new formulations, ritual rituals, and members-only editions. Sign up and a curated sample kit lands in your doorstep with your first order.
+                  Be the first to hear about new formulations, seasonal rituals, and members-only editions. Receive personalized skincare guidance and exclusive perks with your first order.
                 </motion.p>
 
                 {/* Form or success state */}
@@ -125,7 +160,7 @@ export function ShopCTA(): React.ReactElement {
                   transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   className="mt-10"
                 >
-                  {submitted ? (
+                  {status === 'success' ? (
                     <div className="inline-flex items-center gap-3 px-6 py-4 rounded-full bg-sage border-2 border-sage">
                       <div className="h-8 w-8 rounded-full bg-ivory flex items-center justify-center">
                         <Sparkles
@@ -138,7 +173,7 @@ export function ShopCTA(): React.ReactElement {
                           You're in
                         </p>
                         <p className="text-xs font-light text-ivory">
-                          Check your inbox for your welcome gift.
+                          Check your inbox for your welcome letter.
                         </p>
                       </div>
                     </div>
@@ -158,20 +193,40 @@ export function ShopCTA(): React.ReactElement {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="Your email address"
-                          className="w-full h-14 pl-12 pr-5 rounded-full bg-ivory text-deep placeholder:text-deep/50 text-sm font-light focus:outline-none focus:ring-2 focus:ring-mauve transition-all"
+                          disabled={status === 'loading'}
+                          className="w-full h-14 pl-12 pr-5 rounded-full bg-ivory text-deep placeholder:text-deep/50 text-sm font-light focus:outline-none focus:ring-2 focus:ring-mauve transition-all disabled:opacity-50"
                           aria-label="Email address"
                         />
                       </div>
                       <button
                         type="submit"
-                        className="group inline-flex items-center justify-center gap-2 pl-6 pr-1.5 h-14 rounded-full bg-mauve text-ivory font-sans text-[11px] uppercase tracking-[0.22em] font-medium hover:bg-ivory hover:text-deep transition-colors duration-300 whitespace-nowrap"
+                        disabled={status === 'loading'}
+                        className="group inline-flex items-center justify-center gap-2 pl-6 pr-1.5 h-14 rounded-full bg-mauve text-ivory font-sans text-[11px] uppercase tracking-[0.22em] font-medium hover:bg-ivory hover:text-deep transition-colors duration-300 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <span>Claim welcome gift</span>
+                        <span>{status === 'loading' ? 'Subscribing...' : 'Subscribe'}</span>
                         <span className="h-11 w-11 rounded-full bg-ivory text-mauve flex items-center justify-center transition-colors duration-300 group-hover:bg-deep group-hover:text-ivory">
-                          <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
+                          {status === 'loading' ? (
+                            <span className="h-4 w-4 border-2 border-mauve/30 border-t-mauve rounded-full animate-spin" />
+                          ) : (
+                            <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
+                          )}
                         </span>
                       </button>
                     </form>
+                  )}
+
+                  {/* Error Message */}
+                  {status === 'error' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 p-4 bg-red-100 border border-red-300 rounded-2xl"
+                    >
+                      <p className="text-sm text-red-700 font-medium flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4" />
+                        {errorMessage}
+                      </p>
+                    </motion.div>
                   )}
 
                   {/* Fine print */}
