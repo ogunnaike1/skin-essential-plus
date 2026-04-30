@@ -1,4 +1,4 @@
-import type { Service } from './supabase/types';
+import type { Service } from './types';
 import type { ServiceItem } from '@/types';
 
 
