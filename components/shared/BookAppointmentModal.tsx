@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { X, CalendarDays, Clock3, User, Mail, MessageSquare, ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard, Building2, Copy, Check, Sparkles } from "lucide-react";
 import Image from "next/image";
-import { getPublicServices } from "@/lib/supabase/public-services-api";
+import Script from "next/script";
+import { getPublicServices } from "@/lib/supabase/services-api";
 import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
 import type { Service } from "@/lib/supabase/types";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
@@ -371,6 +372,8 @@ export default function BookAppointmentModal({
                 </div>
 
                 <form onSubmit={handleDetailsSubmit} className="space-y-5">
+                  {/* Paystack Script - must be inside form element */}
+                  <Script src="https://js.paystack.co/v1/inline.js" strategy="lazyOnload" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-deep">

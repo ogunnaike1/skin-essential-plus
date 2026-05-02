@@ -67,8 +67,21 @@ export default function RootLayout({
       className={`${cormorant.variable} ${playfair.variable} ${manrope.variable}`}
     >
       <body className="min-h-screen overflow-x-hidden">
-        {/* Paystack Script for Payment Integration */}
-        <Script src="https://js.paystack.co/v1/inline.js" strategy="lazyOnload" />
+        {/* Suppress hydration warnings from browser extensions */}
+        <Script
+          id="suppress-hydration-warnings"
+          strategy="beforeInteractive"
+        >{`
+          if (typeof window !== 'undefined') {
+            const originalError = console.error;
+            console.error = (...args) => {
+              if (typeof args[0] === 'string' && args[0].includes('cz-shortcut-listen')) {
+                return;
+              }
+              originalError.apply(console, args);
+            };
+          }
+        `}</Script>
         
         {/* Cart Provider - Wraps entire app for cart state */}
         <CartProvider>

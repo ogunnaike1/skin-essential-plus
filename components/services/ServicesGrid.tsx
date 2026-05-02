@@ -3,7 +3,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
-  Filter,
   Search,
   X,
   Loader2,
@@ -14,14 +13,11 @@ import { CategoryNav } from "@/components/services/CategoryNav";
 import { EmployeeModal } from "@/components/services/EmployeeModal";
 import { ServiceCard } from "./ServicesCard";
 import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
-import {
-  SERVICE_CATEGORIES,
-} from "@/lib/services-data";
+import { SERVICE_CATEGORIES } from "@/lib/services-data";
 import { cn } from "@/lib/utils";
 import type { ServiceItem } from "@/types";
-import { getPublicServices } from "@/lib/supabase/public-services-api";
+import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
 import { transformServicesToItems } from "@/lib/supabase/transform-services";
-import type { Service } from "@/lib/supabase/types";
 
 const PRICE_RANGES = [
   { id: "any", label: "Any price", min: 0, max: Infinity },
@@ -42,10 +38,6 @@ const DURATION_RANGES = [
 type PriceRangeId = (typeof PRICE_RANGES)[number]["id"];
 type DurationRangeId = (typeof DURATION_RANGES)[number]["id"];
 
-/**
- * DESKTOP: Original design with sidebar filters and category sections
- * MOBILE: Vertical category list - click category → sub-services grid expands below
- */
 export function ServicesGrid(): React.ReactElement {
   const [search, setSearch] = useState("");
   const [priceRange, setPriceRange] = useState<PriceRangeId>("any");
@@ -56,21 +48,15 @@ export function ServicesGrid(): React.ReactElement {
 
   const [favorites, setFavorites] = useState<ReadonlySet<string>>(new Set());
   const [modalService, setModalService] = useState<ServiceItem | null>(null);
-
-  // Mobile accordion - which category is expanded
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-
-  // Booking modal state
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedServiceForBooking, setSelectedServiceForBooking] = useState<Service | null>(null);
 
-  // Supabase data state
   const [services, setServices] = useState<ServiceItem[]>([]);
-  const [rawServices, setRawServices] = useState<Service[]>([]); // Store raw Service objects
+  const [rawServices, setRawServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load services from Supabase on mount
   useEffect(() => {
     loadServices();
   }, []);
@@ -80,7 +66,7 @@ export function ServicesGrid(): React.ReactElement {
       setLoading(true);
       setError(null);
       const data = await getPublicServices();
-      setRawServices(data); // Store raw services
+      setRawServices(data);
       const transformedServices = transformServicesToItems(data);
       setServices(transformedServices);
     } catch (err) {
@@ -93,10 +79,8 @@ export function ServicesGrid(): React.ReactElement {
 
   const handleCategoryClick = (categoryId: string) => {
     if (expandedCategory === categoryId) {
-      // Just close if clicking the same category
       setExpandedCategory(null);
     } else {
-      // Close current, then open new one after a delay
       setExpandedCategory(null);
       setTimeout(() => {
         setExpandedCategory(categoryId);
@@ -113,7 +97,6 @@ export function ServicesGrid(): React.ReactElement {
   };
 
   const handleBook = (service: ServiceItem) => {
-    // Find the raw Service object that matches this ServiceItem
     const rawService = rawServices.find(s => s.id === service.id);
     
     if (rawService) {
@@ -152,14 +135,16 @@ export function ServicesGrid(): React.ReactElement {
     return map;
   }, [filteredServices]);
 
-  const totalResults = filteredServices.length;
+  // Calculate service counts for CategoryNav
+  const serviceCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    servicesByCategory.forEach((items, catId) => {
+      counts[catId] = items.length;
+    });
+    return counts;
+  }, [servicesByCategory]);
 
-  const hasActiveFilters =
-    search ||
-    priceRange !== "any" ||
-    durationRange !== "any" ||
-    availableOnly ||
-    favoritesOnly;
+  const totalResults = filteredServices.length;
 
   const clearFilters = () => {
     setSearch("");
@@ -180,9 +165,7 @@ export function ServicesGrid(): React.ReactElement {
         }}
       >
         <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-14">
-          {/* DESKTOP LAYOUT - UNCHANGED */}
           <div className="hidden lg:block">
-            {/* HEADER */}
             <div className="mb-8">
               <h2 className="text-4xl font-light text-deep">
                 Find your <span className="text-mauve">ritual</span>
@@ -192,7 +175,6 @@ export function ServicesGrid(): React.ReactElement {
               </p>
             </div>
 
-            {/* SEARCH */}
             <div className="flex gap-3 mb-6">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-mauve" />
@@ -222,7 +204,6 @@ export function ServicesGrid(): React.ReactElement {
               </button>
             </div>
 
-            {/* ERROR STATE */}
             {error && (
               <div className="mb-6 p-4 rounded-2xl bg-mauve-tint border-2 border-mauve">
                 <p className="text-deep text-sm">{error}</p>
@@ -235,15 +216,13 @@ export function ServicesGrid(): React.ReactElement {
               </div>
             )}
 
-            {/* LOADING STATE */}
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-mauve" />
               </div>
             ) : (
-              /* GRID */
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <CategoryNav />
+                <CategoryNav serviceCounts={serviceCounts} totalServices={totalResults} />
 
                 <div className="lg:col-span-9 space-y-12">
                   {SERVICE_CATEGORIES.map((cat) => {
@@ -276,9 +255,8 @@ export function ServicesGrid(): React.ReactElement {
             )}
           </div>
 
-          {/* MOBILE LAYOUT - VERTICAL CATEGORY ACCORDION */}
+          {/* MOBILE LAYOUT */}
           <div className="lg:hidden">
-            {/* HEADER */}
             <div className="mb-6">
               <h2 className="text-3xl font-light text-deep">
                 Our <span className="text-mauve">services</span>
@@ -288,7 +266,6 @@ export function ServicesGrid(): React.ReactElement {
               </p>
             </div>
 
-            {/* ERROR STATE */}
             {error && (
               <div className="mb-6 p-4 rounded-2xl bg-mauve-tint border-2 border-mauve">
                 <p className="text-deep text-sm">{error}</p>
@@ -301,13 +278,11 @@ export function ServicesGrid(): React.ReactElement {
               </div>
             )}
 
-            {/* LOADING STATE */}
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-mauve" />
               </div>
             ) : (
-              /* CATEGORY ACCORDION LIST */
               <div className="space-y-3">
                 {SERVICE_CATEGORIES.map((cat) => {
                   const items = servicesByCategory.get(cat.id) ?? [];
@@ -343,7 +318,6 @@ export function ServicesGrid(): React.ReactElement {
                         isExpanded ? accentBorder[cat.color] : "border-deep/10"
                       )}
                     >
-                      {/* Category header - clickable */}
                       <button
                         type="button"
                         onClick={() => handleCategoryClick(cat.id)}
@@ -381,7 +355,6 @@ export function ServicesGrid(): React.ReactElement {
                         />
                       </button>
 
-                      {/* Sub-services grid - expands below */}
                       <AnimatePresence initial={false}>
                         {isExpanded ? (
                           <motion.div
@@ -417,7 +390,6 @@ export function ServicesGrid(): React.ReactElement {
         </div>
       </section>
 
-      {/* Employee Modal */}
       <EmployeeModal
         service={modalService}
         onClose={() => setModalService(null)}
@@ -427,7 +399,6 @@ export function ServicesGrid(): React.ReactElement {
         }}
       />
 
-      {/* Booking Modal */}
       <BookAppointmentModal
         isOpen={showBookingModal}
         onClose={() => {

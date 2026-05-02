@@ -4,18 +4,20 @@ import { motion } from "framer-motion";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import {
-  SERVICE_CATEGORIES,
-  SERVICES_CATALOG,
-} from "@/lib/services-data";
+import { SERVICE_CATEGORIES } from "@/lib/services-data";
 import { cn } from "@/lib/utils";
+
+interface CategoryNavProps {
+  serviceCounts?: Record<string, number>;
+  totalServices?: number;
+}
 
 /**
  * Colorful category navigator.
  * Desktop: vertical sidebar with color-tinted rows and a full-color active state.
  * Mobile: horizontal scroll of colorful category pills.
  */
-export function CategoryNav(): React.ReactElement {
+export function CategoryNav({ serviceCounts = {}, totalServices = 0 }: CategoryNavProps): React.ReactElement {
   const [activeId, setActiveId] = useState<string>(
     SERVICE_CATEGORIES[0]?.id ?? ""
   );
@@ -54,9 +56,6 @@ export function CategoryNav(): React.ReactElement {
     const top = target.getBoundingClientRect().top + window.scrollY - 100;
     window.scrollTo({ top, behavior: "smooth" });
   };
-
-  const getServiceCount = (catId: string): number =>
-    SERVICES_CATALOG.filter((s) => s.categoryId === catId).length;
 
   return (
     <>
@@ -100,7 +99,7 @@ export function CategoryNav(): React.ReactElement {
                   <span className="h-3 w-px bg-ivory/20" aria-hidden />
                   <span>
                     <span className="text-ivory font-medium">
-                      {SERVICES_CATALOG.length}
+                      {totalServices}
                     </span>{" "}
                     services
                   </span>
@@ -114,7 +113,7 @@ export function CategoryNav(): React.ReactElement {
                 {SERVICE_CATEGORIES.map((cat, i) => {
                   const Icon = cat.icon;
                   const isActive = cat.id === activeId;
-                  const count = getServiceCount(cat.id);
+                  const count = serviceCounts[cat.id] || 0;
 
                   // Resting tint — soft palette wash on every row
                   const restingTint: Record<typeof cat.color, string> = {
@@ -223,7 +222,7 @@ export function CategoryNav(): React.ReactElement {
                   </span>
                 </div>
                 <span className="text-[10px] uppercase tracking-[0.15em] text-ivory tabular-nums">
-                  {SERVICES_CATALOG.length} total
+                  {totalServices} total
                 </span>
               </div>
             </div>

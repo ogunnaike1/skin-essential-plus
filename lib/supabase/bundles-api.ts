@@ -1,4 +1,5 @@
 import { supabase } from './client';
+import { supabaseAdmin } from './admin-client';
 
 export interface Bundle {
   id: string;
@@ -30,7 +31,7 @@ export interface CreateBundleData {
   display_order?: number;
 }
 
-// Get all active bundles for public display
+// Get all active bundles for public display (uses regular client)
 export async function getPublicBundles(): Promise<Bundle[]> {
   const { data, error } = await supabase
     .from('bundles')
@@ -42,9 +43,9 @@ export async function getPublicBundles(): Promise<Bundle[]> {
   return data || [];
 }
 
-// Get all bundles (admin)
+// Get all bundles (admin) - uses admin client to bypass RLS
 export async function getBundles(): Promise<Bundle[]> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('bundles')
     .select('*')
     .order('display_order', { ascending: true });
@@ -53,9 +54,9 @@ export async function getBundles(): Promise<Bundle[]> {
   return data || [];
 }
 
-// Get single bundle
+// Get single bundle - uses admin client
 export async function getBundleById(id: string): Promise<Bundle | null> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('bundles')
     .select('*')
     .eq('id', id)
@@ -65,9 +66,9 @@ export async function getBundleById(id: string): Promise<Bundle | null> {
   return data;
 }
 
-// Create bundle
+// Create bundle - uses admin client
 export async function createBundle(bundleData: CreateBundleData): Promise<Bundle> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('bundles')
     .insert([bundleData])
     .select()
@@ -77,9 +78,9 @@ export async function createBundle(bundleData: CreateBundleData): Promise<Bundle
   return data;
 }
 
-// Update bundle
+// Update bundle - uses admin client
 export async function updateBundle(id: string, bundleData: Partial<CreateBundleData>): Promise<Bundle> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('bundles')
     .update(bundleData)
     .eq('id', id)
@@ -90,9 +91,9 @@ export async function updateBundle(id: string, bundleData: Partial<CreateBundleD
   return data;
 }
 
-// Delete bundle
+// Delete bundle - uses admin client
 export async function deleteBundle(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('bundles')
     .delete()
     .eq('id', id);
@@ -100,19 +101,19 @@ export async function deleteBundle(id: string): Promise<void> {
   if (error) throw error;
 }
 
-// Upload bundle image
+// Upload bundle image - uses admin client
 export async function uploadBundleImage(file: File): Promise<string> {
   const fileExt = file.name.split('.').pop();
   const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
   const filePath = `bundles/${fileName}`;
 
-  const { error: uploadError } = await supabase.storage
+  const { error: uploadError } = await supabaseAdmin.storage
     .from('images')
     .upload(filePath, file);
 
   if (uploadError) throw uploadError;
 
-  const { data: { publicUrl } } = supabase.storage
+  const { data: { publicUrl } } = supabaseAdmin.storage
     .from('images')
     .getPublicUrl(filePath);
 

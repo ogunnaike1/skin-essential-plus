@@ -47,7 +47,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Precision skin therapies tailored to your unique biology — where advanced science meets timeless beauty rituals.",
     image:
-      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1920&q=85&auto=format&fit=crop",
+      "/images/homepage-hero/home-page-hero2.jpg",
     ctaPrimary: "Book an Appointment",
     ctaSecondary: "Explore Services",
   },
@@ -58,7 +58,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Sanctuary rituals designed to restore equilibrium — a curated escape for the senses and the skin.",
     image:
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1920&q=85&auto=format&fit=crop",
+      "/images/homepage-hero/home-page-hero3.jpg",
     ctaPrimary: "Reserve a Session",
     ctaSecondary: "View Menu",
   },
@@ -69,7 +69,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Bespoke lash sketching by master artisans — every curve drawn to accentuate your natural geometry.",
     image:
-      "https://images.unsplash.com/photo-1583241800698-e8ab01830a07?w=1920&q=85&auto=format&fit=crop",
+      "/images/homepage-hero/home-page-hero4.jpg",
     ctaPrimary: "Book Lash Artist",
     ctaSecondary: "See Gallery",
   },
@@ -80,7 +80,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "A holistic ecosystem of treatments, products, and guidance — your skin's journey, curated with intention.",
     image:
-      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1920&q=85&auto=format&fit=crop",
+      "/images/homepage-hero/home-page-hero5.jpg",
     ctaPrimary: "Start Your Journey",
     ctaSecondary: "Meet Our Experts",
   },
