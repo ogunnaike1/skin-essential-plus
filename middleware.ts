@@ -1,17 +1,22 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verify } from "jsonwebtoken";
+import { jwtVerify } from "jose";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || "your-secret-key-change-in-production"
+);
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // CRITICAL: Skip middleware for login page and ALL auth routes
+  console.log("🔍 Middleware:", pathname);
+
+  // Skip middleware for login page and ALL auth routes
   if (
     pathname === "/admin/login" || 
     pathname.startsWith("/api/admin/auth")
   ) {
+    console.log("✅ Skipping auth check for:", pathname);
     return NextResponse.next();
   }
 
@@ -19,22 +24,24 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
     const token = request.cookies.get("admin_token")?.value;
 
+    console.log("🍪 Cookie present:", !!token);
+
     if (!token) {
-      // Redirect to login for page requests
+      console.log("❌ No token found, redirecting to login");
       if (pathname.startsWith("/admin")) {
         const loginUrl = new URL("/admin/login", request.url);
         return NextResponse.redirect(loginUrl);
       }
-      // Return 401 for API requests
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     try {
-      verify(token, JWT_SECRET);
+      // Use jose for Edge Runtime compatibility
+      const { payload } = await jwtVerify(token, JWT_SECRET);
+      console.log("✅ Token verified successfully:", payload);
       return NextResponse.next();
     } catch (error) {
-      console.error("Token verification failed:", error);
-      // Invalid token - redirect to login
+      console.error("❌ Token verification failed:", error);
       if (pathname.startsWith("/admin")) {
         const loginUrl = new URL("/admin/login", request.url);
         return NextResponse.redirect(loginUrl);

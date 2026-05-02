@@ -20,17 +20,25 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
+      console.log("🚀 Starting login...");
+
       const res = await fetch("/api/admin/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
+        credentials: 'include', // CRITICAL: Include cookies
       });
 
+      console.log("📡 Response status:", res.status);
+
       const data = await res.json();
+      console.log("📦 Response data:", data);
 
       if (!res.ok) {
         throw new Error(data.error || "Login failed");
       }
+
+      console.log("✅ Login successful!");
 
       // Show success notification
       showSuccess("login-success", {
@@ -38,13 +46,14 @@ export default function AdminLogin() {
         message: "Redirecting to dashboard...",
       });
 
-      // CRITICAL: Use window.location.href for full page reload
-      // This ensures the cookie is properly sent with the next request
+      // Wait a bit, then redirect with full page reload
       setTimeout(() => {
-        window.location.href = "/admin";
-      }, 500);
+        console.log("🔄 Redirecting to /admin/dashboard...");
+        window.location.href = "/admin/dashboard";
+      }, 1000); // Increased to 1 second to ensure cookie is set
+
     } catch (err: any) {
-      console.error("Login error:", err);
+      console.error("❌ Login error:", err);
       showSuccess("generic-success", {
         title: "Login Failed",
         message: err.message || "Invalid email or password. Please try again.",

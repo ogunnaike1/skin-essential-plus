@@ -747,7 +747,7 @@ skin-essential-plus/
 
 #### **Admin Components** (`components/admin/`)
 ```bash
-components/admin/AdminSidebar.tsx       # From: admin-system/AdminSidebar.tsx
+    # From: admin-system/AdminSidebar.tsx
 components/admin/AdminHeader.tsx        # From: admin-system/AdminHeader.tsx
 components/admin/AdminLayout.tsx        # From: admin-system/AdminLayout.tsx
 components/admin/ServiceModal.tsx       # From: admin-system/ServiceModal.tsx

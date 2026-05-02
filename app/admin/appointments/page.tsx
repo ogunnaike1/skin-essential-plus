@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AdminLayout } from '@/components/admin/AdminLayout';
 import { getAppointments, updateAppointment, type Appointment } from '@/lib/supabase/appointments-api';
 import { Calendar, Clock, Mail, Phone, User, DollarSign, Filter, Search, X } from 'lucide-react';
 import { formatShopPrice } from '@/lib/shop-data';
@@ -136,9 +135,18 @@ export default function AppointmentsPage() {
   };
 
   return (
-    <AdminLayout title="Appointments" subtitle="Manage customer bookings and schedules">
-      <div className="space-y-6">
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="font-display text-3xl lg:text-4xl font-light text-deep mb-2">
+          Appointments
+        </h1>
+        <p className="text-sm text-deep/60">
+          Manage customer bookings and schedules
+        </p>
+      </div>
 
+      <div className="space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="bg-white p-6 rounded-lg border border-gray-200">
@@ -536,6 +544,6 @@ export default function AppointmentsPage() {
           </div>
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
 }

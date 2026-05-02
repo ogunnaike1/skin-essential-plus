@@ -48,7 +48,7 @@ export function ServicesGrid(): React.ReactElement {
 
   const [favorites, setFavorites] = useState<ReadonlySet<string>>(new Set());
   const [modalService, setModalService] = useState<ServiceItem | null>(null);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedServiceForBooking, setSelectedServiceForBooking] = useState<Service | null>(null);
 
@@ -78,14 +78,15 @@ export function ServicesGrid(): React.ReactElement {
   };
 
   const handleCategoryClick = (categoryId: string) => {
-    if (expandedCategory === categoryId) {
-      setExpandedCategory(null);
-    } else {
-      setExpandedCategory(null);
-      setTimeout(() => {
-        setExpandedCategory(categoryId);
-      }, 100);
-    }
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
   };
 
   const toggleFavorite = (id: string) => {
@@ -262,8 +263,38 @@ export function ServicesGrid(): React.ReactElement {
                 Our <span className="text-mauve">services</span>
               </h2>
               <p className="text-sm text-deep mt-2">
-                {loading ? 'Loading...' : 'Tap a category to view treatments'}
+                {loading ? 'Loading...' : 'Search or tap a category to view treatments'}
               </p>
+            </div>
+
+            {/* Mobile Search Bar */}
+            <div className="mb-6">
+              <div className="relative">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep"
+                  strokeWidth={1.5}
+                />
+                <input
+                  type="text"
+                  placeholder="Search services..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-12 pl-11 pr-10 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-deep/10 transition-colors"
+                  >
+                    <X className="h-4 w-4 text-deep" strokeWidth={1.5} />
+                  </button>
+                )}
+              </div>
+              {search && (
+                <p className="text-xs text-deep mt-2">
+                  {totalResults} result{totalResults === 1 ? "" : "s"} found
+                </p>
+              )}
             </div>
 
             {error && (
@@ -288,7 +319,7 @@ export function ServicesGrid(): React.ReactElement {
                   const items = servicesByCategory.get(cat.id) ?? [];
                   if (!items.length) return null;
 
-                  const isExpanded = expandedCategory === cat.id;
+                  const isExpanded = expandedCategories.has(cat.id);
                   const Icon = cat.icon;
 
                   const accentBg: Record<typeof cat.color, string> = {
@@ -314,7 +345,7 @@ export function ServicesGrid(): React.ReactElement {
                     <div
                       key={cat.id}
                       className={cn(
-                        "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
+                        "relative overflow-hidden rounded-2xl border-2 transition-colors duration-300",
                         isExpanded ? accentBorder[cat.color] : "border-deep/10"
                       )}
                     >
@@ -358,10 +389,13 @@ export function ServicesGrid(): React.ReactElement {
                       <AnimatePresence initial={false}>
                         {isExpanded ? (
                           <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: "auto" }}
-                            exit={{ height: 0 }}
-                            transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ 
+                              duration: 0.4, 
+                              ease: [0.16, 1, 0.3, 1]
+                            }}
                             style={{ overflow: "hidden" }}
                           >
                             <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">

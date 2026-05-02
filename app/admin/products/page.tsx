@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ProductModal } from "@/components/admin/ProductModal";
 import {
   Plus,
@@ -69,10 +68,17 @@ export default function ProductsManagement() {
   const bestsellersCount = products.filter(p => p.is_bestseller).length;
 
   return (
-    <AdminLayout
-      title="Products Management"
-      subtitle={`Manage your ${products.length} products`}
-    >
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="font-display text-3xl lg:text-4xl font-light text-deep mb-2">
+          Products Management
+        </h1>
+        <p className="text-sm text-deep/60">
+          Manage your {products.length} products
+        </p>
+      </div>
+
       {/* Stats Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
         <div className="px-4 py-3 rounded-xl bg-mauve-tint border border-mauve/20">
@@ -309,6 +315,6 @@ export default function ProductsManagement() {
         onSuccess={handleModalSuccess}
         editProduct={editingProduct}
       />
-    </AdminLayout>
+    </div>
   );
 }

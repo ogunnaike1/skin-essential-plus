@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AdminLayout } from "@/components/admin/AdminLayout";
 import {
   Users,
   Search,
@@ -106,10 +105,17 @@ export default function CustomersManagement() {
   };
 
   return (
-    <AdminLayout
-      title="Customers"
-      subtitle={`Manage your ${stats.totalCustomers} customers`}
-    >
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="font-display text-3xl lg:text-4xl font-light text-deep mb-2">
+          Customers
+        </h1>
+        <p className="text-sm text-deep/60">
+          Manage your {stats.totalCustomers} customers
+        </p>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <div className="px-4 py-3 rounded-xl bg-mauve-tint border border-mauve/20">
@@ -467,6 +473,6 @@ export default function CustomersManagement() {
           </div>
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
 }

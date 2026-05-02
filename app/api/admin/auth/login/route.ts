@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sign } from "jsonwebtoken";
+import { SignJWT } from "jose";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || "your-secret-key-change-in-production"
+);
+
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@skinessentialplus.com";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
@@ -10,7 +13,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body;
 
-    console.log("Login attempt:", { email }); // Debug log
+    console.log("📧 Login attempt:", { email });
 
     if (!email || !password) {
       return NextResponse.json(
@@ -21,24 +24,25 @@ export async function POST(request: NextRequest) {
 
     // Simple credential check
     if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-      console.log("Invalid credentials"); // Debug log
+      console.log("❌ Invalid credentials");
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // Create JWT token
-    const token = sign(
-      { 
-        email,
-        role: "admin",
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7) // 7 days
-      },
-      JWT_SECRET
-    );
+    // Create JWT token with jose (Edge Runtime compatible)
+    const token = await new SignJWT({ 
+      email,
+      role: "admin"
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("7d") // 7 days
+      .sign(JWT_SECRET);
 
-    console.log("Token created, setting cookie"); // Debug log
+    console.log("✅ Token created");
+    console.log("🔑 Token preview:", token.substring(0, 30) + "...");
 
     // Create response
     const response = NextResponse.json({
@@ -46,20 +50,22 @@ export async function POST(request: NextRequest) {
       message: "Login successful",
     });
 
-    // Set HTTP-only cookie
-    response.cookies.set("admin_token", token, {
+    // Set HTTP-only cookie with 7-day expiration
+    response.cookies.set({
+      name: "admin_token",
+      value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
       path: "/",
     });
 
-    console.log("Cookie set successfully"); // Debug log
+    console.log("🍪 Cookie set with 7-day expiration");
 
     return response;
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("💥 Login error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

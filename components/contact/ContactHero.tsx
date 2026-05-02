@@ -18,22 +18,33 @@ export function ContactHero(): React.ReactElement {
     {
       icon: Mail,
       label: "Email",
-      value: "hello@skinessential.ng",
-      href: "mailto:hello@skinessential.ng",
+      value: "hello@skinessentialplus.com",
+      onClick: () => {
+        // Scroll to contact form smoothly
+        const formElement = document.getElementById('contact-form');
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Focus on first input after scroll
+          setTimeout(() => {
+            const firstInput = formElement.querySelector('input');
+            firstInput?.focus();
+          }, 800);
+        }
+      },
       color: "sage" as const,
     },
     {
       icon: MapPin,
       label: "Location",
-      value: "Lekki Phase 1, Lagos",
-      href: "#location",
+      value: "12 Serenity Avenue, Victoria Island, Lagos",
+      href: "https://maps.google.com/?q=Victoria+Island+Lagos+Nigeria",
       color: "deep" as const,
     },
     {
       icon: Clock,
       label: "Hours",
       value: "Mon–Sat, 9am–7pm",
-      href: "#hours",
+      href: "#",
       color: "mauve" as const,
     },
   ];
@@ -121,25 +132,21 @@ export function ContactHero(): React.ReactElement {
                 deep: "bg-deep-tint",
               };
 
-              return (
-                <motion.a
-                  key={method.label}
-                  href={method.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: 0.4 + idx * 0.1,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  className="group relative p-5 rounded-2xl bg-ivory border-2 border-deep/10 hover:border-deep/20 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(71,103,106,0.12)] text-left"
-                >
+              // Don't make Hours clickable
+              const isClickable = method.label !== "Hours";
+
+              const content = (
+                <>
                   {/* Icon */}
                   <div
-                    className={`inline-flex h-11 w-11 rounded-xl items-center justify-center mb-4 transition-colors duration-300 ${accentTint[method.color]} group-hover:${accentBg[method.color]}`}
+                    className={`inline-flex h-11 w-11 rounded-xl items-center justify-center mb-4 transition-colors duration-300 ${accentTint[method.color]} ${
+                      isClickable ? `group-hover:${accentBg[method.color]}` : ""
+                    }`}
                   >
                     <Icon
-                      className={`h-5 w-5 transition-colors duration-300 ${accentText[method.color]} group-hover:text-ivory`}
+                      className={`h-5 w-5 transition-colors duration-300 ${accentText[method.color]} ${
+                        isClickable ? "group-hover:text-ivory" : ""
+                      }`}
                       strokeWidth={1.5}
                     />
                   </div>
@@ -153,7 +160,47 @@ export function ContactHero(): React.ReactElement {
                   <p className="text-sm font-light text-deep group-hover:text-deep transition-colors">
                     {method.value}
                   </p>
-                </motion.a>
+                </>
+              );
+
+              return (
+                <motion.div
+                  key={method.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.4 + idx * 0.1,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                >
+                  {isClickable ? (
+                    method.onClick ? (
+                      // Email - scrolls to form
+                      <button
+                        onClick={method.onClick}
+                        className="group relative p-5 rounded-2xl bg-ivory border-2 border-deep/10 hover:border-deep/20 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(71,103,106,0.12)] text-left w-full"
+                      >
+                        {content}
+                      </button>
+                    ) : (
+                      // Phone and Location - opens link
+                      <a
+                        href={method.href}
+                        target={method.label === "Location" ? "_blank" : undefined}
+                        rel={method.label === "Location" ? "noopener noreferrer" : undefined}
+                        className="group relative p-5 rounded-2xl bg-ivory border-2 border-deep/10 hover:border-deep/20 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(71,103,106,0.12)] text-left block"
+                      >
+                        {content}
+                      </a>
+                    )
+                  ) : (
+                    // Hours - not clickable
+                    <div className="group relative p-5 rounded-2xl bg-ivory border-2 border-deep/10 text-left">
+                      {content}
+                    </div>
+                  )}
+                </motion.div>
               );
             })}
           </motion.div>

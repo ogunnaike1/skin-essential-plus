@@ -11,6 +11,7 @@ import {
   Star,
   X,
   Loader2,
+  Search,
 } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
@@ -38,9 +39,10 @@ export function ProductsGrid(): React.ReactElement {
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
   const [sort, setSort] = useState<SortOption>("featured");
   const [favorites, setFavorites] = useState<ReadonlySet<string>>(new Set());
+  const [search, setSearch] = useState("");
 
-  // Mobile accordion state
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  // Mobile accordion state - CHANGED TO SET
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   // Supabase products state
   const [products, setProducts] = useState<SupabaseProduct[]>([]);
@@ -70,14 +72,15 @@ export function ProductsGrid(): React.ReactElement {
   };
 
   const handleCategoryClick = (categoryId: string) => {
-    if (expandedCategory === categoryId) {
-      setExpandedCategory(null);
-    } else {
-      setExpandedCategory(null);
-      setTimeout(() => {
-        setExpandedCategory(categoryId);
-      }, 100);
-    }
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
   };
 
   const toggleFavorite = (id: string, productName: string) => {
@@ -97,6 +100,15 @@ export function ProductsGrid(): React.ReactElement {
 
   const filteredProducts = useMemo(() => {
     let list = [...products];
+
+    // Apply search filter
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter((p) => {
+        const searchableText = `${p.name} ${p.tagline} ${p.key_ingredient}`.toLowerCase();
+        return searchableText.includes(q);
+      });
+    }
 
     if (activeCategory !== "all") {
       list = list.filter((p) => p.category === activeCategory);
@@ -123,13 +135,14 @@ export function ProductsGrid(): React.ReactElement {
     }
 
     return list;
-  }, [activeCategory, stockFilter, sort, products]);
+  }, [activeCategory, stockFilter, sort, products, search]);
 
   const hasActiveFilters = activeCategory !== "all" || stockFilter !== "all";
   const clearAll = () => {
     setActiveCategory("all");
     setStockFilter("all");
     setSort("featured");
+    setSearch("");
   };
 
   return (
@@ -244,9 +257,39 @@ export function ProductsGrid(): React.ReactElement {
                 Shop the collection
               </h2>
               <p className="mt-2 text-sm font-light text-deep">
-                Tap a category to see products.
+                Search or tap a category to see products.
               </p>
             </motion.div>
+
+            {/* Mobile Search Bar */}
+            <div className="mb-6">
+              <div className="relative">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep"
+                  strokeWidth={1.5}
+                />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-12 pl-11 pr-10 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-deep/10 transition-colors"
+                  >
+                    <X className="h-4 w-4 text-deep" strokeWidth={1.5} />
+                  </button>
+                )}
+              </div>
+              {search && (
+                <p className="text-xs text-deep mt-2">
+                  {filteredProducts.length} result{filteredProducts.length === 1 ? "" : "s"} found
+                </p>
+              )}
+            </div>
 
             {/* Accordion list */}
             <div className="space-y-3">
@@ -256,10 +299,10 @@ export function ProductsGrid(): React.ReactElement {
                 </div>
               ) : (
                 PRODUCT_CATEGORIES.map((cat) => {
-                  const allProductsInCat = products.filter((p) => p.category === cat.id);
+                  const allProductsInCat = filteredProducts.filter((p) => p.category === cat.id);
                   if (allProductsInCat.length === 0) return null;
                   
-                  const isExpanded = expandedCategory === cat.id;
+                  const isExpanded = expandedCategories.has(cat.id);
 
                 const accentBg: Record<typeof cat.color, string> = {
                   mauve: "bg-mauve",
@@ -281,7 +324,7 @@ export function ProductsGrid(): React.ReactElement {
                   <div
                     key={cat.id}
                     className={cn(
-                      "overflow-hidden rounded-2xl border-2 transition-colors duration-300",
+                      "relative overflow-hidden rounded-2xl border-2 transition-colors duration-300",
                       isExpanded
                         ? accentBorder[cat.color]
                         : "border-deep/10 hover:border-deep/20"
@@ -330,10 +373,13 @@ export function ProductsGrid(): React.ReactElement {
                     <AnimatePresence initial={false}>
                       {isExpanded ? (
                         <motion.div
-                          initial={{ height: 0 }}
-                          animate={{ height: "auto" }}
-                          exit={{ height: 0 }}
-                          transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ 
+                            duration: 0.4, 
+                            ease: [0.16, 1, 0.3, 1]
+                          }}
                           style={{ overflow: "hidden" }}
                         >
                           <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">

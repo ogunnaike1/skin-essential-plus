@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AdminLayout } from "@/components/admin/AdminLayout";
+
 import {
   Settings as SettingsIcon,
   Store,
@@ -95,10 +95,17 @@ export default function SettingsPage() {
   ];
 
   return (
-    <AdminLayout
-      title="Settings"
-      subtitle="Manage your store configuration"
-    >
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="font-display text-3xl lg:text-4xl font-light text-deep mb-2">
+          Settings
+        </h1>
+        <p className="text-sm text-deep/60">
+          Manage your store configuration
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar Tabs */}
         <div className="lg:col-span-1">
@@ -671,6 +678,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 }

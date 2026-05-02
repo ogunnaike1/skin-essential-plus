@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Appointments", href: "/admin/appointments", icon: Calendar },
   { name: "Services", href: "/admin/services", icon: Sparkles },
   { name: "Products", href: "/admin/products", icon: ShoppingBag },
@@ -42,7 +42,7 @@ export default function AdminLayout({
     setLoggingOut(true);
     try {
       await fetch("/api/admin/auth/logout", { method: "POST" });
-      router.push("/admin/login");
+      window.location.href = "/admin/login";
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -73,6 +73,7 @@ export default function AdminLayout({
           ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
         `}
+        style={{ backgroundColor: '#47676A' }}
       >
         {/* Logo */}
         <div className="p-6 border-b border-ivory/10">
