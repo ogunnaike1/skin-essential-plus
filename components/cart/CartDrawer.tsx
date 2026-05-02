@@ -76,12 +76,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               className="fixed inset-0 bg-deep/80 backdrop-blur-md z-[90]"
             />
 
-            {/* Drawer */}
+            {/* Drawer - ADD onClick stopPropagation HERE */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()} // 🔥 THIS FIXES THE COLLAPSE
               className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-ivory shadow-2xl z-[100] flex flex-col border-l-2 border-deep/10"
             >
               {/* Header */}
@@ -132,10 +133,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               {/* Cart Items */}
               {items.length > 0 && (
                 <>
-                  <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-ivory">
+                  <div 
+                    className="flex-1 overflow-y-auto p-6 space-y-4 bg-ivory"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {items.map((item) => (
                       <div
                         key={item.product.id}
+                        onClick={(e) => e.stopPropagation()}
                         className="flex gap-4 p-4 rounded-2xl border-2 border-deep/10 bg-ivory hover:border-mauve/30 transition-colors"
                       >
                         {/* Product Image */}
@@ -167,7 +172,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             {/* Quantity Controls */}
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateQuantity(item.product.id, item.quantity - 1);
+                                }}
                                 className="h-7 w-7 rounded-full bg-mauve-tint hover:bg-mauve hover:text-ivory text-deep flex items-center justify-center transition-colors"
                                 aria-label="Decrease quantity"
                               >
@@ -177,7 +185,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateQuantity(item.product.id, item.quantity + 1);
+                                }}
                                 className="h-7 w-7 rounded-full bg-mauve-tint hover:bg-mauve hover:text-ivory text-deep flex items-center justify-center transition-colors"
                                 aria-label="Increase quantity"
                               >
@@ -201,7 +212,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                         {/* Remove Button */}
                         <button
-                          onClick={() => removeFromCart(item.product.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFromCart(item.product.id);
+                          }}
                           className="p-2 rounded-full hover:bg-mauve-tint text-deep/40 hover:text-deep transition-colors self-start"
                           aria-label="Remove from cart"
                         >
@@ -212,7 +226,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
 
                   {/* Footer - Coupon & Checkout */}
-                  <div className="border-t border-deep/10 p-6 space-y-4 bg-ivory">
+                  <div 
+                    className="border-t border-deep/10 p-6 space-y-4 bg-ivory"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {/* Coupon Code */}
                     {!couponCode && (
                       <div>
@@ -234,7 +251,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             />
                           </div>
                           <button
-                            onClick={handleApplyCoupon}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleApplyCoupon();
+                            }}
                             disabled={isApplyingCoupon}
                             className="px-4 py-2 rounded-full bg-sage text-ivory text-xs font-medium hover:bg-sage-dark transition-colors disabled:opacity-50"
                           >
@@ -260,7 +280,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           </div>
                         </div>
                         <button
-                          onClick={() => applyCoupon("")}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            applyCoupon("");
+                          }}
                           className="text-xs text-deep/60 hover:text-deep"
                         >
                           Remove
@@ -290,7 +313,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                     {/* Checkout Button */}
                     <button
-                      onClick={handleCheckout}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCheckout();
+                      }}
                       className="w-full py-4 rounded-full bg-mauve text-ivory font-medium hover:bg-mauve-dark transition-colors flex items-center justify-center gap-2"
                     >
                       Proceed to Checkout
@@ -299,7 +325,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                     {/* Clear Cart */}
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         if (confirm("Are you sure you want to clear your cart?")) {
                           clearCart();
                         }
