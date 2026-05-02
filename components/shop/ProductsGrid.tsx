@@ -508,7 +508,7 @@ function FilterPanel({
 }
 
 // ──────────────────────────────────────────────────────────────
-// Product Card - WITH ADD TO CART
+// Product Card - WITH ADD TO CART (ALWAYS VISIBLE)
 // ──────────────────────────────────────────────────────────────
 interface ProductCardProps {
   product: SupabaseProduct;
@@ -623,18 +623,18 @@ function ProductCard({
           />
         </button>
 
-        {/* ADD TO CART BUTTON */}
+        {/* ADD TO CART BUTTON - ALWAYS VISIBLE */}
         <button
           type="button"
           onClick={handleAddToCart}
           aria-label={`Add ${product.name} to cart`}
           className={cn(
-            "absolute bottom-2 right-2 z-10 px-3 py-2 rounded-full flex items-center justify-center gap-1.5 text-ivory opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-lg",
+            "absolute bottom-2 right-2 z-10 px-3 py-2 rounded-full flex items-center justify-center gap-1.5 text-ivory shadow-lg hover:scale-105 transition-transform duration-200",
             accentBg[product.accent]
           )}
         >
           <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.75} />
-          <span className="text-[10px] font-medium uppercase tracking-wider">Add to Cart</span>
+          <span className="text-[10px] font-medium uppercase tracking-wider">Add</span>
         </button>
       </div>
 

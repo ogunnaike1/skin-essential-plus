@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sign } from "jsonwebtoken";
-import { cookies } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@skinessentialplus.com";
@@ -11,6 +10,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body;
 
+    console.log("Login attempt:", { email }); // Debug log
+
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
@@ -18,8 +19,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Simple credential check (replace with database check in production)
+    // Simple credential check
     if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      console.log("Invalid credentials"); // Debug log
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
@@ -36,9 +38,16 @@ export async function POST(request: NextRequest) {
       JWT_SECRET
     );
 
+    console.log("Token created, setting cookie"); // Debug log
+
+    // Create response
+    const response = NextResponse.json({
+      success: true,
+      message: "Login successful",
+    });
+
     // Set HTTP-only cookie
-    const cookieStore = await cookies();
-    cookieStore.set("admin_token", token, {
+    response.cookies.set("admin_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -46,10 +55,9 @@ export async function POST(request: NextRequest) {
       path: "/",
     });
 
-    return NextResponse.json({
-      success: true,
-      message: "Login successful",
-    });
+    console.log("Cookie set successfully"); // Debug log
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

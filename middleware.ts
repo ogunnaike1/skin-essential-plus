@@ -7,8 +7,11 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-producti
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for login page and API login route
-  if (pathname === "/admin/login" || pathname === "/api/admin/auth/login") {
+  // CRITICAL: Skip middleware for login page and ALL auth routes
+  if (
+    pathname === "/admin/login" || 
+    pathname.startsWith("/api/admin/auth")
+  ) {
     return NextResponse.next();
   }
 
@@ -19,7 +22,8 @@ export function middleware(request: NextRequest) {
     if (!token) {
       // Redirect to login for page requests
       if (pathname.startsWith("/admin")) {
-        return NextResponse.redirect(new URL("/admin/login", request.url));
+        const loginUrl = new URL("/admin/login", request.url);
+        return NextResponse.redirect(loginUrl);
       }
       // Return 401 for API requests
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -29,9 +33,11 @@ export function middleware(request: NextRequest) {
       verify(token, JWT_SECRET);
       return NextResponse.next();
     } catch (error) {
+      console.error("Token verification failed:", error);
       // Invalid token - redirect to login
       if (pathname.startsWith("/admin")) {
-        return NextResponse.redirect(new URL("/admin/login", request.url));
+        const loginUrl = new URL("/admin/login", request.url);
+        return NextResponse.redirect(loginUrl);
       }
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

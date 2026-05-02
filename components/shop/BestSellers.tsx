@@ -167,17 +167,18 @@ export function BestSellers(): React.ReactElement {
                       </div>
                     )}
 
-                    {/* Quick-shop button — bottom-right */}
+                    {/* Add to Cart button — always visible */}
                     <button
                       type="button"
                       onClick={() => handleAddToCart(product)}
                       aria-label={`Add ${product.name} to cart`}
                       className={cn(
-                        "absolute bottom-3 right-3 h-10 w-10 rounded-full flex items-center justify-center text-ivory opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300",
+                        "absolute bottom-3 right-3 px-3 py-1.5 rounded-full flex items-center justify-center gap-1.5 text-ivory shadow-lg hover:scale-105 transition-transform duration-200",
                         accentBg[product.accent]
                       )}
                     >
                       <ShoppingBag className="h-4 w-4" strokeWidth={1.75} />
+                      <span className="text-[9px] font-medium uppercase tracking-wider">Add</span>
                     </button>
                   </div>
 

@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Lock, Mail, Eye, EyeOff, Sparkles, ShieldCheck } from "lucide-react";
-import Image from "next/image";
+import { Lock, Mail, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
 export default function AdminLogin() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
@@ -38,20 +35,20 @@ export default function AdminLogin() {
       // Show success notification
       showSuccess("login-success", {
         title: "Welcome Back!",
-        message: "Login successful. Redirecting to dashboard...",
+        message: "Redirecting to dashboard...",
       });
 
-      // Redirect after a short delay
+      // CRITICAL: Use window.location.href for full page reload
+      // This ensures the cookie is properly sent with the next request
       setTimeout(() => {
-        router.push("/admin");
-      }, 1000);
+        window.location.href = "/admin";
+      }, 500);
     } catch (err: any) {
       console.error("Login error:", err);
       showSuccess("generic-success", {
         title: "Login Failed",
         message: err.message || "Invalid email or password. Please try again.",
       });
-    } finally {
       setLoading(false);
     }
   };
