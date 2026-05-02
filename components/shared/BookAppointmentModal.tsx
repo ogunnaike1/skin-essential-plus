@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 import { X, CalendarDays, Clock3, User, Mail, MessageSquare, ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard, Building2, Copy, Check, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Script from "next/script";
-import { getPublicServices } from "@/lib/supabase/services-api";
+import { getPublicServices, type Service } from "@/lib/supabase/services-api-public"; // Use the correct Service type
 import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
-import type { Service } from "@/lib/supabase/types";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
 type BookAppointmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  preselectedService?: Service | null; // New prop for preselected service
+  preselectedService?: Service | null; // Using Service from services-api-public
 };
 
 type Step = 1 | 2 | 3;
@@ -340,7 +339,7 @@ export default function BookAppointmentModal({
                           <div className="mt-3 flex items-center gap-2">
                             <Clock3 className="h-3 w-3 text-mauve" />
                             <span className="text-xs text-deep/70">
-                              {(service as any).duration || '60 mins'}
+                              {service.duration} mins
                             </span>
                           </div>
                         </div>

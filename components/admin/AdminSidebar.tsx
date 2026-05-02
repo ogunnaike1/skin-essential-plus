@@ -31,11 +31,6 @@ const navItems = [
     icon: ShoppingBag,
   },
   {
-    label: "Bundles",
-    href: "/admin/bundles",
-    icon: Package,
-  },
-  {
     label: "Appointments",
     href: "/admin/appointments",
     icon: CalendarDays,

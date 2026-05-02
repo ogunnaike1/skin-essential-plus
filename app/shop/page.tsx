@@ -4,7 +4,6 @@ import { BestSellers } from "@/components/shop/BestSellers";
 import { BrandStory } from "@/components/shop/BrandStory";
 import { NewArrivals } from "@/components/shop/NewArrivals";
 import { ProductsGrid } from "@/components/shop/ProductsGrid";
-import { RoutineBundles } from "@/components/shop/RoutineBundles";
 import { ShopCTA } from "@/components/shop/ShopCTA";
 import { ShopHero } from "@/components/shop/ShopHero";
 
@@ -22,7 +21,6 @@ export default function ShopPage(): React.ReactElement {
          <ProductsGrid />
          <NewArrivals />
         <BestSellers />
-        <RoutineBundles />
         <BrandStory />
         <ShopCTA />
       </main>
