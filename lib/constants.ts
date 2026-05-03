@@ -9,15 +9,16 @@ import {
   HeartHandshake,
 } from "lucide-react";
 
+// Try explicit import path instead of alias
 import type {
   BeforeAfterItem,
   HeroSlide,
   NavLink,
-  Service,
+  HomeService,
   SocialImage,
   Testimonial,
   TrustPoint,
-} from "@/types";
+} from "@/lib/supabase/types"; 
 
 export const SITE = {
   name: "Skin Essential Plus",
@@ -86,16 +87,16 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
   },
 ] as const;
 
-export const SERVICES: readonly Service[] = [
+// ✅ Changed type from Service[] to HomeService[]
+export const SERVICES: readonly HomeService[] = [
   {
     id: 1,
     title: "Skin Treatments",
     description:
       "Advanced facials, microneedling, and bespoke therapies calibrated to your skin's unique signature.",
     image:
-      "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&q=80&auto=format&fit=crop",
+      "/images/homepage-hero/home-Skin-Treatments.png",
     icon: Sparkles,
-    price: "from ₦45,000",
   },
   {
     id: 2,
@@ -103,9 +104,8 @@ export const SERVICES: readonly Service[] = [
     description:
       "Immersive body rituals, aromatherapy, and hydrotherapy designed to restore balance and radiance.",
     image:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80&auto=format&fit=crop",
+      "/images/homepage-hero/home-Spa-Therapy.png",
     icon: Flower2,
-    price: "from ₦55,000",
   },
   {
     id: 3,
@@ -113,9 +113,8 @@ export const SERVICES: readonly Service[] = [
     description:
       "Hand-crafted lash extensions and architectural sketching by certified master artisans.",
     image:
-      "https://images.unsplash.com/photo-1583241800698-e8ab01830a07?w=800&q=80&auto=format&fit=crop",
+      "/images/homepage-hero/home-eye-lash.png",
     icon: Eye,
-    price: "from ₦25,000",
   },
   {
     id: 4,
@@ -123,9 +122,8 @@ export const SERVICES: readonly Service[] = [
     description:
       "Comprehensive regimens combining treatments, clinical-grade products, and lifestyle guidance.",
     image:
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80&auto=format&fit=crop",
+      "/images/homepage-hero/home-Full-Skincare.png",
     icon: Droplets,
-    price: "from ₦80,000",
   },
 ] as const;
 

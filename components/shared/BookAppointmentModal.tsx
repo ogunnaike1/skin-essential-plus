@@ -1,28 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X, CalendarDays, Clock3, User, Mail, MessageSquare, ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard, Building2, Copy, Check, Sparkles } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { X, CalendarDays, Clock3, User, Mail, MessageSquare, ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard, Building2, Copy, Check, Sparkles, Search, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Script from "next/script";
-import { getPublicServices, type Service } from "@/lib/supabase/services-api-public"; // Use the correct Service type
+import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
 import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
+
+/**
+ * Helper functions to safely access Service fields
+ * Handles different field naming conventions from database
+ */
+const getServiceCategory = (service: Service): string => {
+  return (service as any).category_name || (service as any).category || 'Other';
+};
+
+const getServiceDuration = (service: Service): number | string => {
+  return (service as any).duration_minutes || (service as any).duration || 'N/A';
+};
+
+const getServiceImage = (service: Service): string | null => {
+  return (service as any).image_url || (service as any).image || null;
+};
 
 type BookAppointmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  preselectedService?: Service | null; // Using Service from services-api-public
+  preselectedService?: Service | null;
 };
 
 type Step = 1 | 2 | 3;
 type PaymentMethod = "card" | "transfer" | null;
-
-// Service categories for navigation
-const SERVICE_CATEGORIES = [
-  { id: "facial", label: "Facial Treatments", color: "mauve" as const },
-  { id: "body", label: "Body Treatments", color: "sage" as const },
-  { id: "specialty", label: "Specialty Services", color: "deep" as const },
-];
 
 export default function BookAppointmentModal({
   isOpen,
@@ -31,11 +40,15 @@ export default function BookAppointmentModal({
 }: BookAppointmentModalProps) {
   const [step, setStep] = useState<Step>(1);
   const [services, setServices] = useState<Service[]>([]);
+  const [categories, setCategories] = useState<Array<{ id: string; name: string; count: number }>>([]);
   const [loading, setLoading] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
   const [copied, setCopied] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string | "all">("all");
+  
+  // Search and filter state
+  const [search, setSearch] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   
   // Success notification hook
   const { notification, showSuccess, hideSuccess } = useSuccessNotification();
@@ -69,10 +82,67 @@ export default function BookAppointmentModal({
     try {
       const data = await getPublicServices();
       setServices(data);
+      
+      // Extract unique categories with counts
+      const categoryMap = new Map<string, number>();
+      data.forEach(service => {
+        const categoryName = getServiceCategory(service);
+        const count = categoryMap.get(categoryName) || 0;
+        categoryMap.set(categoryName, count + 1);
+      });
+      
+      const cats = Array.from(categoryMap.entries())
+        .map(([name, count]) => ({
+          id: name.toLowerCase().replace(/\s+/g, '-'),
+          name,
+          count
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      
+      setCategories(cats);
+      
+      // Expand first category by default
+      if (cats.length > 0) {
+        setExpandedCategories(new Set([cats[0]!.id]));
+      }
     } catch (error) {
       console.error('Error loading services:', error);
     }
   };
+
+  // Filtered services based on search
+  const filteredServices = useMemo(() => {
+    if (!search.trim()) return services;
+    
+    const query = search.toLowerCase().trim();
+    return services.filter(service => {
+      const categoryName = getServiceCategory(service);
+      return (
+        service.name.toLowerCase().includes(query) ||
+        service.description.toLowerCase().includes(query) ||
+        categoryName.toLowerCase().includes(query)
+      );
+    });
+  }, [services, search]);
+
+  // Group services by category
+  const servicesByCategory = useMemo(() => {
+    const grouped = new Map<string, Service[]>();
+    
+    filteredServices.forEach(service => {
+      const categoryName = getServiceCategory(service);
+      const categoryId = categoryName.toLowerCase().replace(/\s+/g, '-');
+      if (!grouped.has(categoryId)) {
+        grouped.set(categoryId, []);
+      }
+      grouped.get(categoryId)!.push(service);
+    });
+    
+    return grouped;
+  }, [filteredServices]);
+
+  // Count results
+  const totalResults = filteredServices.length;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -94,7 +164,8 @@ export default function BookAppointmentModal({
     setStep(1);
     setSelectedService(null);
     setPaymentMethod(null);
-    setActiveCategory("all");
+    setSearch("");
+    setExpandedCategories(new Set(categories.length > 0 ? [categories[0]!.id] : []));
     setFormData({
       customer_name: "",
       customer_email: "",
@@ -111,9 +182,31 @@ export default function BookAppointmentModal({
     setStep(2);
   };
 
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
+  };
+
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStep(3);
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
   const handleCardPayment = async () => {
@@ -121,7 +214,6 @@ export default function BookAppointmentModal({
 
     setLoading(true);
     try {
-      // Create appointment in database
       const appointmentData: CreateAppointmentData = {
         ...formData,
         service_id: selectedService.id,
@@ -131,12 +223,11 @@ export default function BookAppointmentModal({
 
       const appointment = await createAppointment(appointmentData);
 
-      // Initialize Paystack payment
-      // @ts-ignore - PaystackPop is loaded via script
+      // @ts-ignore
       const handler = window.PaystackPop.setup({
         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         email: formData.customer_email,
-        amount: selectedService.price * 100, // Convert to kobo
+        amount: selectedService.price * 100,
         currency: 'NGN',
         ref: `APPT-${appointment.id}`,
         metadata: {
@@ -145,14 +236,12 @@ export default function BookAppointmentModal({
           service_name: selectedService.name,
         },
         callback: function(response: any) {
-          // Show success notification
           showSuccess("appointment-booked", {
             title: "Payment Confirmed!",
             message: `Your appointment for ${selectedService.name} is confirmed`,
             details: `Reference: ${response.reference}`
           });
           
-          // Close modal after showing notification
           setTimeout(() => {
             handleClose();
           }, 1500);
@@ -175,7 +264,6 @@ export default function BookAppointmentModal({
 
     setLoading(true);
     try {
-      // Create appointment with pending payment
       const appointmentData: CreateAppointmentData = {
         ...formData,
         service_id: selectedService.id,
@@ -185,166 +273,185 @@ export default function BookAppointmentModal({
 
       const appointment = await createAppointment(appointmentData);
       
-      // Show success notification
       showSuccess("appointment-booked", {
         title: "Booking Created!",
         message: "Please complete the bank transfer to confirm your appointment",
         details: `Reference: APPT-${appointment.id}`
       });
       
-      // Close modal after showing notification
       setTimeout(() => {
         handleClose();
       }, 2000);
     } catch (error) {
       console.error('Error creating appointment:', error);
       alert('Failed to create appointment. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // Filter services by category
-  const filteredServices = activeCategory === "all" 
-    ? services 
-    : services.filter(s => s.category === activeCategory);
 
   if (!isOpen) return null;
 
   return (
     <>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-6">
-        {/* Backdrop */}
-        <button
-          aria-label="Close modal"
+      <Script src="https://js.paystack.co/v1/inline.js" />
+      
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div
+          className="absolute inset-0 bg-deep/60 backdrop-blur-sm"
           onClick={handleClose}
-          className="absolute inset-0 bg-deep/70 backdrop-blur-sm"
         />
 
-        {/* Decorative glow */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-mauve/20 blur-3xl" />
-        <div className="pointer-events-none absolute right-[10%] top-[20%] h-48 w-48 rounded-full bg-sage/20 blur-3xl" />
+        <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-ivory shadow-2xl">
+          {/* Header */}
+          <div className="sticky top-0 z-10 bg-ivory border-b border-deep/10">
+            <div className="flex h-2">
+              <span className="flex-1 bg-mauve" />
+              <span className="flex-1 bg-sage" />
+              <span className="flex-1 bg-deep" />
+            </div>
+            
+            <div className="flex items-center justify-between p-6">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  {step === 1 && <Sparkles className="h-5 w-5 text-mauve" />}
+                  {step === 2 && <CalendarDays className="h-5 w-5 text-sage" />}
+                  {step === 3 && <CreditCard className="h-5 w-5 text-deep" />}
+                  <span className="text-xs uppercase tracking-wider text-deep/70 font-medium">
+                    Step {step} of 3
+                  </span>
+                </div>
+                <h2 className="font-display text-2xl sm:text-3xl font-light text-deep">
+                  {step === 1 && "Choose a Service"}
+                  {step === 2 && "Your Details"}
+                  {step === 3 && "Payment"}
+                </h2>
+              </div>
 
-        {/* Modal */}
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="relative z-10 w-full h-full sm:h-auto sm:max-w-4xl overflow-y-auto sm:overflow-hidden sm:rounded-[28px] border-0 sm:border sm:border-ivory/40 bg-ivory shadow-[0_20px_60px_rgba(71,103,106,0.3)]"
-        >
-          {/* Top accent bar */}
-          <div className="h-1.5 w-full flex">
-            <span className={`flex-1 transition-all ${step >= 1 ? 'bg-mauve' : 'bg-mauve/30'}`} />
-            <span className={`flex-1 transition-all ${step >= 2 ? 'bg-sage' : 'bg-sage/30'}`} />
-            <span className={`flex-1 transition-all ${step >= 3 ? 'bg-deep' : 'bg-deep/30'}`} />
+              <button
+                onClick={handleClose}
+                className="flex h-10 w-10 items-center justify-center rounded-full text-deep hover:bg-deep hover:text-ivory transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
-          <div className="relative px-6 py-8 sm:px-8 sm:py-10">
-            <button
-              onClick={handleClose}
-              className="absolute right-4 top-4 rounded-full border border-deep/10 bg-ivory p-2 text-deep transition hover:bg-mauve-tint"
-              aria-label="Close modal"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            {/* Step 1: Select Service */}
+          {/* Content */}
+          <div className="p-6 sm:p-8">
+            {/* Step 1: Service Selection with Search */}
             {step === 1 && (
               <div>
+                {/* Search Bar */}
                 <div className="mb-6">
-                  <p className="text-xs uppercase tracking-wider text-mauve font-medium mb-2">Step 1 of 3</p>
-                  <h2 className="font-display text-3xl sm:text-4xl font-light text-deep">
-                    Choose your service
-                  </h2>
-                  <p className="mt-2 text-sm text-deep/70">
-                    Select the service you'd like to book
-                  </p>
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
+                    <input
+                      type="text"
+                      placeholder="Search services..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="w-full h-12 pl-11 pr-10 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
+                    />
+                    {search && (
+                      <button
+                        onClick={() => setSearch("")}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-mauve/10 rounded-full transition-colors"
+                      >
+                        <X className="h-4 w-4 text-deep/40" />
+                      </button>
+                    )}
+                  </div>
+                  {search && (
+                    <p className="mt-2 text-xs text-deep/60">
+                      {totalResults} result{totalResults === 1 ? '' : 's'} found
+                    </p>
+                  )}
                 </div>
 
-                {/* Category Filter */}
-                <div className="mb-6 flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setActiveCategory("all")}
-                    className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${
-                      activeCategory === "all"
-                        ? "bg-deep text-ivory"
-                        : "bg-deep-tint text-deep hover:bg-deep hover:text-ivory"
-                    }`}
-                  >
-                    All Services
-                  </button>
-                  {SERVICE_CATEGORIES.map((cat) => {
-                    const isActive = activeCategory === cat.id;
-                    const colorClasses = {
-                      mauve: isActive ? "bg-mauve text-ivory" : "bg-mauve-tint text-deep hover:bg-mauve hover:text-ivory",
-                      sage: isActive ? "bg-sage text-ivory" : "bg-sage-tint text-deep hover:bg-sage hover:text-ivory",
-                      deep: isActive ? "bg-deep text-ivory" : "bg-deep-tint text-deep hover:bg-deep hover:text-ivory",
-                    };
+                {/* Services by Category */}
+                <div className="space-y-3">
+                  {categories.map(category => {
+                    const categoryServices = servicesByCategory.get(category.id) || [];
+                    const isExpanded = expandedCategories.has(category.id);
                     
+                    if (search && categoryServices.length === 0) return null;
+
                     return (
-                      <button
-                        key={cat.id}
-                        onClick={() => setActiveCategory(cat.id)}
-                        className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${colorClasses[cat.color]}`}
-                      >
-                        {cat.label}
-                      </button>
+                      <div key={category.id} className="border-2 border-deep/10 rounded-2xl overflow-hidden">
+                        {/* Category Header */}
+                        <button
+                          onClick={() => toggleCategory(category.id)}
+                          className="w-full flex items-center justify-between p-4 hover:bg-mauve-tint transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <h3 className="font-display text-lg font-light text-deep">
+                              {category.name}
+                            </h3>
+                            <span className="text-xs text-deep/50">
+                              ({categoryServices.length})
+                            </span>
+                          </div>
+                          <ChevronDown 
+                            className={`h-5 w-5 text-deep/40 transition-transform duration-300 ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
+
+                        {/* Category Services */}
+                        {isExpanded && (
+                          <div className="border-t border-deep/10 p-4 bg-ivory space-y-2">
+                            {categoryServices.map(service => (
+                              <button
+                                key={service.id}
+                                onClick={() => handleServiceSelect(service)}
+                                className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-sage-tint border-2 border-transparent hover:border-sage transition-all group"
+                              >
+                                {getServiceImage(service) && (
+                                  <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+                                    <Image
+                                      src={getServiceImage(service)!}
+                                      alt={service.name}
+                                      fill
+                                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex-1 text-left">
+                                  <h4 className="font-medium text-deep group-hover:text-sage transition-colors">
+                                    {service.name}
+                                  </h4>
+                                  <p className="text-xs text-deep/60 line-clamp-1">
+                                    {service.description}
+                                  </p>
+                                  <div className="flex items-center gap-3 mt-1">
+                                    <span className="text-sm font-medium text-mauve">
+                                      ₦{service.price.toLocaleString()}
+                                    </span>
+                                    <span className="text-xs text-deep/40">
+                                      {getServiceDuration(service)} min
+                                    </span>
+                                  </div>
+                                </div>
+                                <ArrowRight className="h-5 w-5 text-deep/40 group-hover:text-sage group-hover:translate-x-1 transition-all" />
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2">
-                  {filteredServices.length === 0 ? (
-                    <div className="col-span-2 text-center py-10">
-                      <p className="text-deep/60">No services found in this category</p>
-                    </div>
-                  ) : (
-                    filteredServices.map((service) => (
+                  {totalResults === 0 && (
+                    <div className="text-center py-12">
+                      <p className="text-deep/60">No services found matching "{search}"</p>
                       <button
-                        key={service.id}
-                        onClick={() => handleServiceSelect(service)}
-                        className="group text-left rounded-2xl border-2 border-deep/10 hover:border-mauve transition-all overflow-hidden bg-ivory hover:shadow-lg"
+                        onClick={() => setSearch("")}
+                        className="mt-4 text-sm text-mauve hover:underline"
                       >
-                        <div className="relative h-40 bg-deep-tint overflow-hidden">
-                          {service.image_url ? (
-                            <Image
-                              src={service.image_url}
-                              alt={service.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-mauve-tint">
-                              <Sparkles className="h-12 w-12 text-mauve" />
-                            </div>
-                          )}
-                          <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-ivory/90 backdrop-blur">
-                            <span className="text-sm font-medium text-deep">
-                              ₦{service.price.toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-display text-lg font-light text-deep mb-1">
-                            {service.name}
-                          </h3>
-                          <p className="text-xs text-deep/60 line-clamp-2">
-                            {service.description}
-                          </p>
-                          <div className="mt-3 flex items-center gap-2">
-                            <Clock3 className="h-3 w-3 text-mauve" />
-                            <span className="text-xs text-deep/70">
-                              {service.duration} mins
-                            </span>
-                          </div>
-                        </div>
+                        Clear search
                       </button>
-                    ))
+                    </div>
                   )}
                 </div>
               </div>
@@ -359,133 +466,121 @@ export default function BookAppointmentModal({
                     className="inline-flex items-center gap-2 text-sm text-deep/70 hover:text-deep mb-4"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back to services
+                    Change service
                   </button>
-                  <p className="text-xs uppercase tracking-wider text-sage font-medium mb-2">Step 2 of 3</p>
-                  <h2 className="font-display text-3xl sm:text-4xl font-light text-deep">
-                    Your details
-                  </h2>
-                  <p className="mt-2 text-sm text-deep/70">
-                    Booking: <span className="font-medium text-deep">{selectedService.name}</span> - ₦{selectedService.price.toLocaleString()}
-                  </p>
+
+                  <div className="rounded-2xl border-2 border-sage bg-sage-tint p-4">
+                    <p className="text-xs text-deep/70 mb-1">Selected Service</p>
+                    <h3 className="font-display text-xl font-light text-deep">{selectedService.name}</h3>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-sm font-medium text-sage">₦{selectedService.price.toLocaleString()}</span>
+                      <span className="text-xs text-deep/60">
+                        {getServiceDuration(selectedService)} minutes
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 <form onSubmit={handleDetailsSubmit} className="space-y-5">
-                  {/* Paystack Script - must be inside form element */}
-                  <Script src="https://js.paystack.co/v1/inline.js" strategy="lazyOnload" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-deep">
-                        Full Name *
-                      </label>
-                      <div className="flex items-center gap-3 rounded-2xl border border-deep/10 bg-mauve-tint px-4 py-3 transition focus-within:border-mauve focus-within:bg-ivory">
-                        <User className="h-4 w-4 text-mauve" />
+                      <label className="eyebrow text-deep text-[9px] block mb-2">— Your name</label>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
                         <input
                           type="text"
                           required
                           value={formData.customer_name}
                           onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                          placeholder="Your full name"
-                          className="w-full bg-transparent text-sm text-deep placeholder:text-deep/50 outline-none"
+                          placeholder="Ada Okafor"
+                          className="w-full h-12 pl-11 pr-4 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-deep">
-                        Email Address *
-                      </label>
-                      <div className="flex items-center gap-3 rounded-2xl border border-deep/10 bg-sage-tint px-4 py-3 transition focus-within:border-sage focus-within:bg-ivory">
-                        <Mail className="h-4 w-4 text-sage" />
+                      <label className="eyebrow text-deep text-[9px] block mb-2">— Email address</label>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
                         <input
                           type="email"
                           required
                           value={formData.customer_email}
                           onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                          placeholder="you@example.com"
-                          className="w-full bg-transparent text-sm text-deep placeholder:text-deep/50 outline-none"
+                          placeholder="ada@example.com"
+                          className="w-full h-12 pl-11 pr-4 rounded-full bg-sage-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-sage focus:outline-none transition-colors"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-deep">
-                      Phone Number *
-                    </label>
-                    <div className="flex items-center gap-3 rounded-2xl border border-deep/10 bg-deep-tint px-4 py-3 transition focus-within:border-deep focus-within:bg-ivory">
-                      <Phone className="h-4 w-4 text-deep" />
-                      <input
-                        type="tel"
-                        required
-                        value={formData.customer_phone}
-                        onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                        placeholder="080XXXXXXXX"
-                        className="w-full bg-transparent text-sm text-deep placeholder:text-deep/50 outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-deep">
-                        Preferred Date *
-                      </label>
-                      <div className="flex items-center gap-3 rounded-2xl border border-deep/10 bg-deep-tint px-4 py-3 transition focus-within:border-deep focus-within:bg-ivory">
-                        <CalendarDays className="h-4 w-4 text-deep" />
+                      <label className="eyebrow text-deep text-[9px] block mb-2">— Phone number</label>
+                      <div className="relative">
+                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
+                        <input
+                          type="tel"
+                          required
+                          value={formData.customer_phone}
+                          onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
+                          placeholder="+234 XXX XXX XXXX"
+                          className="w-full h-12 pl-11 pr-4 rounded-full bg-deep-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-deep focus:outline-none transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="eyebrow text-deep text-[9px] block mb-2">— Preferred date</label>
+                      <div className="relative">
+                        <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
                         <input
                           type="date"
                           required
                           value={formData.appointment_date}
                           onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })}
                           min={new Date().toISOString().split('T')[0]}
-                          className="w-full bg-transparent text-sm text-deep outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-deep">
-                        Preferred Time *
-                      </label>
-                      <div className="flex items-center gap-3 rounded-2xl border border-deep/10 bg-deep-tint px-4 py-3 transition focus-within:border-deep focus-within:bg-ivory">
-                        <Clock3 className="h-4 w-4 text-deep" />
-                        <input
-                          type="time"
-                          required
-                          value={formData.appointment_time}
-                          onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })}
-                          className="w-full bg-transparent text-sm text-deep outline-none"
+                          className="w-full h-12 pl-11 pr-4 rounded-full bg-mauve-tint border-2 border-transparent text-deep text-sm font-light focus:border-mauve focus:outline-none transition-colors"
                         />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-deep">
-                      Additional Notes (Optional)
-                    </label>
-                    <div className="flex gap-3 rounded-2xl border border-deep/10 bg-mauve-tint px-4 py-3">
-                      <MessageSquare className="mt-1 h-4 w-4 text-mauve" />
-                      <textarea
-                        rows={4}
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder="Any special requests or information we should know..."
-                        className="w-full resize-none bg-transparent text-sm text-deep placeholder:text-deep/50 outline-none"
+                    <label className="eyebrow text-deep text-[9px] block mb-2">— Preferred time</label>
+                    <div className="relative">
+                      <Clock3 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
+                      <input
+                        type="time"
+                        required
+                        value={formData.appointment_time}
+                        onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })}
+                        className="w-full h-12 pl-11 pr-4 rounded-full bg-sage-tint border-2 border-transparent text-deep text-sm font-light focus:border-sage focus:outline-none transition-colors"
                       />
                     </div>
                   </div>
 
-                  <div className="flex justify-end pt-4">
-                    <button
-                      type="submit"
-                      className="inline-flex items-center gap-2 rounded-full bg-sage px-6 py-3 text-sm font-medium text-ivory transition hover:bg-sage-dark"
-                    >
-                      Continue to Payment
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
+                  <div>
+                    <label className="eyebrow text-deep text-[9px] block mb-2">— Additional notes (optional)</label>
+                    <div className="relative">
+                      <MessageSquare className="absolute left-4 top-4 h-4 w-4 text-deep/40" />
+                      <textarea
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Any special requests or information we should know..."
+                        rows={4}
+                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-deep-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-deep focus:outline-none transition-colors resize-none"
+                      />
+                    </div>
                   </div>
+
+                  <button
+                    type="submit"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-sage px-6 py-4 text-sm font-medium text-ivory transition hover:bg-sage-dark"
+                  >
+                    Continue to Payment
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </form>
               </div>
             )}
@@ -501,64 +596,37 @@ export default function BookAppointmentModal({
                     <ArrowLeft className="h-4 w-4" />
                     Back to details
                   </button>
-                  <p className="text-xs uppercase tracking-wider text-deep font-medium mb-2">Step 3 of 3</p>
+                  <p className="text-xs uppercase tracking-wider text-deep font-medium mb-2">Choose Payment Method</p>
                   <h2 className="font-display text-3xl sm:text-4xl font-light text-deep">
-                    Choose payment method
+                    How would you like to pay?
                   </h2>
-                  <p className="mt-2 text-sm text-deep/70">
-                    Total: <span className="font-display text-xl font-medium text-mauve">₦{selectedService.price.toLocaleString()}</span>
-                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Card Payment */}
                   <button
                     onClick={() => setPaymentMethod("card")}
-                    className="group text-left rounded-2xl border-2 border-deep/10 hover:border-mauve transition-all p-6 bg-mauve-tint hover:shadow-lg"
+                    className="group p-6 rounded-2xl border-2 border-mauve bg-mauve-tint hover:bg-mauve hover:shadow-lg transition-all"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="rounded-xl bg-mauve p-3">
-                        <CreditCard className="h-6 w-6 text-ivory" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-display text-xl font-light text-deep mb-2">
-                          Pay with Card
-                        </h3>
-                        <p className="text-sm text-deep/70 mb-3">
-                          Instant confirmation with Paystack
-                        </p>
-                        <ul className="space-y-1 text-xs text-deep/60">
-                          <li>✓ Instant confirmation</li>
-                          <li>✓ Secure payment</li>
-                          <li>✓ All cards accepted</li>
-                        </ul>
-                      </div>
-                    </div>
+                    <CreditCard className="h-8 w-8 text-mauve group-hover:text-ivory mb-4 transition-colors" />
+                    <h3 className="font-display text-xl font-light text-deep group-hover:text-ivory mb-2 transition-colors">
+                      Card Payment
+                    </h3>
+                    <p className="text-sm text-deep/70 group-hover:text-ivory/80 transition-colors">
+                      Pay securely with Paystack
+                    </p>
                   </button>
 
-                  {/* Bank Transfer */}
                   <button
                     onClick={() => setPaymentMethod("transfer")}
-                    className="group text-left rounded-2xl border-2 border-deep/10 hover:border-sage transition-all p-6 bg-sage-tint hover:shadow-lg"
+                    className="group p-6 rounded-2xl border-2 border-sage bg-sage-tint hover:bg-sage hover:shadow-lg transition-all"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="rounded-xl bg-sage p-3">
-                        <Building2 className="h-6 w-6 text-ivory" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-display text-xl font-light text-deep mb-2">
-                          Bank Transfer
-                        </h3>
-                        <p className="text-sm text-deep/70 mb-3">
-                          Pay directly to our account
-                        </p>
-                        <ul className="space-y-1 text-xs text-deep/60">
-                          <li>✓ No transaction fees</li>
-                          <li>✓ Confirmed within 24hrs</li>
-                          <li>✓ Send proof via WhatsApp</li>
-                        </ul>
-                      </div>
-                    </div>
+                    <Building2 className="h-8 w-8 text-sage group-hover:text-ivory mb-4 transition-colors" />
+                    <h3 className="font-display text-xl font-light text-deep group-hover:text-ivory mb-2 transition-colors">
+                      Bank Transfer
+                    </h3>
+                    <p className="text-sm text-deep/70 group-hover:text-ivory/80 transition-colors">
+                      Transfer to our account
+                    </p>
                   </button>
                 </div>
               </div>
@@ -582,7 +650,6 @@ export default function BookAppointmentModal({
                 </div>
 
                 <div className="space-y-6">
-                  {/* Booking Summary */}
                   <div className="rounded-2xl border-2 border-deep/10 bg-mauve-tint p-6">
                     <h3 className="font-medium text-deep mb-4">Booking Summary</h3>
                     
@@ -647,7 +714,6 @@ export default function BookAppointmentModal({
                 </div>
 
                 <div className="space-y-6">
-                  {/* Bank Details */}
                   <div className="rounded-2xl border-2 border-sage bg-sage-tint p-6">
                     <h3 className="font-medium text-deep mb-4 flex items-center gap-2">
                       <Building2 className="h-5 w-5 text-sage" />
@@ -705,7 +771,6 @@ export default function BookAppointmentModal({
                     </div>
                   </div>
 
-                  {/* Instructions */}
                   <div className="rounded-2xl border-2 border-deep/10 bg-mauve-tint p-6">
                     <h3 className="font-medium text-deep mb-3">Next Steps</h3>
                     <ol className="space-y-2 text-sm text-deep/70">
@@ -719,7 +784,7 @@ export default function BookAppointmentModal({
                       </li>
                       <li className="flex gap-3">
                         <span className="font-medium text-mauve">3.</span>
-                        <span>Send proof to <strong className="text-deep">+234 XXX XXX XXXX</strong> on WhatsApp</span>
+                        <span>Send proof to <strong className="text-deep">+234 901 234 5678</strong> on WhatsApp</span>
                       </li>
                       <li className="flex gap-3">
                         <span className="font-medium text-mauve">4.</span>
@@ -752,7 +817,6 @@ export default function BookAppointmentModal({
         </div>
       </div>
 
-      {/* Success Notification */}
       <SuccessNotification
         {...notification}
         onClose={hideSuccess}

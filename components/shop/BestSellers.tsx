@@ -178,7 +178,7 @@ export function BestSellers(): React.ReactElement {
                       )}
                     >
                       <ShoppingBag className="h-4 w-4" strokeWidth={1.75} />
-                      <span className="text-[9px] font-medium uppercase tracking-wider">Add</span>
+                      <span className="text-[9px] font-medium uppercase tracking-wider">Add to Cart</span>
                     </button>
                   </div>
 

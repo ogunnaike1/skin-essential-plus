@@ -219,7 +219,7 @@ export function NewArrivals(): React.ReactElement {
                           accentBg[product.accent]
                         )}
                       >
-                        <span>Add</span>
+                        <span>Add to Cart</span>
                         <span className="h-7 w-7 rounded-full bg-ivory flex items-center justify-center transition-transform duration-300 group-hover/btn:rotate-90">
                           <ShoppingBag
                             className={cn("h-3 w-3", accentText[product.accent])}

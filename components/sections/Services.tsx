@@ -3,11 +3,12 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SERVICES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import type { Service } from "@/types";
+import type { HomeService } from "@/lib/supabase/types";
 
 interface CardPalette {
   cardBg: string;
@@ -27,9 +28,6 @@ interface CardPalette {
   iconBg: string;
   iconText: string;
   overlayGradient: string;
-  priceBg: string;
-  priceText: string;
-  priceBorder: string;
   accentBar: string;
   bodyTint: string;
   isDark: boolean;
@@ -56,9 +54,6 @@ const CARD_PALETTES: readonly CardPalette[] = [
     iconText: "text-ivory",
     overlayGradient:
       "from-mauve/85 via-mauve/25 via-35% to-transparent",
-    priceBg: "bg-mauve",
-    priceText: "text-ivory",
-    priceBorder: "border-mauve",
     accentBar: "bg-gradient-to-r from-mauve via-mauve/70 to-sage/50",
     bodyTint: "bg-white/45",
     isDark: false,
@@ -83,9 +78,6 @@ const CARD_PALETTES: readonly CardPalette[] = [
     iconText: "text-ivory",
     overlayGradient:
       "from-sage/85 via-sage/25 via-35% to-transparent",
-    priceBg: "bg-sage",
-    priceText: "text-ivory",
-    priceBorder: "border-sage",
     accentBar: "bg-gradient-to-r from-sage via-deep-light to-mauve/60",
     bodyTint: "bg-white/45",
     isDark: false,
@@ -110,9 +102,6 @@ const CARD_PALETTES: readonly CardPalette[] = [
     iconText: "text-deep",
     overlayGradient:
       "from-deep-dark/95 via-deep/45 via-40% to-transparent",
-    priceBg: "bg-gradient-to-r from-mauve to-forest",
-    priceText: "text-ivory",
-    priceBorder: "border-mauve/60",
     accentBar: "bg-gradient-to-r from-mauve via-deep-light to-forest",
     bodyTint: "bg-white/5",
     isDark: true,
@@ -137,9 +126,6 @@ const CARD_PALETTES: readonly CardPalette[] = [
     iconText: "text-ivory",
     overlayGradient:
       "from-forest/75 via-deep/20 via-35% to-transparent",
-    priceBg: "bg-gradient-to-r from-forest to-deep",
-    priceText: "text-ivory",
-    priceBorder: "border-forest/40",
     accentBar: "bg-gradient-to-r from-forest via-sage to-mauve",
     bodyTint: "bg-white/45",
     isDark: false,
@@ -147,7 +133,7 @@ const CARD_PALETTES: readonly CardPalette[] = [
 ] as const;
 
 interface ServiceCardProps {
-  service: Service;
+  service: HomeService;
   index: number;
 }
 
@@ -168,140 +154,133 @@ function ServiceCard({ service, index }: ServiceCardProps): React.ReactElement {
       }}
       whileHover={{ y: -10 }}
       className={cn(
-        "group relative overflow-hidden rounded-[2rem] border-2 backdrop-blur-xl shadow-glass transition-all duration-700 ease-cinematic hover:shadow-lift",
-        palette.cardBg,
-        palette.border,
-        palette.borderHover,
+        "relative overflow-hidden rounded-[2rem] border-2 backdrop-blur-xl shadow-glass transition-all duration-700 ease-cinematic hover:shadow-lift",
         offset
       )}
     >
-      {/* Top color accent */}
-      <div className={cn("absolute inset-x-0 top-0 h-1.5", palette.accentBar)} />
-
-      {/* Hover glow */}
-      <div
-        className="pointer-events-none absolute -inset-20 opacity-0 blur-3xl transition-opacity duration-1000 group-hover:opacity-100"
-        style={{
-          background: `radial-gradient(circle at 50% 0%, ${palette.glowColor} 0%, transparent 58%)`,
-        }}
-        aria-hidden
-      />
-
-      {/* Secondary inner wash */}
-      <div
+      <Link
+        href="/services"
         className={cn(
-          "pointer-events-none absolute inset-x-6 bottom-6 top-[42%] rounded-[1.5rem] blur-2xl opacity-50",
-          palette.bodyTint
+          "group block",
+          palette.cardBg,
+          palette.border,
+          palette.borderHover
         )}
-        aria-hidden
-      />
+      >
+        {/* Top color accent */}
+        <div className={cn("absolute inset-x-0 top-0 h-1.5", palette.accentBar)} />
 
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <Image
-          src={service.image}
-          alt={service.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-          className="object-cover transition-transform duration-[1.4s] ease-cinematic group-hover:scale-110"
-        />
-
+        {/* Hover glow */}
         <div
-          className={cn(
-            "absolute inset-0 bg-gradient-to-t mix-blend-multiply",
-            palette.overlayGradient
-          )}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-
-        {/* Floating accent orb */}
-        <div
-          className="absolute -right-8 top-8 h-24 w-24 rounded-full blur-2xl opacity-40 transition-all duration-700 group-hover:scale-125"
-          style={{ backgroundColor: palette.accentHex }}
+          className="pointer-events-none absolute -inset-20 opacity-0 blur-3xl transition-opacity duration-1000 group-hover:opacity-100"
+          style={{
+            background: `radial-gradient(circle at 50% 0%, ${palette.glowColor} 0%, transparent 58%)`,
+          }}
           aria-hidden
         />
 
-        {/* Icon tile */}
-        <div className="absolute left-5 top-5">
+        {/* Secondary inner wash */}
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-x-6 bottom-6 top-[42%] rounded-[1.5rem] blur-2xl opacity-50",
+            palette.bodyTint
+          )}
+          aria-hidden
+        />
+
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <Image
+            src={service.image}
+            alt={service.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+            className="object-cover transition-transform duration-[1.4s] ease-cinematic group-hover:scale-110"
+          />
+
           <div
             className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-2xl shadow-glass transition-all duration-500 group-hover:-rotate-6 group-hover:scale-110",
-              palette.iconBg
+              "absolute inset-0 bg-gradient-to-t mix-blend-multiply",
+              palette.overlayGradient
             )}
-          >
-            <Icon className={cn("h-5 w-5", palette.iconText)} strokeWidth={1.5} />
-          </div>
-        </div>
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
-        {/* Price pill */}
-        <div className="absolute right-5 top-5">
+          {/* Floating accent orb */}
+          <div
+            className="absolute -right-8 top-8 h-24 w-24 rounded-full blur-2xl opacity-40 transition-all duration-700 group-hover:scale-125"
+            style={{ backgroundColor: palette.accentHex }}
+            aria-hidden
+          />
+
+          {/* Icon tile */}
+          <div className="absolute left-5 top-5">
+            <div
+              className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-2xl shadow-glass transition-all duration-500 group-hover:-rotate-6 group-hover:scale-110",
+                palette.iconBg
+              )}
+            >
+              <Icon className={cn("h-5 w-5", palette.iconText)} strokeWidth={1.5} />
+            </div>
+          </div>
+
+          {/* Decorative number */}
           <span
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] backdrop-blur-md",
-              palette.priceBg,
-              palette.priceText,
-              palette.priceBorder
-            )}
+            className="pointer-events-none absolute bottom-4 left-5 font-display text-6xl font-light leading-none tracking-tighter text-ivory opacity-50 transition-opacity duration-500 group-hover:opacity-80"
           >
-            {service.price}
+            0{index + 1}
           </span>
         </div>
 
-        {/* Decorative number */}
-        <span
-          className="pointer-events-none absolute bottom-4 left-5 font-display text-6xl font-light leading-none tracking-tighter text-ivory opacity-50 transition-opacity duration-500 group-hover:opacity-80"
-        >
-          0{index + 1}
-        </span>
-      </div>
-
-      <div className="relative p-7 sm:p-8">
-        <div
-          className={cn(
-            "mb-5 h-px w-14 transition-all duration-700 group-hover:w-24",
-            palette.isDark ? "bg-mauve/80" : "bg-gradient-to-r from-mauve via-sage to-deep"
-          )}
-        />
-
-        <h3
-          className={cn(
-            "font-display text-2xl font-light tracking-tight sm:text-3xl",
-            palette.titleColor
-          )}
-        >
-          {service.title}
-        </h3>
-
-        <p
-          className={cn(
-            "mt-3 text-sm font-light leading-relaxed",
-            palette.bodyColor
-          )}
-        >
-          {service.description}
-        </p>
-
-        <div className="mt-7 flex items-center justify-between">
-          <span className={cn("eyebrow", palette.eyebrowColor)}>Discover</span>
-
+        <div className="relative p-7 sm:p-8">
           <div
             className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-500 group-hover:scale-110",
-              palette.arrowBg,
-              palette.arrowBorder,
-              palette.arrowBgHover
+              "mb-5 h-px w-14 transition-all duration-700 group-hover:w-24",
+              palette.isDark ? "bg-mauve/80" : "bg-gradient-to-r from-mauve via-sage to-deep"
+            )}
+          />
+
+          <h3
+            className={cn(
+              "font-display text-2xl font-light tracking-tight sm:text-3xl",
+              palette.titleColor
             )}
           >
-            <ArrowUpRight
+            {service.title}
+          </h3>
+
+          <p
+            className={cn(
+              "mt-3 text-sm font-light leading-relaxed",
+              palette.bodyColor
+            )}
+          >
+            {service.description}
+          </p>
+
+          <div className="mt-7 flex items-center justify-between">
+            <span className={cn("eyebrow", palette.eyebrowColor)}>Discover</span>
+
+            <div
               className={cn(
-                "h-4 w-4 transition-all duration-500 group-hover:rotate-45",
-                palette.arrowText,
-                palette.arrowTextHover
+                "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-500 group-hover:scale-110",
+                palette.arrowBg,
+                palette.arrowBorder,
+                palette.arrowBgHover
               )}
-              strokeWidth={1.5}
-            />
+            >
+              <ArrowUpRight
+                className={cn(
+                  "h-4 w-4 transition-all duration-500 group-hover:rotate-45",
+                  palette.arrowText,
+                  palette.arrowTextHover
+                )}
+                strokeWidth={1.5}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
     </motion.article>
   );
 }
