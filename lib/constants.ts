@@ -215,42 +215,42 @@ export const BEFORE_AFTER: readonly BeforeAfterItem[] = [
 export const SOCIAL_IMAGES: readonly SocialImage[] = [
   {
     id: 1,
-    src: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-page-hero2.jpg",
     alt: "Facial treatment",
   },
   {
     id: 2,
-    src: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-page-hero3.jpg",
     alt: "Spa therapy",
   },
   {
     id: 3,
-    src: "https://images.unsplash.com/photo-1583241800698-e8ab01830a07?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-page-hero4.jpg",
     alt: "Lash artistry",
   },
   {
     id: 4,
-    src: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-page-hero5.jpg",
     alt: "Skincare routine",
   },
   {
     id: 5,
-    src: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-Full-Skincare.png",
     alt: "Skin treatment",
   },
   {
     id: 6,
-    src: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-Skin-Treatments.png",
     alt: "Aromatherapy",
   },
   {
     id: 7,
-    src: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-Spa-Therapy.png",
     alt: "Product ritual",
   },
   {
     id: 8,
-    src: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=600&q=80&auto=format&fit=crop",
+    src: "/images/homepage-hero/home-eye-lash.png",
     alt: "Beauty details",
   },
 ] as const;

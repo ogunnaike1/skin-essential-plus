@@ -680,7 +680,7 @@ function ProductCard({
           )}
         >
           <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.75} />
-          <span className="text-[10px] font-medium uppercase tracking-wider">Add</span>
+          <span className="text-[10px] font-medium uppercase tracking-wider">Add to Cart</span>
         </button>
       </div>
 

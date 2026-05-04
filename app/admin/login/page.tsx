@@ -48,8 +48,8 @@ export default function AdminLogin() {
 
       // Wait a bit, then redirect with full page reload
       setTimeout(() => {
-        console.log("🔄 Redirecting to /admin/dashboard...");
-        window.location.href = "/admin/dashboard";
+        console.log("🔄 Redirecting to /admin...");
+        window.location.href = "/admin";
       }, 1000); // Increased to 1 second to ensure cookie is set
 
     } catch (err: any) {

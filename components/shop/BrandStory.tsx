@@ -200,7 +200,7 @@ export function BrandStory(): React.ReactElement {
                 })}
               </div>
 
-              {/* CTA */}
+              {/* CTA - Single button linking to About page */}
               <div className="flex flex-wrap items-center gap-3">
                 <a
                   href="/about"
@@ -210,12 +210,6 @@ export function BrandStory(): React.ReactElement {
                   <span className="h-8 w-8 rounded-full bg-mauve flex items-center justify-center transition-transform duration-500 group-hover:rotate-[22deg]">
                     <ArrowUpRight className="h-3.5 w-3.5 text-ivory" strokeWidth={1.75} />
                   </span>
-                </a>
-                <a
-                  href="/about#team"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-full border-2 border-deep text-deep text-[11px] uppercase tracking-[0.22em] font-medium hover:bg-deep hover:text-ivory transition-colors"
-                >
-                  Meet the team
                 </a>
               </div>
             </motion.div>

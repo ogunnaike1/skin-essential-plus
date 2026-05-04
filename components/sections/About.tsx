@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface StatProps {
   value: string;
@@ -33,6 +34,69 @@ export function About(): React.ReactElement {
       id="about"
       className="relative py-24 sm:py-32 section-padding overflow-hidden"
     >
+      {/* Vibrant animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-mauve-tint via-sage-tint to-ivory">
+        <motion.div
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%'],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            repeatType: 'reverse',
+            ease: 'linear',
+          }}
+          className="absolute inset-0 opacity-50"
+          style={{
+            background: 'linear-gradient(135deg, #E6DCE4 0%, #DCE4E8 25%, #FCFBFC 50%, #E6DCE4 75%, #DCE4E8 100%)',
+            backgroundSize: '400% 400%',
+          }}
+        />
+      </div>
+
+      {/* Floating color orbs */}
+      <motion.div
+        animate={{
+          x: [0, 50, 0],
+          y: [0, -30, 0],
+          scale: [1, 1.2, 1],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute top-20 left-10 h-96 w-96 rounded-full bg-gradient-to-br from-mauve/30 to-transparent blur-3xl"
+      />
+      <motion.div
+        animate={{
+          x: [0, -50, 0],
+          y: [0, 40, 0],
+          scale: [1, 1.3, 1],
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
+        className="absolute bottom-20 right-10 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-sage/40 to-transparent blur-3xl"
+      />
+      <motion.div
+        animate={{
+          x: [0, 30, 0],
+          y: [0, -20, 0],
+          scale: [1, 1.15, 1],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
+        className="absolute top-1/2 right-1/4 h-80 w-80 rounded-full bg-gradient-to-br from-deep/20 to-transparent blur-3xl"
+      />
+
       <div className="relative max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Image stack */}
@@ -43,7 +107,7 @@ export function About(): React.ReactElement {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-6 relative"
           >
-            <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-glass-lg">
+            <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-glass-lg ring-1 ring-ivory/50">
               <Image
                 src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1200&q=85&auto=format&fit=crop"
                 alt="The Skin Essential Plus sanctuary interior"
@@ -59,7 +123,7 @@ export function About(): React.ReactElement {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute -bottom-8 -right-4 sm:right-8 w-40 sm:w-56 aspect-square rounded-3xl overflow-hidden shadow-lift border-4 border-ivory"
+              className="absolute -bottom-8 -right-4 sm:right-8 w-40 sm:w-56 aspect-square rounded-3xl overflow-hidden shadow-lift border-4 border-ivory ring-2 ring-mauve/20"
             >
               <Image
                 src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=600&q=85&auto=format&fit=crop"
@@ -70,10 +134,18 @@ export function About(): React.ReactElement {
               />
             </motion.div>
 
-            <div
-              className="absolute -top-6 -left-6 h-32 w-32 rounded-full blur-2xl opacity-50 pointer-events-none"
-              style={{ background: "radial-gradient(circle, #8A6F88, transparent 70%)" }}
-              aria-hidden
+            {/* Additional decorative glow */}
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute -top-6 -left-6 h-40 w-40 rounded-full blur-2xl bg-gradient-to-br from-mauve/60 via-sage/40 to-transparent pointer-events-none"
             />
           </motion.div>
 
@@ -126,14 +198,14 @@ export function About(): React.ReactElement {
               transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="mt-10"
             >
-              <button type="button" className="btn-outline">
+              <Link href="/about" className="btn-outline">
                 Our Full Story
                 <ArrowRight className="h-4 w-4" />
-              </button>
+              </Link>
             </motion.div>
 
             <div className="mt-14 grid grid-cols-3 gap-6 border-t border-deep/15 pt-10">
-              <Stat value="12K+" label="Transformations" delay={0.3} />
+              <Stat value="2,500+" label="Transformations" delay={0.3} />
               <Stat value="15" label="Master Artisans" delay={0.4} />
               <Stat value="98%" label="Return Rate" delay={0.5} />
             </div>

@@ -9,6 +9,7 @@ import Script from "next/script";
 import { SITE } from "@/lib/constants";
 import { ConditionalLayout } from "@/components/shared/ConditionalLayout";
 import { CartProvider } from "@/app/contexts/CartContext";
+import { RootLayoutClient } from "@/components/layout/RootLayoutClient";
 
 import "./globals.css";
 
@@ -83,10 +84,12 @@ export default function RootLayout({
           }
         `}</Script>
         
-        {/* Cart Provider - Wraps entire app for cart state */}
-        <CartProvider>
-          <ConditionalLayout>{children}</ConditionalLayout>
-        </CartProvider>
+        {/* Loading Screen + Cart Provider - Wraps entire app */}
+        <RootLayoutClient>
+          <CartProvider>
+            <ConditionalLayout>{children}</ConditionalLayout>
+          </CartProvider>
+        </RootLayoutClient>
       </body>
     </html>
   );
