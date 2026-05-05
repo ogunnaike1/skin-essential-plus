@@ -30,29 +30,20 @@ import { SuccessNotification, useSuccessNotification } from "@/components/shared
 type StockFilter = "all" | "in-stock" | "on-sale";
 type SortOption = "featured" | "price-low" | "price-high" | "rating";
 
-/**
- * MOBILE: Pure accordion — tap a category, products expand below.
- * DESKTOP: Full filter panel + product grid.
- */
 export function ProductsGrid(): React.ReactElement {
   const [activeCategory, setActiveCategory] = useState<ProductCategory | "all">("all");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
   const [sort, setSort] = useState<SortOption>("featured");
   const [favorites, setFavorites] = useState<ReadonlySet<string>>(new Set());
   const [search, setSearch] = useState("");
-
-  // Mobile accordion state - CHANGED TO SET
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
-  // Supabase products state
   const [products, setProducts] = useState<SupabaseProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Success notification for favorites and cart
   const { notification, showSuccess, hideSuccess } = useSuccessNotification();
 
-  // Load products from Supabase
   useEffect(() => {
     loadProducts();
   }, []);
@@ -101,7 +92,6 @@ export function ProductsGrid(): React.ReactElement {
   const filteredProducts = useMemo(() => {
     let list = [...products];
 
-    // Apply search filter
     const q = search.trim().toLowerCase();
     if (q) {
       list = list.filter((p) => {
@@ -147,50 +137,166 @@ export function ProductsGrid(): React.ReactElement {
 
   return (
     <>
-      <section id="products-grid" className="relative bg-ivory">
-        <div className="mx-auto max-w-[1600px]">
-          {/* DESKTOP LAYOUT */}
-          <div className="hidden lg:block px-6 sm:px-10 lg:px-14 py-16 sm:py-20">
+      {/* HERO SECTION WITH SEARCH */}
+      <section className="relative py-12 sm:py-16 overflow-hidden">
+        {/* Vibrant animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-sage via-mauve/80 to-deep">
+          <motion.div
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%'],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'linear',
+            }}
+            className="absolute inset-0 opacity-50"
+            style={{
+              background: 'linear-gradient(135deg, #4F7288, #8A6F88, #47676A, #0F5F2E)',
+              backgroundSize: '400% 400%',
+            }}
+          />
+        </div>
+
+        {/* Floating color orbs */}
+        <motion.div
+          animate={{
+            x: [0, 80, 0],
+            y: [0, -80, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-sage/40 to-transparent blur-3xl"
+        />
+        <motion.div
+          animate={{
+            x: [0, -70, 0],
+            y: [0, 70, 0],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-mauve/50 to-transparent blur-3xl"
+        />
+        <motion.div
+          animate={{
+            x: [0, 40, 0],
+            y: [0, -40, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+          className="absolute top-1/2 right-1/3 w-80 h-80 rounded-full bg-gradient-to-br from-deep/30 to-transparent blur-3xl"
+        />
+
+        <div className="relative section-padding max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ivory/10 backdrop-blur-sm mb-6">
+              <ShoppingBag className="h-4 w-4 text-ivory" />
+              <span className="text-xs uppercase tracking-wider text-ivory font-medium">
+                Our Shop
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light text-ivory mb-4 leading-tight">
+              Curated <span className="italic">Skincare</span> Collection
+            </h1>
+
+            <p className="text-lg text-ivory/80 mb-10 max-w-2xl mx-auto">
+              {loading ? 'Loading our luxury products...' : `${products.length} clinician-approved products across ${PRODUCT_CATEGORIES.length} categories`}
+            </p>
+
+            {/* Enhanced Search Bar */}
             <motion.div
-              initial={{ opacity: 1, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-10 sm:mb-14 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="max-w-2xl mx-auto"
             >
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="h-1 w-8 rounded-full bg-mauve" />
-                  <span className="h-1 w-8 rounded-full bg-sage" />
-                  <span className="h-1 w-8 rounded-full bg-deep" />
+              <div className="relative group">
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-sage via-mauve to-deep rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000" />
+                
+                {/* Search input */}
+                <div className="relative">
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-deep/40 z-10" />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="relative w-full h-16 pl-14 pr-14 rounded-full border-2 border-ivory/20 bg-ivory/95 backdrop-blur-xl text-deep placeholder:text-deep/40 text-lg font-light focus:border-ivory focus:outline-none focus:ring-4 focus:ring-ivory/20 transition-all shadow-xl"
+                    placeholder="Search for serums, cleansers, moisturizers..."
+                    disabled={loading}
+                  />
+                  {search && (
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-deep/5 transition-colors"
+                    >
+                      <X className="h-5 w-5 text-deep/60" />
+                    </button>
+                  )}
                 </div>
-                <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-light text-deep leading-tight tracking-tight">
-                  The full <em className="not-italic text-mauve">library</em>.
-                </h2>
-                <p className="mt-3 text-sm sm:text-base font-light text-deep max-w-lg">
-                  {loading ? 'Loading products...' : `Browse ${products.length} clinician-approved products across ${PRODUCT_CATEGORIES.length} categories.`}
-                </p>
               </div>
 
-              <div className="relative">
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as SortOption)}
-                  className="h-11 pl-4 pr-10 rounded-full bg-ivory border-2 border-mauve text-deep text-[11px] uppercase tracking-[0.15em] font-medium appearance-none cursor-pointer focus:border-deep focus:outline-none transition-colors"
-                  aria-label="Sort products"
+              {/* Search results count */}
+              {search && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-4 text-sm text-ivory/80"
                 >
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: low to high</option>
-                  <option value="price-high">Price: high to low</option>
-                  <option value="rating">Top rated</option>
-                </select>
-                <ArrowUpRight className="absolute right-3 top-1/2 -translate-y-1/2 h-3 w-3 text-mauve rotate-90 pointer-events-none" />
-              </div>
+                  {filteredProducts.length} product{filteredProducts.length === 1 ? "" : "s"} found
+                </motion.p>
+              )}
             </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Decorative corner accents */}
+        <div className="absolute top-8 left-8 w-16 h-16 border-l-2 border-t-2 border-ivory/30 rounded-tl-2xl" />
+        <div className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-ivory/30 rounded-br-2xl" />
+      </section>
+
+      {/* PRODUCTS GRID SECTION */}
+      <section id="products-grid" className="relative bg-ivory py-8 sm:py-12">
+        <div className="mx-auto max-w-[1600px]">
+          {/* DESKTOP LAYOUT */}
+          <div className="hidden lg:block px-6 sm:px-10 lg:px-14">
+            {error && (
+              <div className="mb-8 p-6 rounded-2xl bg-mauve-tint border-2 border-mauve">
+                <p className="text-deep text-sm mb-3">{error}</p>
+                <button
+                  onClick={loadProducts}
+                  className="px-6 py-2.5 rounded-full bg-mauve text-ivory text-sm font-medium hover:bg-mauve-dark transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
 
             {/* Fixed-height grid wrapper with independent scroll */}
             <div className="grid grid-cols-12 gap-8 h-[calc(100vh-12rem)]">
-              {/* Sidebar — fills parent height, internal scroll */}
+              {/* Sidebar */}
               <aside className="col-span-3 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
                 <FilterPanel
                   activeCategory={activeCategory}
@@ -203,11 +309,12 @@ export function ProductsGrid(): React.ReactElement {
                 />
               </aside>
 
-              {/* Product grid — fills parent height, scrolls independently */}
+              {/* Product grid */}
               <div className="col-span-9 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-mauve scrollbar-track-transparent">
                 {loading ? (
-                  <div className="flex items-center justify-center py-20">
-                    <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+                  <div className="flex flex-col items-center justify-center py-32">
+                    <Loader2 className="h-12 w-12 animate-spin text-mauve mb-4" />
+                    <p className="text-deep/60 font-light">Loading products...</p>
                   </div>
                 ) : error ? (
                   <div className="text-center py-20">
@@ -241,172 +348,131 @@ export function ProductsGrid(): React.ReactElement {
 
           {/* MOBILE ACCORDION LAYOUT */}
           <div className="lg:hidden px-6 py-10">
-            <motion.div
-              initial={{ opacity: 1, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-8"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <span className="h-1 w-8 rounded-full bg-mauve" />
-                <span className="eyebrow text-mauve text-[10px]">
-                  — Browse by category
-                </span>
+            {error && (
+              <div className="mb-6 p-4 rounded-2xl bg-mauve-tint border-2 border-mauve">
+                <p className="text-deep text-sm">{error}</p>
+                <button
+                  onClick={loadProducts}
+                  className="mt-2 px-4 py-2 rounded-full bg-mauve text-ivory text-sm hover:bg-mauve-dark transition-colors"
+                >
+                  Retry
+                </button>
               </div>
-              <h2 className="font-display text-3xl font-light text-deep leading-tight tracking-tight">
-                Shop the collection
-              </h2>
-              <p className="mt-2 text-sm font-light text-deep">
-                Search or tap a category to see products.
-              </p>
-            </motion.div>
+            )}
 
-            {/* Mobile Search Bar */}
-            <div className="mb-6">
-              <div className="relative">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep"
-                  strokeWidth={1.5}
-                />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-12 pl-11 pr-10 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-deep/10 transition-colors"
-                  >
-                    <X className="h-4 w-4 text-deep" strokeWidth={1.5} />
-                  </button>
-                )}
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="h-10 w-10 animate-spin text-mauve mb-3" />
+                <p className="text-deep/60 text-sm font-light">Loading products...</p>
               </div>
-              {search && (
-                <p className="text-xs text-deep mt-2">
-                  {filteredProducts.length} result{filteredProducts.length === 1 ? "" : "s"} found
-                </p>
-              )}
-            </div>
-
-            {/* Accordion list */}
-            <div className="space-y-3">
-              {loading ? (
-                <div className="flex items-center justify-center py-20">
-                  <Loader2 className="h-8 w-8 animate-spin text-mauve" />
-                </div>
-              ) : (
-                PRODUCT_CATEGORIES.map((cat) => {
+            ) : (
+              <div className="space-y-3">
+                {PRODUCT_CATEGORIES.map((cat) => {
                   const allProductsInCat = filteredProducts.filter((p) => p.category === cat.id);
                   if (allProductsInCat.length === 0) return null;
                   
                   const isExpanded = expandedCategories.has(cat.id);
 
-                const accentBg: Record<typeof cat.color, string> = {
-                  mauve: "bg-mauve",
-                  sage: "bg-sage",
-                  deep: "bg-deep",
-                };
-                const accentText: Record<typeof cat.color, string> = {
-                  mauve: "text-mauve",
-                  sage: "text-sage",
-                  deep: "text-deep",
-                };
-                const accentBorder: Record<typeof cat.color, string> = {
-                  mauve: "border-mauve",
-                  sage: "border-sage",
-                  deep: "border-deep",
-                };
+                  const accentBg: Record<typeof cat.color, string> = {
+                    mauve: "bg-mauve",
+                    sage: "bg-sage",
+                    deep: "bg-deep",
+                  };
+                  const accentText: Record<typeof cat.color, string> = {
+                    mauve: "text-mauve",
+                    sage: "text-sage",
+                    deep: "text-deep",
+                  };
+                  const accentBorder: Record<typeof cat.color, string> = {
+                    mauve: "border-mauve",
+                    sage: "border-sage",
+                    deep: "border-deep",
+                  };
 
-                return (
-                  <div
-                    key={cat.id}
-                    className={cn(
-                      "relative overflow-hidden rounded-2xl border-2 transition-colors duration-300",
-                      isExpanded
-                        ? accentBorder[cat.color]
-                        : "border-deep/10 hover:border-deep/20"
-                    )}
-                  >
-                    {/* Accordion header */}
-                    <button
-                      type="button"
-                      onClick={() => handleCategoryClick(cat.id)}
-                      className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
+                  return (
+                    <div
+                      key={cat.id}
+                      className={cn(
+                        "relative overflow-hidden rounded-2xl border-2 transition-colors duration-300",
+                        isExpanded
+                          ? accentBorder[cat.color]
+                          : "border-deep/10 hover:border-deep/20"
+                      )}
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div
-                          className={cn(
-                            "shrink-0 h-11 w-11 rounded-xl flex items-center justify-center",
-                            accentBg[cat.color]
-                          )}
-                        >
-                          <Sparkles className="h-5 w-5 text-ivory" strokeWidth={1.5} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3
+                      <button
+                        type="button"
+                        onClick={() => handleCategoryClick(cat.id)}
+                        className="w-full flex items-center justify-between gap-4 p-5 bg-ivory text-left"
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div
                             className={cn(
-                              "font-display text-xl font-light leading-tight tracking-tight",
-                              isExpanded ? accentText[cat.color] : "text-deep"
+                              "shrink-0 h-11 w-11 rounded-xl flex items-center justify-center",
+                              accentBg[cat.color]
                             )}
                           >
-                            {cat.label}
-                          </h3>
-                          <p className="text-[11px] text-deep font-light truncate">
-                            {allProductsInCat.length} product
-                            {allProductsInCat.length === 1 ? "" : "s"}
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronDown
-                        className={cn(
-                          "h-5 w-5 shrink-0 transition-transform duration-300",
-                          isExpanded ? cn("rotate-180", accentText[cat.color]) : "text-deep"
-                        )}
-                        strokeWidth={1.5}
-                      />
-                    </button>
-
-                    {/* Accordion panel */}
-                    <AnimatePresence initial={false}>
-                      {isExpanded ? (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ 
-                            duration: 0.4, 
-                            ease: [0.16, 1, 0.3, 1]
-                          }}
-                          style={{ overflow: "hidden" }}
-                        >
-                          <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
-                            {allProductsInCat.map((product, idx) => (
-                              <ProductCard
-                                key={product.id}
-                                product={product}
-                                index={idx}
-                                isFavorite={favorites.has(product.id)}
-                                onToggleFavorite={toggleFavorite}
-                                showSuccess={showSuccess}
-                              />
-                            ))}
+                            <Sparkles className="h-5 w-5 text-ivory" strokeWidth={1.5} />
                           </div>
-                        </motion.div>
-                      ) : null}
-                    </AnimatePresence>
-                  </div>
-                );
-              })
-              )}
-            </div>
+                          <div className="flex-1 min-w-0">
+                            <h3
+                              className={cn(
+                                "font-display text-xl font-light leading-tight tracking-tight",
+                                isExpanded ? accentText[cat.color] : "text-deep"
+                              )}
+                            >
+                              {cat.label}
+                            </h3>
+                            <p className="text-[11px] text-deep font-light truncate">
+                              {allProductsInCat.length} product
+                              {allProductsInCat.length === 1 ? "" : "s"}
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronDown
+                          className={cn(
+                            "h-5 w-5 shrink-0 transition-transform duration-300",
+                            isExpanded ? cn("rotate-180", accentText[cat.color]) : "text-deep"
+                          )}
+                          strokeWidth={1.5}
+                        />
+                      </button>
+
+                      <AnimatePresence initial={false}>
+                        {isExpanded ? (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ 
+                              duration: 0.4, 
+                              ease: [0.16, 1, 0.3, 1]
+                            }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="p-5 pt-0 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-ivory">
+                              {allProductsInCat.map((product, idx) => (
+                                <ProductCard
+                                  key={product.id}
+                                  product={product}
+                                  index={idx}
+                                  isFavorite={favorites.has(product.id)}
+                                  onToggleFavorite={toggleFavorite}
+                                  showSuccess={showSuccess}
+                                />
+                              ))}
+                            </div>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Success Notification - Single instance for entire grid */}
       <SuccessNotification
         {...notification}
         onClose={hideSuccess}
@@ -415,9 +481,7 @@ export function ProductsGrid(): React.ReactElement {
   );
 }
 
-// ──────────────────────────────────────────────────────────────
-// Desktop filter sidebar
-// ──────────────────────────────────────────────────────────────
+// Filter Panel Component (unchanged)
 interface FilterPanelProps {
   activeCategory: ProductCategory | "all";
   setActiveCategory: (c: ProductCategory | "all") => void;
@@ -553,9 +617,7 @@ function FilterPanel({
   );
 }
 
-// ──────────────────────────────────────────────────────────────
-// Product Card - WITH ADD TO CART (ALWAYS VISIBLE)
-// ──────────────────────────────────────────────────────────────
+// ProductCard Component (unchanged - keeping your existing implementation)
 interface ProductCardProps {
   product: SupabaseProduct;
   index: number;
@@ -591,7 +653,6 @@ function ProductCard({
     deep: "text-deep",
   };
 
-  // Add to cart handler
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     addToCart(product);
@@ -669,7 +730,6 @@ function ProductCard({
           />
         </button>
 
-        {/* ADD TO CART BUTTON - ALWAYS VISIBLE */}
         <button
           type="button"
           onClick={handleAddToCart}
@@ -759,9 +819,6 @@ function ProductCard({
   );
 }
 
-// ──────────────────────────────────────────────────────────────
-// Empty state
-// ──────────────────────────────────────────────────────────────
 function EmptyState({ clearAll }: { clearAll: () => void }): React.ReactElement {
   return (
     <div className="text-center py-24 px-6 rounded-2xl border-2 border-mauve bg-mauve-tint">

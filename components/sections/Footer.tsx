@@ -1,21 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 
 import { Logo } from "@/components/ui/Logo";
 import { NAV_LINKS, SITE } from "@/lib/constants";
 
 const SERVICES_LINKS = [
-  { label: "Skin Treatments", href: "#services" },
-  { label: "Spa Therapy", href: "#services" },
-  { label: "Eyelash Sketching", href: "#services" },
-  { label: "Full Skincare", href: "#services" },
+  { label: "Skin Treatments", href: "/services" },
+  { label: "Spa Therapy", href: "/services" },
+  { label: "Eyelash Sketching", href: "/services" },
+  { label: "Full Skincare", href: "/services" },
 ] as const;
 
 const LEGAL_LINKS = [
-  { label: "Privacy", href: "#" },
-  { label: "Terms", href: "#" },
-  { label: "Cookies", href: "#" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Cookies", href: "/cookies" },
 ] as const;
 
 const SOCIALS = [
@@ -75,12 +76,12 @@ export function Footer(): React.ReactElement {
               <ul className="space-y-3">
                 {NAV_LINKS.map((link) => (
                   <li key={link.href}>
-                    <a
+                    <Link
                       href={link.href}
                       className="text-sm font-light text-ivory hover:text-ivory transition-colors duration-300"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -91,12 +92,12 @@ export function Footer(): React.ReactElement {
               <ul className="space-y-3">
                 {SERVICES_LINKS.map((link) => (
                   <li key={link.label}>
-                    <a
+                    <Link
                       href={link.href}
                       className="text-sm font-light text-ivory hover:text-ivory transition-colors duration-300"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -134,12 +135,12 @@ export function Footer(): React.ReactElement {
             <ul className="flex items-center gap-6">
               {LEGAL_LINKS.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-xs text-ivory/85 hover:text-ivory font-light tracking-wide transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

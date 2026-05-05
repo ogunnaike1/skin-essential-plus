@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { ServicesCTA } from "@/components/services/ServicesCTA";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
-import { ServicesHero } from "@/components/services/ServicesHero";
+
 
 export const metadata: Metadata = {
   title: "Services — Rituals & Treatments",
@@ -14,7 +14,6 @@ export default function ServicesPage(): React.ReactElement {
   return (
     <>
       <main>
-        <ServicesHero />
         <ServicesGrid />
         <ServicesCTA />
       </main>

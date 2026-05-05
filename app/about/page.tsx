@@ -5,7 +5,7 @@ import { JoinCTA } from "@/components/about/JoinCTA";
 import { Milestones } from "@/components/about/Milestones";
 import { OurStory } from "../../components/about/OurStory";
 import { Philosophy } from "../../components/about/Philosophy";
-import { TeamGrid } from "@/components/about/TeamGrid";
+
 import { Values } from "@/components/about/Values";
 
 
@@ -23,7 +23,6 @@ export default function AboutPage(): React.ReactElement {
         <OurStory />
         <Philosophy />
         <FounderLetter />
-        <TeamGrid />
         <Values />
         <Milestones />
         <JoinCTA />

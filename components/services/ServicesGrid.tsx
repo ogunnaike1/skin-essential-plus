@@ -6,6 +6,7 @@ import {
   Search,
   X,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 
@@ -136,7 +137,6 @@ export function ServicesGrid(): React.ReactElement {
     return map;
   }, [filteredServices]);
 
-  // Calculate service counts for CategoryNav
   const serviceCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     servicesByCategory.forEach((items, catId) => {
@@ -157,60 +157,160 @@ export function ServicesGrid(): React.ReactElement {
 
   return (
     <>
-      <section
-        id="services-grid"
-        className="relative py-12 sm:py-16"
-        style={{
-          background:
-            "linear-gradient(180deg, #FCFBFC 0%, rgba(138,111,136,0.08) 50%, rgba(79,114,136,0.08) 100%)",
-        }}
-      >
-        <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-14">
-          <div className="hidden lg:block">
-            <div className="mb-8">
-              <h2 className="text-4xl font-light text-deep">
-                Find your <span className="text-mauve">ritual</span>
-              </h2>
-              <p className="text-sm text-deep mt-2">
-                {loading ? 'Loading services...' : `${totalResults} services match`}
-              </p>
+      {/* HERO SECTION WITH SEARCH */}
+      <section className="relative py-12 sm:py-16 overflow-hidden">
+        {/* Vibrant animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-mauve via-sage/80 to-deep">
+          <motion.div
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%'],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'linear',
+            }}
+            className="absolute inset-0 opacity-50"
+            style={{
+              background: 'linear-gradient(135deg, #8A6F88, #4F7288, #47676A, #0F5F2E)',
+              backgroundSize: '400% 400%',
+            }}
+          />
+        </div>
+
+        {/* Floating color orbs */}
+        <motion.div
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-mauve/40 to-transparent blur-3xl"
+        />
+        <motion.div
+          animate={{
+            x: [0, -80, 0],
+            y: [0, 80, 0],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-sage/50 to-transparent blur-3xl"
+        />
+        <motion.div
+          animate={{
+            x: [0, 50, 0],
+            y: [0, -50, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+          className="absolute top-1/2 right-1/3 w-80 h-80 rounded-full bg-gradient-to-br from-forest/30 to-transparent blur-3xl"
+        />
+
+        <div className="relative section-padding max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ivory/10 backdrop-blur-sm mb-6">
+              <Sparkles className="h-4 w-4 text-ivory" />
+              <span className="text-xs uppercase tracking-wider text-ivory font-medium">
+                Our Services
+              </span>
             </div>
 
-            <div className="flex gap-3 mb-6">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-mauve" />
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-12 pl-10 pr-10 rounded-full border border-mauve/30"
-                  placeholder="Search services..."
-                  disabled={loading}
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
+            {/* Title */}
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light text-ivory mb-4 leading-tight">
+              Discover Your <span className="italic">Perfect</span> Ritual
+            </h1>
+
+            <p className="text-lg text-ivory/80 mb-10 max-w-2xl mx-auto">
+              {loading ? 'Loading our curated treatments...' : `${totalResults} premium treatments await you`}
+            </p>
+
+            {/* Enhanced Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="max-w-2xl mx-auto"
+            >
+              <div className="relative group">
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-mauve via-sage to-deep rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000" />
+                
+                {/* Search input */}
+                <div className="relative">
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-deep/40 z-10" />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="relative w-full h-16 pl-14 pr-14 rounded-full border-2 border-ivory/20 bg-ivory/95 backdrop-blur-xl text-deep placeholder:text-deep/40 text-lg font-light focus:border-ivory focus:outline-none focus:ring-4 focus:ring-ivory/20 transition-all shadow-xl"
+                    placeholder="Search for treatments, skincare, spa..."
+                    disabled={loading}
+                  />
+                  {search && (
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-deep/5 transition-colors"
+                    >
+                      <X className="h-5 w-5 text-deep/60" />
+                    </button>
+                  )}
+                </div>
               </div>
 
-              <button
-                onClick={() => setShowFilters((v) => !v)}
-                className="px-4 rounded-full border"
-                disabled={loading}
-              >
-                Filters
-              </button>
-            </div>
+              {/* Search results count */}
+              {search && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-4 text-sm text-ivory/80"
+                >
+                  {totalResults} result{totalResults === 1 ? "" : "s"} found
+                </motion.p>
+              )}
+            </motion.div>
+          </motion.div>
+        </div>
 
+        {/* Decorative corner accents */}
+        <div className="absolute top-8 left-8 w-16 h-16 border-l-2 border-t-2 border-ivory/30 rounded-tl-2xl" />
+        <div className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-ivory/30 rounded-br-2xl" />
+      </section>
+
+      {/* SERVICES GRID SECTION */}
+      <section
+        id="services-grid"
+        className="relative py-8 sm:py-12 bg-ivory"
+      >
+        <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-14">
+          {/* DESKTOP LAYOUT */}
+          <div className="hidden lg:block">
             {error && (
-              <div className="mb-6 p-4 rounded-2xl bg-mauve-tint border-2 border-mauve">
-                <p className="text-deep text-sm">{error}</p>
+              <div className="mb-8 p-6 rounded-2xl bg-mauve-tint border-2 border-mauve">
+                <p className="text-deep text-sm mb-3">{error}</p>
                 <button
                   onClick={loadServices}
-                  className="mt-2 px-4 py-2 rounded-full bg-mauve text-ivory text-sm hover:bg-mauve-dark transition-colors"
+                  className="px-6 py-2.5 rounded-full bg-mauve text-ivory text-sm font-medium hover:bg-mauve-dark transition-colors"
                 >
                   Retry
                 </button>
@@ -218,23 +318,31 @@ export function ServicesGrid(): React.ReactElement {
             )}
 
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+              <div className="flex flex-col items-center justify-center py-32">
+                <Loader2 className="h-12 w-12 animate-spin text-mauve mb-4" />
+                <p className="text-deep/60 font-light">Loading treatments...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <CategoryNav serviceCounts={serviceCounts} totalServices={totalResults} />
 
-                <div className="lg:col-span-9 space-y-12">
+                <div className="lg:col-span-9 space-y-16">
                   {SERVICE_CATEGORIES.map((cat) => {
                     const items = servicesByCategory.get(cat.id) ?? [];
                     if (!items.length) return null;
 
                     return (
                       <section key={cat.id} id={cat.id} className="scroll-mt-28">
-                        <h3 className="text-2xl mb-4">{cat.name}</h3>
+                        <div className="mb-6">
+                          <h3 className="font-display text-3xl font-light text-deep mb-2">
+                            {cat.name}
+                          </h3>
+                          <p className="text-sm text-deep/60">
+                            {items.length} treatment{items.length === 1 ? "" : "s"} available
+                          </p>
+                        </div>
 
-                        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
                           {items.map((s, idx) => (
                             <ServiceCard
                               key={s.id}
@@ -258,45 +366,6 @@ export function ServicesGrid(): React.ReactElement {
 
           {/* MOBILE LAYOUT */}
           <div className="lg:hidden">
-            <div className="mb-6">
-              <h2 className="text-3xl font-light text-deep">
-                Our <span className="text-mauve">services</span>
-              </h2>
-              <p className="text-sm text-deep mt-2">
-                {loading ? 'Loading...' : 'Search or tap a category to view treatments'}
-              </p>
-            </div>
-
-            {/* Mobile Search Bar */}
-            <div className="mb-6">
-              <div className="relative">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep"
-                  strokeWidth={1.5}
-                />
-                <input
-                  type="text"
-                  placeholder="Search services..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-12 pl-11 pr-10 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-deep/10 transition-colors"
-                  >
-                    <X className="h-4 w-4 text-deep" strokeWidth={1.5} />
-                  </button>
-                )}
-              </div>
-              {search && (
-                <p className="text-xs text-deep mt-2">
-                  {totalResults} result{totalResults === 1 ? "" : "s"} found
-                </p>
-              )}
-            </div>
-
             {error && (
               <div className="mb-6 p-4 rounded-2xl bg-mauve-tint border-2 border-mauve">
                 <p className="text-deep text-sm">{error}</p>
@@ -310,8 +379,9 @@ export function ServicesGrid(): React.ReactElement {
             )}
 
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="h-10 w-10 animate-spin text-mauve mb-3" />
+                <p className="text-deep/60 text-sm font-light">Loading treatments...</p>
               </div>
             ) : (
               <div className="space-y-3">

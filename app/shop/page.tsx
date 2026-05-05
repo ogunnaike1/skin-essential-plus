@@ -5,7 +5,7 @@ import { BrandStory } from "@/components/shop/BrandStory";
 import { NewArrivals } from "@/components/shop/NewArrivals";
 import { ProductsGrid } from "@/components/shop/ProductsGrid";
 import { ShopCTA } from "@/components/shop/ShopCTA";
-import { ShopHero } from "@/components/shop/ShopHero";
+
 
 export const metadata: Metadata = {
   title: "Shop — Clinical Skincare & Tools",
@@ -17,10 +17,9 @@ export default function ShopPage(): React.ReactElement {
   return (
     <>
       <main>
-        <ShopHero />
-         <ProductsGrid />
+        <ProductsGrid />
+         <BestSellers />
          <NewArrivals />
-        <BestSellers />
         <BrandStory />
         <ShopCTA />
       </main>

@@ -48,10 +48,15 @@ export const metadata: Metadata = {
     "premium skincare",
     "facial treatments",
   ],
+  icons: {
+    icon: "/images/skin-essential-transparent.png",
+    apple: "/images/skin-essential-transparent.png",
+  },
   openGraph: {
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
     type: "website",
+    images: [{ url: "/images/skin-essential-transparent.png" }],
   },
 };
 
