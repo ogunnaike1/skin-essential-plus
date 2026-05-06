@@ -27,7 +27,7 @@ export const SITE = {
     "Premium skincare, spa therapy, and beauty rituals crafted for the modern connoisseur.",
   email: "hello@skinessentialplus.com",
   phone: "+234 800 123 4567",
-  address: "12 Serenity Avenue, Victoria Island, Lagos",
+  address: "No 2, Alaafia Avenue, Opposite IDC Primary School, Akobo, Ibadan",
   hours: "Mon–Sat · 9:00 AM – 8:00 PM",
 } as const;
 
@@ -48,7 +48,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Precision skin therapies tailored to your unique biology — where advanced science meets timeless beauty rituals.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero2",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg",
     ctaPrimary: "Book an Appointment",
     ctaSecondary: "Explore Services",
   },
@@ -59,7 +59,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Sanctuary rituals designed to restore equilibrium — a curated escape for the senses and the skin.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero3",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg",
     ctaPrimary: "Reserve a Session",
     ctaSecondary: "View Menu",
   },
@@ -215,22 +215,22 @@ export const BEFORE_AFTER: readonly BeforeAfterItem[] = [
 export const SOCIAL_IMAGES: readonly SocialImage[] = [
   {
     id: 1,
-    src: "/images/homepage-hero/home-page-hero2.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg",
     alt: "Facial treatment",
   },
   {
     id: 2,
-    src: "/images/homepage-hero/home-page-hero3.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg",
     alt: "Spa therapy",
   },
   {
     id: 3,
-    src: "/images/homepage-hero/home-page-hero4.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778093141/skin-ig4_ihjvl0.jpg",
     alt: "Lash artistry",
   },
   {
     id: 4,
-    src: "/images/homepage-hero/home-page-hero5.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig2_w7tvnk.jpg",
     alt: "Skincare routine",
   },
   {

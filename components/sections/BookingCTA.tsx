@@ -24,7 +24,7 @@ export function BookingCTA(): React.ReactElement {
           >
             <div className="absolute inset-0 opacity-30">
               <Image
-                src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1800&q=85&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=1800&q=85&auto=format&fit=crop"
                 alt=""
                 fill
                 sizes="100vw"

@@ -2,23 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  CheckCircle2, 
-  X, 
-  ShoppingBag, 
-  Calendar, 
-  Upload, 
+import {
+  CheckCircle2,
+  X,
+  ShoppingBag,
+  Calendar,
+  Upload,
   LogIn,
   Package,
   Sparkles,
   Heart,
   Trash2,
   Edit,
-  Send
+  Send,
+  AlertCircle,
 } from "lucide-react";
 import React from "react";
 
-export type NotificationType = 
+export type NotificationType =
   | "appointment-booked"
   | "cart-added"
   | "login-success"
@@ -28,7 +29,8 @@ export type NotificationType =
   | "item-updated"
   | "favorite-added"
   | "message-sent"
-  | "generic-success";
+  | "generic-success"
+  | "generic-error";
 
 interface SuccessNotificationProps {
   isOpen: boolean;
@@ -39,19 +41,23 @@ interface SuccessNotificationProps {
   details?: string;
   autoClose?: boolean;
   duration?: number;
+  variant?: "success" | "error";
 }
 
-const notificationConfig: Record<NotificationType, {
-  icon: React.ReactNode;
-  color: "mauve" | "sage" | "deep";
-  defaultTitle: string;
-  defaultMessage: string;
-}> = {
+const notificationConfig: Record<
+  NotificationType,
+  {
+    icon: React.ReactNode;
+    color: "mauve" | "sage" | "deep";
+    defaultTitle: string;
+    defaultMessage: string;
+  }
+> = {
   "appointment-booked": {
     icon: <Calendar className="h-6 w-6" />,
     color: "mauve",
     defaultTitle: "Appointment Booked!",
-    defaultMessage: "Your appointment has been successfully scheduled. We'll send you a confirmation shortly.",
+    defaultMessage: "Your appointment has been successfully scheduled.",
   },
   "cart-added": {
     icon: <ShoppingBag className="h-6 w-6" />,
@@ -107,6 +113,12 @@ const notificationConfig: Record<NotificationType, {
     defaultTitle: "Success!",
     defaultMessage: "Operation completed successfully.",
   },
+  "generic-error": {
+    icon: <AlertCircle className="h-6 w-6" />,
+    color: "mauve",
+    defaultTitle: "Something went wrong",
+    defaultMessage: "Please try again or contact us for help.",
+  },
 };
 
 export function SuccessNotification({
@@ -118,52 +130,34 @@ export function SuccessNotification({
   details,
   autoClose = true,
   duration = 4000,
+  variant,
 }: SuccessNotificationProps) {
   const config = notificationConfig[type];
+  const isError = variant === "error" || type === "generic-error";
+
   const displayTitle = title || config.defaultTitle;
   const displayMessage = message || config.defaultMessage;
 
   useEffect(() => {
     if (isOpen && autoClose) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, duration);
-
+      const timer = setTimeout(onClose, duration);
       return () => clearTimeout(timer);
     }
   }, [isOpen, autoClose, duration, onClose]);
 
   const colorClasses = {
-    mauve: {
-      bg: "bg-mauve",
-      text: "text-mauve",
-      tint: "bg-mauve-tint",
-      border: "border-mauve",
-      glow: "bg-mauve/20",
-    },
-    sage: {
-      bg: "bg-sage",
-      text: "text-sage",
-      tint: "bg-sage-tint",
-      border: "border-sage",
-      glow: "bg-sage/20",
-    },
-    deep: {
-      bg: "bg-deep",
-      text: "text-deep",
-      tint: "bg-deep-tint",
-      border: "border-deep",
-      glow: "bg-deep/20",
-    },
+    mauve: { bg: "bg-mauve", text: "text-mauve", tint: "bg-mauve-tint", border: "border-mauve", glow: "bg-mauve/20" },
+    sage:  { bg: "bg-sage",  text: "text-sage",  tint: "bg-sage-tint",  border: "border-sage",  glow: "bg-sage/20"  },
+    deep:  { bg: "bg-deep",  text: "text-deep",  tint: "bg-deep-tint",  border: "border-deep",  glow: "bg-deep/20"  },
   };
 
-  const colors = colorClasses[config.color];
+  const effectiveColor = isError ? "mauve" : config.color;
+  const colors = colorClasses[effectiveColor];
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -173,24 +167,16 @@ export function SuccessNotification({
             onClick={onClose}
           />
 
-          {/* Notification Card */}
           <div className="fixed inset-0 z-[201] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 300, 
-                damping: 25,
-                duration: 0.3 
-              }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className="pointer-events-auto relative w-full max-w-md"
             >
-              {/* Decorative glow */}
               <div className={`absolute inset-0 rounded-[32px] blur-2xl ${colors.glow} -z-10`} />
 
-              {/* Card */}
               <div className="relative overflow-hidden rounded-[28px] border border-ivory/40 bg-ivory shadow-2xl">
                 {/* Top accent bar */}
                 <div className="h-1.5 w-full flex">
@@ -199,34 +185,29 @@ export function SuccessNotification({
                   <span className="flex-1 bg-ivory/20" />
                 </div>
 
-                {/* Content */}
                 <div className="p-8">
                   {/* Icon */}
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    transition={{ 
-                      type: "spring", 
-                      stiffness: 200, 
-                      damping: 15,
-                      delay: 0.1 
-                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
                     className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${colors.bg} text-ivory mb-6 relative`}
                   >
-                    {config.icon}
-                    
-                    {/* Success checkmark overlay */}
+                    {isError ? <AlertCircle className="h-6 w-6" /> : config.icon}
+
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.3, duration: 0.2 }}
-                      className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-ivory border-2 border-sage flex items-center justify-center"
+                      className={`absolute -top-1 -right-1 w-6 h-6 rounded-full bg-ivory border-2 ${colors.border} flex items-center justify-center`}
                     >
-                      <CheckCircle2 className="h-4 w-4 text-sage" strokeWidth={3} />
+                      {isError
+                        ? <X className={`h-3.5 w-3.5 ${colors.text}`} strokeWidth={3} />
+                        : <CheckCircle2 className="h-4 w-4 text-sage" strokeWidth={3} />
+                      }
                     </motion.div>
                   </motion.div>
 
-                  {/* Text */}
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -235,17 +216,16 @@ export function SuccessNotification({
                     <h3 className="font-display text-2xl font-light text-deep mb-2 leading-tight">
                       {displayTitle}
                     </h3>
-                    <p className="text-sm text-deep/70 leading-relaxed mb-1">
+                    <p className="text-sm text-deep/70 leading-relaxed">
                       {displayMessage}
                     </p>
                     {details && (
-                      <p className="text-xs text-deep/50 mt-2 font-mono">
+                      <p className="text-xs text-deep/50 mt-2 font-mono break-all">
                         {details}
                       </p>
                     )}
                   </motion.div>
 
-                  {/* Sparkles decoration */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -256,7 +236,6 @@ export function SuccessNotification({
                   </motion.div>
                 </div>
 
-                {/* Progress bar (for auto-close) */}
                 {autoClose && (
                   <motion.div
                     initial={{ scaleX: 1 }}
@@ -266,10 +245,9 @@ export function SuccessNotification({
                   />
                 )}
 
-                {/* Close button */}
                 <button
                   onClick={onClose}
-                  className={`absolute top-4 right-4 p-2 rounded-full ${colors.tint} ${colors.text} hover:${colors.bg} hover:text-ivory transition-all duration-200`}
+                  className={`absolute top-4 right-4 p-2 rounded-full ${colors.tint} ${colors.text} transition-all duration-200`}
                   aria-label="Close notification"
                 >
                   <X className="h-4 w-4" />
@@ -283,7 +261,6 @@ export function SuccessNotification({
   );
 }
 
-// Hook for easy usage
 export function useSuccessNotification() {
   const [notification, setNotification] = React.useState<{
     isOpen: boolean;
@@ -291,6 +268,7 @@ export function useSuccessNotification() {
     title?: string;
     message?: string;
     details?: string;
+    variant?: "success" | "error";
   }>({
     isOpen: false,
     type: "generic-success",
@@ -298,26 +276,18 @@ export function useSuccessNotification() {
 
   const showSuccess = (
     type: NotificationType,
-    options?: {
-      title?: string;
-      message?: string;
-      details?: string;
-    }
+    options?: { title?: string; message?: string; details?: string }
   ) => {
-    setNotification({
-      isOpen: true,
-      type,
-      ...options,
-    });
+    setNotification({ isOpen: true, type, variant: "success", ...options });
+  };
+
+  const showError = (options?: { title?: string; message?: string; details?: string }) => {
+    setNotification({ isOpen: true, type: "generic-error", variant: "error", ...options });
   };
 
   const hideSuccess = () => {
     setNotification((prev) => ({ ...prev, isOpen: false }));
   };
 
-  return {
-    notification,
-    showSuccess,
-    hideSuccess,
-  };
+  return { notification, showSuccess, showError, hideSuccess };
 }

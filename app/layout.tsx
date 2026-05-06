@@ -89,6 +89,9 @@ export default function RootLayout({
           }
         `}</Script>
         
+        {/* Payment SDKs — loaded globally so they're ready before any modal opens */}
+        <Script src="https://js.paystack.co/v1/inline.js" strategy="afterInteractive" />
+
         {/* Loading Screen + Cart Provider - Wraps entire app */}
         <RootLayoutClient>
           <CartProvider>

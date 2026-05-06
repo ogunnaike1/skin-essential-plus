@@ -7,7 +7,6 @@ import {
   Building2, Copy, Check, Sparkles, Search, ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
-import Script from "next/script";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
 import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
@@ -18,6 +17,15 @@ const getServiceCategory = (service: Service): string =>
 
 const getServiceDuration = (service: Service): number | string =>
   (service as any).duration_minutes || (service as any).duration || "N/A";
+
+function computeEndTime(startTime: string, durationMins: number): string {
+  if (!startTime) return "00:00";
+  const [h, m] = startTime.split(":").map(Number);
+  const total = (h ?? 0) * 60 + (m ?? 0) + durationMins;
+  const endH = Math.floor(total / 60) % 24;
+  const endM = total % 60;
+  return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+}
 
 const getServiceImage = (service: Service): string | null =>
   (service as any).image_url || (service as any).image || null;
@@ -55,15 +63,15 @@ export default function BookAppointmentModal({
   const [search, setSearch]               = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
-  const { notification, showSuccess, hideSuccess } = useSuccessNotification();
+  const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();
 
   const [formData, setFormData] = useState({
     customer_name:    "",
     customer_email:   "",
     customer_phone:   "",
     appointment_date: "",
-    appointment_time: "",
-    message:          "",
+    start_time:       "",
+    notes:            "",
   });
 
   useEffect(() => {
@@ -137,9 +145,11 @@ export default function BookAppointmentModal({
     setSelectedService(null);
     setGateway(null);
     setPaymentMethod(null);
+    setLoading(false);
     setSearch("");
     setExpandedCategories(new Set(categories.length > 0 ? [categories[0]!.id] : []));
-    setFormData({ customer_name: "", customer_email: "", customer_phone: "", appointment_date: "", appointment_time: "", message: "" });
+    setFormData({ customer_name: "", customer_email: "", customer_phone: "", appointment_date: "", start_time: "", notes: "" });
+    hideSuccess();
     onClose();
   };
 
@@ -202,70 +212,103 @@ export default function BookAppointmentModal({
         onClose: () => setLoading(false),
       });
     } else {
-      alert("Moniwave is unavailable right now. Please choose Paystack.");
+      showError({ title: "Moniwave unavailable", message: "Please choose Paystack to continue." });
       setGateway(null);
       setLoading(false);
     }
   };
 
-  // ── Paystack card ─────────────────────────────────────────────
-  const handleCardPayment = async () => {
+  // ── Shared Paystack launcher (card or opay) ───────────────────
+  const launchPaystack = async (channels?: string[]) => {
     if (!selectedService) return;
+
+    // @ts-ignore
+    if (typeof window.PaystackPop === "undefined") {
+      showError({ title: "Payment unavailable", message: "Paystack is still loading. Please wait a moment and try again." });
+      return;
+    }
+
     setLoading(true);
     try {
+      const durationMins = Number(getServiceDuration(selectedService)) || 60;
+      const endTime = computeEndTime(formData.start_time, durationMins);
+
       const appointment = await createAppointment({
         ...formData,
         service_id: selectedService.id,
         service_name: selectedService.name,
         service_price: selectedService.price,
+        end_time: endTime,
+        duration_minutes: durationMins,
       } as CreateAppointmentData);
 
       // @ts-ignore
       const handler = window.PaystackPop.setup({
         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         email: formData.customer_email,
-        amount: selectedService.price * 100,
+        amount: Math.round(selectedService.price * 100),
         currency: "NGN",
         ref: `APPT-${appointment.id}`,
-        metadata: { appointment_id: appointment.id, customer_name: formData.customer_name, service_name: selectedService.name },
-        callback: (response: any) => {
+        ...(channels && channels.length > 0 ? { channels } : {}),
+        metadata: {
+          custom_fields: [
+            { display_name: "Customer", variable_name: "customer_name", value: formData.customer_name },
+            { display_name: "Service",  variable_name: "service_name",  value: selectedService.name },
+            { display_name: "Date",     variable_name: "date",          value: formData.appointment_date },
+            { display_name: "Time",     variable_name: "time",          value: formData.start_time },
+          ],
+        },
+        callback: (response: { reference: string }) => {
+          // Confirm appointment + send brand notification (fire-and-forget)
+          fetch("/api/appointments/notify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ appointmentId: appointment.id, reference: response.reference }),
+          }).catch((err) => console.error("Notify failed:", err));
+
           showSuccess("appointment-booked", {
             title: "Payment Confirmed!",
-            message: `Your appointment for ${selectedService.name} is confirmed`,
+            message: `Your appointment for ${selectedService.name} is confirmed. We'll be in touch shortly.`,
             details: `Reference: ${response.reference}`,
           });
-          setTimeout(() => handleClose(), 1500);
+          setTimeout(() => handleClose(), 2500);
         },
         onClose: () => setLoading(false),
       });
       handler.openIframe();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to create appointment. Please try again.");
+      showError({ title: "Booking failed", message: err?.message ?? "Unable to create your appointment. Please try again." });
       setLoading(false);
     }
   };
+
+  const handleCardPayment = () => launchPaystack();          // no restriction — Paystack shows all active channels
+  const handleOpayPayment = () => launchPaystack(["opay"]);
 
   // ── Bank transfer ─────────────────────────────────────────────
   const handleBankTransfer = async () => {
     if (!selectedService) return;
     setLoading(true);
     try {
+      const durationMins = Number(getServiceDuration(selectedService)) || 60;
       const appointment = await createAppointment({
         ...formData,
         service_id: selectedService.id,
         service_name: selectedService.name,
         service_price: selectedService.price,
+        end_time: computeEndTime(formData.start_time, durationMins),
+        duration_minutes: durationMins,
       } as CreateAppointmentData);
       showSuccess("appointment-booked", {
         title: "Booking Created!",
-        message: "Complete the bank transfer to confirm your appointment",
+        message: "Complete the bank transfer to confirm your appointment.",
         details: `Reference: APPT-${appointment.id}`,
       });
-      setTimeout(() => handleClose(), 2000);
-    } catch (err) {
+      setTimeout(() => handleClose(), 2500);
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to create appointment. Please try again.");
+      showError({ title: "Booking failed", message: err?.message ?? "Unable to create your appointment. Please try again." });
       setLoading(false);
     }
   };
@@ -276,8 +319,6 @@ export default function BookAppointmentModal({
 
   return (
     <>
-      <Script src="https://js.paystack.co/v1/inline.js" />
-      <Script src="https://sdk.monnify.com/plugin/monnify.js" />
 
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <motion.div
@@ -479,7 +520,7 @@ export default function BookAppointmentModal({
                       <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Preferred time</label>
                       <div className="relative">
                         <Clock3 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                        <input required type="time" value={formData.appointment_time} onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })} className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep focus:border-sage focus:outline-none transition-colors" />
+                        <input required type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep focus:border-sage focus:outline-none transition-colors" />
                       </div>
                     </div>
 
@@ -487,7 +528,7 @@ export default function BookAppointmentModal({
                       <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Additional notes (optional)</label>
                       <div className="relative">
                         <MessageSquare className="absolute left-4 top-3.5 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                        <textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Any special requests or preferences..." rows={3} className="w-full pl-11 pr-4 py-3 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-deep focus:outline-none transition-colors resize-none" />
+                        <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Any special requests or preferences..." rows={3} className="w-full pl-11 pr-4 py-3 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-deep focus:outline-none transition-colors resize-none" />
                       </div>
                     </div>
 
@@ -533,6 +574,30 @@ export default function BookAppointmentModal({
                         <p className="text-[11px] text-deep/50 font-light mt-0.5">Card, bank transfer, USSD & more</p>
                       </div>
                       <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00C46E] transition-colors shrink-0" strokeWidth={1.5} />
+                    </button>
+
+                    {/* Opay */}
+                    <button
+                      onClick={handleOpayPayment}
+                      disabled={loading}
+                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#00B65F] hover:shadow-[0_0_0_4px_rgba(0,182,95,0.08)] transition-all text-left disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <div className="h-12 w-12 rounded-xl bg-[#00B65F]/10 flex items-center justify-center shrink-0">
+                        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
+                          <rect width="32" height="32" rx="6" fill="#00B65F" />
+                          <circle cx="16" cy="16" r="6" fill="white" />
+                          <path d="M16 13v6M13 16h6" stroke="#00B65F" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-deep text-sm">Opay Wallet</p>
+                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Pay instantly with your Opay account</p>
+                      </div>
+                      {loading && gateway === null ? (
+                        <span className="h-4 w-4 border-2 border-[#00B65F]/30 border-t-[#00B65F] rounded-full animate-spin shrink-0" />
+                      ) : (
+                        <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00B65F] transition-colors shrink-0" strokeWidth={1.5} />
+                      )}
                     </button>
 
                     {/* Moniwave */}
@@ -587,7 +652,7 @@ export default function BookAppointmentModal({
                       <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-mauve transition-colors shrink-0" strokeWidth={1.5} />
                     </button>
 
-                    {/* Transfer */}
+                    {/* Bank Transfer */}
                     <button
                       onClick={() => setPaymentMethod("transfer")}
                       className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-sage hover:shadow-[0_0_0_4px_rgba(79,114,136,0.08)] transition-all text-left"
@@ -618,7 +683,7 @@ export default function BookAppointmentModal({
                     {[
                       { label: "Service",  value: selectedService.name },
                       { label: "Date",     value: new Date(formData.appointment_date).toLocaleDateString("en-NG", { weekday: "long", day: "numeric", month: "long" }) },
-                      { label: "Time",     value: formData.appointment_time },
+                      { label: "Time",     value: formData.start_time },
                       { label: "Customer", value: formData.customer_name },
                     ].map(({ label, value }) => (
                       <div key={label} className="flex items-center justify-between text-sm">
@@ -660,9 +725,9 @@ export default function BookAppointmentModal({
                     </h3>
 
                     {[
-                      { label: "Bank name",     value: "GTBank (Guaranty Trust Bank)" },
-                      { label: "Account name",  value: "Skin Essential Plus Ltd" },
-                      { label: "Account number", value: "0123456789" },
+                      { label: "Bank name",      value: process.env.NEXT_PUBLIC_BANK_NAME    ?? "" },
+                      { label: "Account name",   value: process.env.NEXT_PUBLIC_ACCOUNT_NAME ?? "" },
+                      { label: "Account number", value: process.env.NEXT_PUBLIC_ACCOUNT_NUMBER ?? "" },
                     ].map(({ label, value }) => (
                       <div key={label} className="flex items-center justify-between">
                         <div>

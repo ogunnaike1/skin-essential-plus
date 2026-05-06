@@ -8,7 +8,6 @@ import {
   Heart,
   ShoppingBag,
   Sparkles,
-  Star,
   X,
   Loader2,
   Search,
@@ -671,7 +670,7 @@ function ProductCard({
         delay: (index % 3) * 0.05,
         ease: [0.16, 1, 0.3, 1],
       }}
-      className="group relative flex flex-col rounded-xl bg-ivory border-2 border-deep/15 overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-deep hover:shadow-[0_12px_30px_rgba(71,103,106,0.12)]"
+      className="group relative flex flex-col rounded-xl bg-white/60 backdrop-blur-md border border-white/80 overflow-hidden shadow-[0_8px_32px_rgba(71,103,106,0.12),inset_0_1px_0_rgba(255,255,255,0.8)] transition-[border-color,box-shadow] duration-300 hover:border-white hover:shadow-[0_16px_48px_rgba(71,103,106,0.18),inset_0_1px_0_rgba(255,255,255,0.9)]"
     >
       <div className={cn("h-0.5 w-full shrink-0", accentBg[product.accent])} />
 
@@ -744,31 +743,12 @@ function ProductCard({
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col p-3 bg-ivory">
-        <div className="flex items-center gap-1 mb-1.5">
-          <div className="flex items-center gap-px">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <Star
-                key={idx}
-                className={cn(
-                  "h-2 w-2",
-                  idx < Math.round(product.rating) ? "fill-mauve text-mauve" : "text-deep/20"
-                )}
-                strokeWidth={0}
-              />
-            ))}
-          </div>
-          <span className="text-[10px] font-medium text-deep tabular-nums">
-            {product.rating.toFixed(1)}
-          </span>
-          <span className="text-[10px] text-deep font-light">({product.review_count})</span>
-        </div>
-
+      <div className="flex-1 flex flex-col p-3 bg-white/50">
         <p className={cn("eyebrow text-[8px] mb-1", accentText[product.accent])}>
           {product.tagline}
         </p>
 
-        <h3 className="font-display text-sm font-light text-deep leading-tight tracking-tight mb-1.5 line-clamp-2">
+        <h3 className="font-display text-lg font-semibold text-deep leading-snug tracking-tight mb-1.5 line-clamp-2">
           {product.name}
         </h3>
 

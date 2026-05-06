@@ -32,7 +32,7 @@ const ABOUT_SLIDES: readonly AboutSlide[] = [
     subtitle:
       "We don't sell treatments. We compose rituals — each one a dialogue between clinical precision and contemplative stillness.",
     image:
-      "https://images.unsplash.com/photo-1591343395082-e120087004b4?w=2400&q=90&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093141/skin-ig4_ihjvl0.jpg",
   },
   {
     id: 2,
@@ -46,7 +46,7 @@ const ABOUT_SLIDES: readonly AboutSlide[] = [
     subtitle:
       "Every protocol is grounded in peer-reviewed dermatology and delivered through the patience of ritual. One without the other is incomplete.",
     image:
-      "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=2400&q=90&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig2_w7tvnk.jpg",
   },
   {
     id: 3,

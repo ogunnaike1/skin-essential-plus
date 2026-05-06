@@ -2,6 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarCheck, Menu, ShoppingBag, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
@@ -11,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { CartIcon } from "@/components/cart/CartIcon";
 
 export function Navbar(): React.ReactElement {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [bookingOpen, setBookingOpen] = useState<boolean>(false);
@@ -93,28 +96,48 @@ export function Navbar(): React.ReactElement {
 
             {/* Center menu */}
             <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex">
-              {NAV_LINKS.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className={cn(
-                      "group relative rounded-full px-4 py-2 text-[12px] font-light uppercase tracking-[0.2em] transition-all duration-500",
-                      scrolled
-                        ? "text-deep hover:text-ivory"
-                        : "text-ivory/90 hover:text-deep"
-                    )}
-                  >
-                    <span
+              {NAV_LINKS.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
                       className={cn(
-                        "absolute inset-0 scale-90 rounded-full opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100",
-                        scrolled ? "bg-deep" : "bg-ivory"
+                        "group relative rounded-full px-4 py-2 text-[12px] font-light uppercase tracking-[0.2em] transition-colors duration-500",
+                        isActive
+                          ? scrolled ? "text-ivory" : "text-deep"
+                          : scrolled ? "text-deep hover:text-ivory" : "text-ivory/90 hover:text-deep"
                       )}
-                      aria-hidden
-                    />
-                    <span className="relative">{link.label}</span>
-                  </a>
-                </li>
-              ))}
+                    >
+                      {/* Active spotlight */}
+                      {isActive && (
+                        <motion.span
+                          layoutId="nav-spotlight"
+                          className={cn(
+                            "absolute inset-0 rounded-full",
+                            scrolled
+                              ? "bg-deep shadow-[0_0_18px_rgba(71,103,106,0.55),inset_0_1px_0_rgba(255,255,255,0.08)]"
+                              : "bg-ivory shadow-[0_0_20px_rgba(252,251,252,0.7)]"
+                          )}
+                          transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                          aria-hidden
+                        />
+                      )}
+                      {/* Hover background (only when not active) */}
+                      {!isActive && (
+                        <span
+                          className={cn(
+                            "absolute inset-0 scale-90 rounded-full opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100",
+                            scrolled ? "bg-deep" : "bg-ivory"
+                          )}
+                          aria-hidden
+                        />
+                      )}
+                      <span className="relative">{link.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
 
             {/* Right cluster */}
@@ -228,32 +251,41 @@ export function Navbar(): React.ReactElement {
               </div>
 
               <ul className="px-6 py-8">
-                {NAV_LINKS.map((link, i) => (
-                  <motion.li
-                    key={link.href}
-                    initial={{ opacity: 0, x: 24 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: 0.12 + i * 0.06,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    className="border-b border-deep/10 last:border-0"
-                  >
-                    <a
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="group flex items-center justify-between py-5"
+                {NAV_LINKS.map((link, i) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <motion.li
+                      key={link.href}
+                      initial={{ opacity: 0, x: 24 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.12 + i * 0.06,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      className="border-b border-deep/10 last:border-0"
                     >
-                      <span className="font-display text-3xl font-light text-deep transition-colors group-hover:text-mauve">
-                        {link.label}
-                      </span>
-                      <span className="text-[10px] tabular-nums text-mauve">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </a>
-                  </motion.li>
-                ))}
+                      <Link
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className="group flex items-center justify-between py-5"
+                      >
+                        <span className={cn(
+                          "font-display text-3xl font-light transition-colors group-hover:text-mauve",
+                          isActive ? "text-mauve" : "text-deep"
+                        )}>
+                          {link.label}
+                        </span>
+                        <span className={cn(
+                          "text-[10px] tabular-nums transition-colors",
+                          isActive ? "text-deep font-semibold" : "text-mauve"
+                        )}>
+                          {isActive ? "●" : String(i + 1).padStart(2, "0")}
+                        </span>
+                      </Link>
+                    </motion.li>
+                  );
+                })}
               </ul>
 
               <div className="space-y-3 px-6 pb-10">

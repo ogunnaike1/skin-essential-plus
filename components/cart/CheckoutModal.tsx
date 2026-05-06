@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Script from "next/script";
 import {
   X,
   ArrowRight,
@@ -54,7 +53,7 @@ export function CheckoutModal({
     phone: "",
   });
 
-  const { notification, showSuccess, hideSuccess } = useSuccessNotification();
+  const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();
 
   const handleClose = () => {
     setStep("details");
@@ -70,35 +69,49 @@ export function CheckoutModal({
 
   // ── PAYSTACK CARD ──────────────────────────────────────────────
   const handlePaystackCard = () => {
+    // @ts-ignore
+    if (typeof window.PaystackPop === "undefined") {
+      showError({ title: "Payment unavailable", message: "Paystack is still loading. Please wait a moment and try again." });
+      return;
+    }
+
     setLoading(true);
     const ref = `SHOP-${Date.now()}`;
 
-    // @ts-ignore
-    const handler = window.PaystackPop.setup({
-      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-      email: formData.email,
-      amount: total * 100,
-      currency: "NGN",
-      ref,
-      metadata: {
-        customer_name: formData.name,
-        customer_phone: formData.phone,
-        order_items: items.map((i) => `${i.product.name} x${i.quantity}`).join(", "),
-        coupon_code: couponCode ?? "",
-      },
-      callback: (response: { reference: string }) => {
-        showSuccess("generic-success", {
-          title: "Payment Successful!",
-          message: "Your order has been placed. Thank you!",
-          details: `Ref: ${response.reference}`,
-        });
-        clearCart();
-        setTimeout(() => handleClose(), 2000);
-      },
-      onClose: () => setLoading(false),
-    });
+    try {
+      // @ts-ignore
+      const handler = window.PaystackPop.setup({
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+        email: formData.email,
+        amount: Math.round(total * 100),
+        currency: "NGN",
+        ref,
+        metadata: {
+          custom_fields: [
+            { display_name: "Customer Name", variable_name: "customer_name", value: formData.name },
+            { display_name: "Phone",         variable_name: "phone",         value: formData.phone },
+            { display_name: "Items",         variable_name: "items",         value: items.map((i) => `${i.product.name} x${i.quantity}`).join(", ") },
+            ...(couponCode ? [{ display_name: "Coupon", variable_name: "coupon_code", value: couponCode }] : []),
+          ],
+        },
+        callback: (response: { reference: string }) => {
+          showSuccess("generic-success", {
+            title: "Payment Successful!",
+            message: "Your order has been placed. We'll be in touch shortly.",
+            details: `Ref: ${response.reference}`,
+          });
+          clearCart();
+          setTimeout(() => handleClose(), 2500);
+        },
+        onClose: () => setLoading(false),
+      });
 
-    handler.openIframe();
+      handler.openIframe();
+    } catch (err) {
+      console.error("Paystack error:", err);
+      showError({ title: "Payment failed", message: "Unable to open payment. Please try again." });
+      setLoading(false);
+    }
   };
 
   // ── MONIWAVE ───────────────────────────────────────────────────
@@ -136,7 +149,7 @@ export function CheckoutModal({
         onClose: () => setLoading(false),
       });
     } else {
-      alert("Moniwave is not available right now. Please choose Paystack.");
+      showError({ title: "Moniwave unavailable", message: "Please choose Paystack to continue." });
       setLoading(false);
     }
   };
@@ -165,9 +178,6 @@ export function CheckoutModal({
 
   return (
     <>
-      <Script src="https://js.paystack.co/v1/inline.js" />
-      <Script src="https://sdk.monnify.com/plugin/monnify.js" />
-
       <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
         {/* Backdrop */}
         <motion.div
@@ -445,9 +455,9 @@ export function CheckoutModal({
 
                     {/* Bank details */}
                     {[
-                      { label: "Bank", value: "GTBank (Guaranty Trust Bank)" },
-                      { label: "Account name", value: "Skin Essential Plus Ltd" },
-                      { label: "Account number", value: "0123456789" },
+                      { label: "Bank",           value: process.env.NEXT_PUBLIC_BANK_NAME    ?? "" },
+                      { label: "Account name",   value: process.env.NEXT_PUBLIC_ACCOUNT_NAME ?? "" },
+                      { label: "Account number", value: process.env.NEXT_PUBLIC_ACCOUNT_NUMBER ?? "" },
                     ].map(({ label, value }) => (
                       <div key={label} className="flex items-center justify-between">
                         <div>

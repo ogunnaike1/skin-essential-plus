@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAppointments, updateAppointment, type Appointment } from '@/lib/supabase/appointments-api';
+import type { Appointment } from '@/lib/supabase/appointments-api';
 import { Calendar, Clock, Mail, Phone, User, DollarSign, Filter, Search, X } from 'lucide-react';
 import { formatShopPrice } from '@/lib/shop-data';
 
@@ -28,8 +28,10 @@ export default function AppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const data = await getAppointments();
-      setAppointments(data);
+      const res = await fetch('/api/admin/appointments');
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      setAppointments(json.appointments);
     } catch (error) {
       console.error('Error fetching appointments:', error);
     } finally {
@@ -64,8 +66,8 @@ export default function AppointmentsPage() {
 
     // Sort by date (newest first)
     filtered.sort((a, b) => {
-      const dateA = new Date(`${a.appointment_date}T${a.appointment_time}`);
-      const dateB = new Date(`${b.appointment_date}T${b.appointment_time}`);
+      const dateA = new Date(`${a.appointment_date}T${a.start_time}`);
+      const dateB = new Date(`${b.appointment_date}T${b.start_time}`);
       return dateB.getTime() - dateA.getTime();
     });
 
@@ -79,7 +81,14 @@ export default function AppointmentsPage() {
         updates.payment_status = paymentStatus as Appointment['payment_status'];
       }
 
-      await updateAppointment(id, updates);
+      const res = await fetch('/api/admin/appointments', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, updates }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+
       await fetchAppointments();
       setSelectedAppointment(null);
     } catch (error) {
@@ -289,17 +298,17 @@ export default function AppointmentsPage() {
                           <div>
                             <p className="text-sm text-gray-500">Time</p>
                             <p className="font-medium text-deep">
-                              {formatTime(appointment.appointment_time)}
+                              {formatTime(appointment.start_time)}
                             </p>
                           </div>
                         </div>
                       </div>
 
                       {/* Message */}
-                      {appointment.message && (
+                      {appointment.notes && (
                         <div className="ml-13 mt-3 p-3 bg-gray-50 rounded-lg">
                           <p className="text-sm text-gray-600">
-                            <span className="font-medium">Message:</span> {appointment.message}
+                            <span className="font-medium">Message:</span> {appointment.notes}
                           </p>
                         </div>
                       )}
@@ -319,14 +328,16 @@ export default function AppointmentsPage() {
                       >
                         {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                       </span>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${getPaymentBadge(
-                          appointment.payment_status
-                        )}`}
-                      >
-                        {appointment.payment_status.charAt(0).toUpperCase() +
-                          appointment.payment_status.slice(1)}
-                      </span>
+                      {appointment.payment_status && (
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${getPaymentBadge(
+                            appointment.payment_status
+                          )}`}
+                        >
+                          {appointment.payment_status.charAt(0).toUpperCase() +
+                            appointment.payment_status.slice(1)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -403,7 +414,7 @@ export default function AppointmentsPage() {
                     <div>
                       <p className="text-sm text-gray-500">Time</p>
                       <p className="font-medium text-deep">
-                        {formatTime(selectedAppointment.appointment_time)}
+                        {formatTime(selectedAppointment.start_time)}
                       </p>
                     </div>
                   </div>
@@ -413,10 +424,10 @@ export default function AppointmentsPage() {
                       {formatShopPrice(selectedAppointment.service_price || 0)}
                     </p>
                   </div>
-                  {selectedAppointment.message && (
+                  {selectedAppointment.notes && (
                     <div>
                       <p className="text-sm text-gray-500">Message</p>
-                      <p className="font-medium text-deep">{selectedAppointment.message}</p>
+                      <p className="font-medium text-deep">{selectedAppointment.notes}</p>
                     </div>
                   )}
                 </div>

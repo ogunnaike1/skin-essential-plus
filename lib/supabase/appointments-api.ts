@@ -9,10 +9,12 @@ export interface Appointment {
   service_name: string;
   service_price: number;
   appointment_date: string;
-  appointment_time: string;
-  message?: string;
+  start_time: string;
+  end_time?: string;
+  duration_minutes?: number;
+  notes?: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  payment_status: 'pending' | 'paid' | 'failed';
+  payment_status?: 'pending' | 'paid' | 'failed';
   payment_reference?: string;
   created_at: string;
   updated_at: string;
@@ -26,15 +28,20 @@ export interface CreateAppointmentData {
   service_name: string;
   service_price: number;
   appointment_date: string;
-  appointment_time: string;
-  message?: string;
+  start_time: string;
+  end_time?: string;
+  duration_minutes?: number;
+  notes?: string;
 }
 
 // Create appointment
 export async function createAppointment(data: CreateAppointmentData) {
   const { data: appointment, error } = await supabase
     .from('appointments')
-    .insert([data])
+    .insert([{
+      ...data,
+      status: 'pending',
+    }])
     .select()
     .single();
 
