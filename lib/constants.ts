@@ -48,7 +48,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Precision skin therapies tailored to your unique biology — where advanced science meets timeless beauty rituals.",
     image:
-      "/images/homepage-hero/home-page-hero2.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero2",
     ctaPrimary: "Book an Appointment",
     ctaSecondary: "Explore Services",
   },
@@ -59,7 +59,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Sanctuary rituals designed to restore equilibrium — a curated escape for the senses and the skin.",
     image:
-      "/images/homepage-hero/home-page-hero3.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero3",
     ctaPrimary: "Reserve a Session",
     ctaSecondary: "View Menu",
   },
@@ -70,7 +70,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Bespoke lash sketching by master artisans — every curve drawn to accentuate your natural geometry.",
     image:
-      "/images/homepage-hero/home-page-hero4.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero4",
     ctaPrimary: "Book Lash Artist",
     ctaSecondary: "See Gallery",
   },
@@ -81,7 +81,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "A holistic ecosystem of treatments, products, and guidance — your skin's journey, curated with intention.",
     image:
-      "/images/homepage-hero/home-page-hero5.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero5",
     ctaPrimary: "Start Your Journey",
     ctaSecondary: "Meet Our Experts",
   },
@@ -95,7 +95,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Advanced facials, microneedling, and bespoke therapies calibrated to your skin's unique signature.",
     image:
-      "/images/homepage-hero/home-Skin-Treatments.png",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-Skin-Treatments",
     icon: Sparkles,
   },
   {
@@ -104,7 +104,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Immersive body rituals, aromatherapy, and hydrotherapy designed to restore balance and radiance.",
     image:
-      "/images/homepage-hero/home-Spa-Therapy.png",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-Spa-Therapy",
     icon: Flower2,
   },
   {
@@ -113,7 +113,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Hand-crafted lash extensions and architectural sketching by certified master artisans.",
     image:
-      "/images/homepage-hero/home-eye-lash.png",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-eye-lash",
     icon: Eye,
   },
   {
@@ -122,7 +122,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Comprehensive regimens combining treatments, clinical-grade products, and lifestyle guidance.",
     image:
-      "/images/homepage-hero/home-Full-Skincare.png",
+      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-Full-Skincare",
     icon: Droplets,
   },
 ] as const;

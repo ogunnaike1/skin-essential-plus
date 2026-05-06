@@ -15,6 +15,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "doaydptoglnqhnzotzgc.supabase.co",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },
