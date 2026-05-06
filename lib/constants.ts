@@ -70,7 +70,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Bespoke lash sketching by master artisans — every curve drawn to accentuate your natural geometry.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero4",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
     ctaPrimary: "Book Lash Artist",
     ctaSecondary: "See Gallery",
   },
@@ -81,7 +81,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "A holistic ecosystem of treatments, products, and guidance — your skin's journey, curated with intention.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-page-hero5",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
     ctaPrimary: "Start Your Journey",
     ctaSecondary: "Meet Our Experts",
   },
@@ -235,7 +235,7 @@ export const SOCIAL_IMAGES: readonly SocialImage[] = [
   },
   {
     id: 5,
-    src: "/images/homepage-hero/home-Full-Skincare.png",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
     alt: "Skin treatment",
   },
   {

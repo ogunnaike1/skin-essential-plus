@@ -12,31 +12,31 @@ interface TimelineEntry {
 
 const TIMELINE: readonly TimelineEntry[] = [
   {
-    year: "2018",
+    year: "2021",
     title: "A quiet beginning",
     description:
-      "Ifeoluwa Peters Kanyinsola opened a single-room studio in Victoria Island, convinced that skincare could be both clinical and contemplative.",
+      "Skin Essential Plus opened its first studio in Akobo, Ibadan — built on the conviction that skincare could be both clinical and deeply personal.",
     color: "#8A6F88",
   },
   {
-    year: "2020",
+    year: "2022",
     title: "The ritual takes form",
     description:
-      "We developed our signature 5-stage ritual — the framework that still underpins every treatment we offer today.",
+      "We developed our signature treatment protocols — a framework grounded in science and delivered through the patience of ritual.",
     color: "#4F7288",
   },
   {
-    year: "2022",
-    title: "A full sanctuary",
+    year: "2023",
+    title: "A growing sanctuary",
     description:
-      "Expansion into our current flagship — eight treatment rooms, a therapy suite, and a dedicated lash artistry atelier.",
+      "Expanding our service menu to include spa therapy, lash artistry, and a full skincare product line curated for every skin type.",
     color: "#47676A",
   },
   {
     year: "2024",
     title: "Redefining luxury",
     description:
-      "Introduction of the Skin Essential Plus complete skincare program — a year-long journey, not a transaction.",
+      "Introduction of the Skin Essential Plus complete skincare program — a holistic journey, not just a transaction.",
     color: "#8A6F88",
   },
 ] as const;
@@ -77,7 +77,7 @@ export function OurStory(): React.ReactElement {
             className="lg:col-span-6 lg:col-start-7"
           >
             <p className="text-base sm:text-lg font-light text-deep leading-[1.65]">
-              What began in a single room with a borrowed treatment bed has become a sanctuary serving thousands. But our fundamental belief hasn't shifted in seven years: that genuine transformation requires patience, presence, and protocols built on science rather than trend. Here are the moments that shaped us.
+              What began in a single room in Akobo, Ibadan has become a sanctuary trusted by hundreds across the city. But our fundamental belief hasn't shifted since day one: that genuine transformation requires patience, presence, and protocols built on science rather than trend. Here are the moments that shaped us.
             </p>
           </motion.div>
         </div>

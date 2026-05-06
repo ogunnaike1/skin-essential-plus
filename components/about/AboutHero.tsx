@@ -60,7 +60,7 @@ const ABOUT_SLIDES: readonly AboutSlide[] = [
     subtitle:
       "We're not here to manufacture sameness. We're here to help you recognize what was always yours — to reveal rather than remake.",
     image:
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=2400&q=90&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
   },
 ] as const;
 
@@ -256,9 +256,9 @@ export function AboutHero(): React.ReactElement {
                     className="mt-7 pt-6 border-t border-ivory/15 flex flex-wrap items-center gap-x-8 gap-y-3"
                   >
                     {[
-                      { label: "Est. 2018", color: "#8A6F88" },
-                      { label: "Lagos, NG", color: "#4F7288" },
-                      { label: "12K+ clients", color: "#FCFBFC" },
+                      { label: "Est. 2021", color: "#8A6F88" },
+                      { label: "Ibadan, NG", color: "#4F7288" },
+                      { label: "500+ clients", color: "#FCFBFC" },
                     ].map((m) => (
                       <div key={m.label} className="flex items-center gap-2">
                         <span
