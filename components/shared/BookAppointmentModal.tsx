@@ -1,28 +1,26 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { X, CalendarDays, Clock3, User, Mail, MessageSquare, ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard, Building2, Copy, Check, Sparkles, Search, ChevronDown } from "lucide-react";
+import {
+  X, CalendarDays, Clock3, User, Mail, MessageSquare,
+  ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard,
+  Building2, Copy, Check, Sparkles, Search, ChevronDown,
+} from "lucide-react";
 import Image from "next/image";
 import Script from "next/script";
+import { motion, AnimatePresence } from "framer-motion";
 import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
 import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
-/**
- * Helper functions to safely access Service fields
- * Handles different field naming conventions from database
- */
-const getServiceCategory = (service: Service): string => {
-  return (service as any).category_name || (service as any).category || 'Other';
-};
+const getServiceCategory = (service: Service): string =>
+  (service as any).category_name || (service as any).category || "Other";
 
-const getServiceDuration = (service: Service): number | string => {
-  return (service as any).duration_minutes || (service as any).duration || 'N/A';
-};
+const getServiceDuration = (service: Service): number | string =>
+  (service as any).duration_minutes || (service as any).duration || "N/A";
 
-const getServiceImage = (service: Service): string | null => {
-  return (service as any).image_url || (service as any).image || null;
-};
+const getServiceImage = (service: Service): string | null =>
+  (service as any).image_url || (service as any).image || null;
 
 type BookAppointmentModalProps = {
   isOpen: boolean;
@@ -30,51 +28,52 @@ type BookAppointmentModalProps = {
   preselectedService?: Service | null;
 };
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2 | 3 | 4;
+type Gateway = "paystack" | "moniwave" | null;
 type PaymentMethod = "card" | "transfer" | null;
+
+const STEP_META: Record<Step, { label: string; color: string }> = {
+  1: { label: "Choose a Service",   color: "text-mauve" },
+  2: { label: "Your Details",       color: "text-sage"  },
+  3: { label: "Payment Gateway",    color: "text-deep"  },
+  4: { label: "Complete Payment",   color: "text-mauve" },
+};
 
 export default function BookAppointmentModal({
   isOpen,
   onClose,
   preselectedService,
 }: BookAppointmentModalProps) {
-  const [step, setStep] = useState<Step>(1);
-  const [services, setServices] = useState<Service[]>([]);
-  const [categories, setCategories] = useState<Array<{ id: string; name: string; count: number }>>([]);
-  const [loading, setLoading] = useState(false);
+  const [step, setStep]                   = useState<Step>(1);
+  const [services, setServices]           = useState<Service[]>([]);
+  const [categories, setCategories]       = useState<Array<{ id: string; name: string; count: number }>>([]);
+  const [loading, setLoading]             = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [gateway, setGateway]             = useState<Gateway>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
-  const [copied, setCopied] = useState(false);
-  
-  // Search and filter state
-  const [search, setSearch] = useState("");
+  const [copied, setCopied]               = useState(false);
+  const [search, setSearch]               = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  
-  // Success notification hook
+
   const { notification, showSuccess, hideSuccess } = useSuccessNotification();
-  
-  // Form data
+
   const [formData, setFormData] = useState({
-    customer_name: "",
-    customer_email: "",
-    customer_phone: "",
+    customer_name:    "",
+    customer_email:   "",
+    customer_phone:   "",
     appointment_date: "",
     appointment_time: "",
-    message: "",
+    message:          "",
   });
 
-  // Load services when modal opens
   useEffect(() => {
-    if (isOpen && step === 1) {
-      loadServices();
-    }
+    if (isOpen && step === 1) loadServices();
   }, [isOpen, step]);
 
-  // Handle preselected service
   useEffect(() => {
     if (preselectedService && isOpen) {
       setSelectedService(preselectedService);
-      setStep(2); // Skip to details step
+      setStep(2);
     }
   }, [preselectedService, isOpen]);
 
@@ -82,78 +81,51 @@ export default function BookAppointmentModal({
     try {
       const data = await getPublicServices();
       setServices(data);
-      
-      // Extract unique categories with counts
       const categoryMap = new Map<string, number>();
-      data.forEach(service => {
-        const categoryName = getServiceCategory(service);
-        const count = categoryMap.get(categoryName) || 0;
-        categoryMap.set(categoryName, count + 1);
+      data.forEach((s) => {
+        const n = getServiceCategory(s);
+        categoryMap.set(n, (categoryMap.get(n) || 0) + 1);
       });
-      
       const cats = Array.from(categoryMap.entries())
-        .map(([name, count]) => ({
-          id: name.toLowerCase().replace(/\s+/g, '-'),
-          name,
-          count
-        }))
+        .map(([name, count]) => ({ id: name.toLowerCase().replace(/\s+/g, "-"), name, count }))
         .sort((a, b) => a.name.localeCompare(b.name));
-      
       setCategories(cats);
-      
-      // Expand first category by default
-      if (cats.length > 0) {
-        setExpandedCategories(new Set([cats[0]!.id]));
-      }
-    } catch (error) {
-      console.error('Error loading services:', error);
+      if (cats.length > 0) setExpandedCategories(new Set([cats[0]!.id]));
+    } catch (err) {
+      console.error("Error loading services:", err);
     }
   };
 
-  // Filtered services based on search
   const filteredServices = useMemo(() => {
     if (!search.trim()) return services;
-    
-    const query = search.toLowerCase().trim();
-    return services.filter(service => {
-      const categoryName = getServiceCategory(service);
+    const q = search.toLowerCase().trim();
+    return services.filter((s) => {
+      const cat = getServiceCategory(s);
       return (
-        service.name.toLowerCase().includes(query) ||
-        service.description.toLowerCase().includes(query) ||
-        categoryName.toLowerCase().includes(query)
+        s.name.toLowerCase().includes(q) ||
+        s.description.toLowerCase().includes(q) ||
+        cat.toLowerCase().includes(q)
       );
     });
   }, [services, search]);
 
-  // Group services by category
   const servicesByCategory = useMemo(() => {
-    const grouped = new Map<string, Service[]>();
-    
-    filteredServices.forEach(service => {
-      const categoryName = getServiceCategory(service);
-      const categoryId = categoryName.toLowerCase().replace(/\s+/g, '-');
-      if (!grouped.has(categoryId)) {
-        grouped.set(categoryId, []);
-      }
-      grouped.get(categoryId)!.push(service);
+    const map = new Map<string, Service[]>();
+    filteredServices.forEach((s) => {
+      const id = getServiceCategory(s).toLowerCase().replace(/\s+/g, "-");
+      if (!map.has(id)) map.set(id, []);
+      map.get(id)!.push(s);
     });
-    
-    return grouped;
+    return map;
   }, [filteredServices]);
 
-  // Count results
   const totalResults = filteredServices.length;
 
   useEffect(() => {
     if (!isOpen) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
-    };
-
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
     document.addEventListener("keydown", onKeyDown);
     document.body.style.overflow = "hidden";
-
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
@@ -163,187 +135,220 @@ export default function BookAppointmentModal({
   const handleClose = () => {
     setStep(1);
     setSelectedService(null);
+    setGateway(null);
     setPaymentMethod(null);
     setSearch("");
     setExpandedCategories(new Set(categories.length > 0 ? [categories[0]!.id] : []));
-    setFormData({
-      customer_name: "",
-      customer_email: "",
-      customer_phone: "",
-      appointment_date: "",
-      appointment_time: "",
-      message: "",
-    });
+    setFormData({ customer_name: "", customer_email: "", customer_phone: "", appointment_date: "", appointment_time: "", message: "" });
     onClose();
   };
 
-  const handleServiceSelect = (service: Service) => {
-    setSelectedService(service);
-    setStep(2);
-  };
-
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories(prev => {
+  const toggleCategory = (id: string) =>
+    setExpandedCategories((prev) => {
       const next = new Set(prev);
-      if (next.has(categoryId)) {
-        next.delete(categoryId);
-      } else {
-        next.add(categoryId);
-      }
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+
+  const copyToClipboard = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }
+    catch (err) { console.error(err); }
   };
 
+  // ── Step 2 submit → Step 3 (gateway) ──────────────────────────
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStep(3);
   };
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+  // ── Gateway: Paystack → Step 4 ────────────────────────────────
+  const handleSelectPaystack = () => {
+    setGateway("paystack");
+    setStep(4);
+  };
+
+  // ── Gateway: Moniwave → fire SDK directly ─────────────────────
+  const handleSelectMoniwave = () => {
+    if (!selectedService) return;
+    setLoading(true);
+    setGateway("moniwave");
+
+    // @ts-ignore
+    if (typeof window.MonnifySDK !== "undefined") {
+      // @ts-ignore
+      window.MonnifySDK.initialize({
+        amount: selectedService.price,
+        currency: "NGN",
+        reference: `APPT-MW-${Date.now()}`,
+        customerFullName: formData.customer_name,
+        customerEmail: formData.customer_email,
+        customerMobileNumber: formData.customer_phone,
+        apiKey: process.env.NEXT_PUBLIC_MONIWAVE_API_KEY ?? "",
+        contractCode: process.env.NEXT_PUBLIC_MONIWAVE_CONTRACT_CODE ?? "",
+        paymentDescription: `Appointment: ${selectedService.name}`,
+        onLoadStart: () => {},
+        onLoadComplete: () => {},
+        onComplete: (response: { paymentStatus: string; transactionReference: string }) => {
+          if (response.paymentStatus === "PAID") {
+            showSuccess("appointment-booked", {
+              title: "Payment Confirmed!",
+              message: `Your appointment for ${selectedService.name} is confirmed`,
+              details: `Ref: ${response.transactionReference}`,
+            });
+            setTimeout(() => handleClose(), 1500);
+          }
+          setLoading(false);
+        },
+        onClose: () => setLoading(false),
+      });
+    } else {
+      alert("Moniwave is unavailable right now. Please choose Paystack.");
+      setGateway(null);
+      setLoading(false);
     }
   };
 
+  // ── Paystack card ─────────────────────────────────────────────
   const handleCardPayment = async () => {
     if (!selectedService) return;
-
     setLoading(true);
     try {
-      const appointmentData: CreateAppointmentData = {
+      const appointment = await createAppointment({
         ...formData,
         service_id: selectedService.id,
         service_name: selectedService.name,
         service_price: selectedService.price,
-      };
-
-      const appointment = await createAppointment(appointmentData);
+      } as CreateAppointmentData);
 
       // @ts-ignore
       const handler = window.PaystackPop.setup({
         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         email: formData.customer_email,
         amount: selectedService.price * 100,
-        currency: 'NGN',
+        currency: "NGN",
         ref: `APPT-${appointment.id}`,
-        metadata: {
-          appointment_id: appointment.id,
-          customer_name: formData.customer_name,
-          service_name: selectedService.name,
-        },
-        callback: function(response: any) {
+        metadata: { appointment_id: appointment.id, customer_name: formData.customer_name, service_name: selectedService.name },
+        callback: (response: any) => {
           showSuccess("appointment-booked", {
             title: "Payment Confirmed!",
             message: `Your appointment for ${selectedService.name} is confirmed`,
-            details: `Reference: ${response.reference}`
+            details: `Reference: ${response.reference}`,
           });
-          
-          setTimeout(() => {
-            handleClose();
-          }, 1500);
+          setTimeout(() => handleClose(), 1500);
         },
-        onClose: function() {
-          setLoading(false);
-        }
+        onClose: () => setLoading(false),
       });
-
       handler.openIframe();
-    } catch (error) {
-      console.error('Error creating appointment:', error);
-      alert('Failed to create appointment. Please try again.');
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create appointment. Please try again.");
       setLoading(false);
     }
   };
 
+  // ── Bank transfer ─────────────────────────────────────────────
   const handleBankTransfer = async () => {
     if (!selectedService) return;
-
     setLoading(true);
     try {
-      const appointmentData: CreateAppointmentData = {
+      const appointment = await createAppointment({
         ...formData,
         service_id: selectedService.id,
         service_name: selectedService.name,
         service_price: selectedService.price,
-      };
-
-      const appointment = await createAppointment(appointmentData);
-      
+      } as CreateAppointmentData);
       showSuccess("appointment-booked", {
         title: "Booking Created!",
-        message: "Please complete the bank transfer to confirm your appointment",
-        details: `Reference: APPT-${appointment.id}`
+        message: "Complete the bank transfer to confirm your appointment",
+        details: `Reference: APPT-${appointment.id}`,
       });
-      
-      setTimeout(() => {
-        handleClose();
-      }, 2000);
-    } catch (error) {
-      console.error('Error creating appointment:', error);
-      alert('Failed to create appointment. Please try again.');
+      setTimeout(() => handleClose(), 2000);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create appointment. Please try again.");
       setLoading(false);
     }
   };
 
   if (!isOpen) return null;
 
+  const stepIcon = { 1: "✦", 2: "✦", 3: "✦", 4: "✦" };
+
   return (
     <>
       <Script src="https://js.paystack.co/v1/inline.js" />
-      
+      <Script src="https://sdk.monnify.com/plugin/monnify.js" />
+
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="absolute inset-0 bg-deep/60 backdrop-blur-sm"
           onClick={handleClose}
         />
 
-        <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-ivory shadow-2xl">
-          {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-ivory shadow-glass-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* ── HEADER ── */}
           <div className="sticky top-0 z-10 bg-ivory border-b border-deep/10">
-            <div className="flex h-2">
-              <span className="flex-1 bg-mauve" />
-              <span className="flex-1 bg-sage" />
-              <span className="flex-1 bg-deep" />
+            {/* Step progress bar */}
+            <div className="flex h-1.5">
+              {([1, 2, 3, 4] as Step[]).map((s) => (
+                <span
+                  key={s}
+                  className={`flex-1 transition-colors duration-500 ${
+                    step >= s
+                      ? s === 1 ? "bg-mauve" : s === 2 ? "bg-sage" : s === 3 ? "bg-deep" : "bg-mauve"
+                      : "bg-deep/10"
+                  }`}
+                />
+              ))}
             </div>
-            
-            <div className="flex items-center justify-between p-6">
+
+            <div className="flex items-center justify-between px-6 py-5">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  {step === 1 && <Sparkles className="h-5 w-5 text-mauve" />}
-                  {step === 2 && <CalendarDays className="h-5 w-5 text-sage" />}
-                  {step === 3 && <CreditCard className="h-5 w-5 text-deep" />}
-                  <span className="text-xs uppercase tracking-wider text-deep/70 font-medium">
-                    Step {step} of 3
-                  </span>
-                </div>
-                <h2 className="font-display text-2xl sm:text-3xl font-light text-deep">
-                  {step === 1 && "Choose a Service"}
-                  {step === 2 && "Your Details"}
-                  {step === 3 && "Payment"}
+                <p className="text-[10px] uppercase tracking-widest text-deep/40 font-light mb-0.5">
+                  Step {step} of 4
+                </p>
+                <h2 className={`font-display text-2xl sm:text-3xl font-light ${STEP_META[step].color}`}>
+                  {STEP_META[step].label}
                 </h2>
+              </div>
+
+              {/* Step dots */}
+              <div className="hidden sm:flex items-center gap-2 mr-4">
+                {([1, 2, 3, 4] as Step[]).map((s) => (
+                  <span
+                    key={s}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      step === s ? "w-6 bg-mauve" : step > s ? "w-2 bg-sage" : "w-2 bg-deep/20"
+                    }`}
+                  />
+                ))}
               </div>
 
               <button
                 onClick={handleClose}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-deep hover:bg-deep hover:text-ivory transition-colors"
+                className="h-9 w-9 flex items-center justify-center rounded-full bg-deep-tint hover:bg-mauve-tint text-deep transition-colors shrink-0"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           </div>
 
-          {/* Content */}
+          {/* ── CONTENT ── */}
           <div className="p-6 sm:p-8">
-            {/* Step 1: Service Selection with Search */}
-            {step === 1 && (
-              <div>
-                {/* Search Bar */}
-                <div className="mb-6">
-                  <div className="relative">
+            <AnimatePresence mode="wait">
+
+              {/* ══ STEP 1 — Service selection ══════════════════════════ */}
+              {step === 1 && (
+                <motion.div key="step-1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <div className="mb-6 relative">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
                     <input
                       type="text"
@@ -353,474 +358,370 @@ export default function BookAppointmentModal({
                       className="w-full h-12 pl-11 pr-10 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
                     />
                     {search && (
-                      <button
-                        onClick={() => setSearch("")}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-mauve/10 rounded-full transition-colors"
-                      >
+                      <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-mauve/10 transition-colors">
                         <X className="h-4 w-4 text-deep/40" />
                       </button>
                     )}
+                    {search && <p className="mt-2 text-xs text-deep/50">{totalResults} result{totalResults === 1 ? "" : "s"} found</p>}
                   </div>
-                  {search && (
-                    <p className="mt-2 text-xs text-deep/60">
-                      {totalResults} result{totalResults === 1 ? '' : 's'} found
-                    </p>
-                  )}
-                </div>
 
-                {/* Services by Category */}
-                <div className="space-y-3">
-                  {categories.map(category => {
-                    const categoryServices = servicesByCategory.get(category.id) || [];
-                    const isExpanded = expandedCategories.has(category.id);
-                    
-                    if (search && categoryServices.length === 0) return null;
-
-                    return (
-                      <div key={category.id} className="border-2 border-deep/10 rounded-2xl overflow-hidden">
-                        {/* Category Header */}
-                        <button
-                          onClick={() => toggleCategory(category.id)}
-                          className="w-full flex items-center justify-between p-4 hover:bg-mauve-tint transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <h3 className="font-display text-lg font-light text-deep">
-                              {category.name}
-                            </h3>
-                            <span className="text-xs text-deep/50">
-                              ({categoryServices.length})
-                            </span>
-                          </div>
-                          <ChevronDown 
-                            className={`h-5 w-5 text-deep/40 transition-transform duration-300 ${
-                              isExpanded ? 'rotate-180' : ''
-                            }`}
-                          />
-                        </button>
-
-                        {/* Category Services */}
-                        {isExpanded && (
-                          <div className="border-t border-deep/10 p-4 bg-ivory space-y-2">
-                            {categoryServices.map(service => (
-                              <button
-                                key={service.id}
-                                onClick={() => handleServiceSelect(service)}
-                                className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-sage-tint border-2 border-transparent hover:border-sage transition-all group"
-                              >
-                                {getServiceImage(service) && (
-                                  <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                                    <Image
-                                      src={getServiceImage(service)!}
-                                      alt={service.name}
-                                      fill
-                                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                    />
+                  <div className="space-y-3">
+                    {categories.map((cat) => {
+                      const catServices = servicesByCategory.get(cat.id) || [];
+                      if (search && catServices.length === 0) return null;
+                      const isExpanded = expandedCategories.has(cat.id);
+                      return (
+                        <div key={cat.id} className="border-2 border-deep/10 rounded-2xl overflow-hidden">
+                          <button onClick={() => toggleCategory(cat.id)} className="w-full flex items-center justify-between p-4 hover:bg-mauve-tint transition-colors">
+                            <div className="flex items-center gap-3">
+                              <h3 className="font-display text-lg font-light text-deep">{cat.name}</h3>
+                              <span className="text-xs text-deep/40">({catServices.length})</span>
+                            </div>
+                            <ChevronDown className={`h-5 w-5 text-deep/40 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
+                          </button>
+                          {isExpanded && (
+                            <div className="border-t border-deep/10 p-4 bg-ivory space-y-2">
+                              {catServices.map((service) => (
+                                <button
+                                  key={service.id}
+                                  onClick={() => { setSelectedService(service); setStep(2); }}
+                                  className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-sage-tint border-2 border-transparent hover:border-sage transition-all group"
+                                >
+                                  {getServiceImage(service) && (
+                                    <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+                                      <Image src={getServiceImage(service)!} alt={service.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    </div>
+                                  )}
+                                  <div className="flex-1 text-left">
+                                    <h4 className="font-medium text-deep group-hover:text-sage transition-colors">{service.name}</h4>
+                                    <p className="text-xs text-deep/60 line-clamp-1">{service.description}</p>
+                                    <div className="flex items-center gap-3 mt-1">
+                                      <span className="text-sm font-medium text-mauve">₦{service.price.toLocaleString()}</span>
+                                      <span className="text-xs text-deep/40">{getServiceDuration(service)} min</span>
+                                    </div>
                                   </div>
-                                )}
-                                <div className="flex-1 text-left">
-                                  <h4 className="font-medium text-deep group-hover:text-sage transition-colors">
-                                    {service.name}
-                                  </h4>
-                                  <p className="text-xs text-deep/60 line-clamp-1">
-                                    {service.description}
-                                  </p>
-                                  <div className="flex items-center gap-3 mt-1">
-                                    <span className="text-sm font-medium text-mauve">
-                                      ₦{service.price.toLocaleString()}
-                                    </span>
-                                    <span className="text-xs text-deep/40">
-                                      {getServiceDuration(service)} min
-                                    </span>
-                                  </div>
-                                </div>
-                                <ArrowRight className="h-5 w-5 text-deep/40 group-hover:text-sage group-hover:translate-x-1 transition-all" />
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                                  <ArrowRight className="h-5 w-5 text-deep/30 group-hover:text-sage group-hover:translate-x-1 transition-all shrink-0" />
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {totalResults === 0 && (
+                      <div className="text-center py-12">
+                        <p className="text-deep/50 font-light">No services found for &ldquo;{search}&rdquo;</p>
+                        <button onClick={() => setSearch("")} className="mt-3 text-sm text-mauve hover:underline">Clear search</button>
                       </div>
-                    );
-                  })}
+                    )}
+                  </div>
+                </motion.div>
+              )}
 
-                  {totalResults === 0 && (
-                    <div className="text-center py-12">
-                      <p className="text-deep/60">No services found matching "{search}"</p>
-                      <button
-                        onClick={() => setSearch("")}
-                        className="mt-4 text-sm text-mauve hover:underline"
-                      >
-                        Clear search
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Customer Details */}
-            {step === 2 && selectedService && (
-              <div>
-                <div className="mb-8">
-                  <button
-                    onClick={() => setStep(1)}
-                    className="inline-flex items-center gap-2 text-sm text-deep/70 hover:text-deep mb-4"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Change service
+              {/* ══ STEP 2 — Customer details ════════════════════════════ */}
+              {step === 2 && selectedService && (
+                <motion.div key="step-2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <button onClick={() => setStep(1)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-5 transition-colors">
+                    <ArrowLeft className="h-4 w-4" /> Change service
                   </button>
 
-                  <div className="rounded-2xl border-2 border-sage bg-sage-tint p-4">
-                    <p className="text-xs text-deep/70 mb-1">Selected Service</p>
-                    <h3 className="font-display text-xl font-light text-deep">{selectedService.name}</h3>
-                    <div className="flex items-center gap-4 mt-2">
-                      <span className="text-sm font-medium text-sage">₦{selectedService.price.toLocaleString()}</span>
-                      <span className="text-xs text-deep/60">
-                        {getServiceDuration(selectedService)} minutes
-                      </span>
+                  {/* Selected service pill */}
+                  <div className="flex items-center gap-3 mb-8 p-4 rounded-2xl bg-sage-tint border border-sage/20">
+                    <div className="h-10 w-10 rounded-xl bg-sage flex items-center justify-center shrink-0">
+                      <Sparkles className="h-4 w-4 text-ivory" strokeWidth={1.5} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Selected service</p>
+                      <p className="font-display text-base font-light text-deep truncate">{selectedService.name}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-display text-lg text-sage">₦{selectedService.price.toLocaleString()}</p>
+                      <p className="text-[10px] text-deep/40">{getServiceDuration(selectedService)} min</p>
                     </div>
                   </div>
-                </div>
 
-                <form onSubmit={handleDetailsSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                      <label className="eyebrow text-deep text-[9px] block mb-2">— Your name</label>
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
-                        <input
-                          type="text"
-                          required
-                          value={formData.customer_name}
-                          onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                          placeholder="Ada Okafor"
-                          className="w-full h-12 pl-11 pr-4 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
-                        />
+                  <form onSubmit={handleDetailsSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Full name</label>
+                        <div className="relative">
+                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
+                          <input required type="text" value={formData.customer_name} onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })} placeholder="Ada Okafor" className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-mauve focus:outline-none transition-colors" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Email address</label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
+                          <input required type="email" value={formData.customer_email} onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })} placeholder="ada@example.com" className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-sage focus:outline-none transition-colors" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Phone number</label>
+                        <div className="relative">
+                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
+                          <input required type="tel" value={formData.customer_phone} onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })} placeholder="+234 800 000 0000" className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-deep focus:outline-none transition-colors" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Preferred date</label>
+                        <div className="relative">
+                          <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
+                          <input required type="date" value={formData.appointment_date} min={new Date().toISOString().split("T")[0]} onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })} className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep focus:border-mauve focus:outline-none transition-colors" />
+                        </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="eyebrow text-deep text-[9px] block mb-2">— Email address</label>
+                      <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Preferred time</label>
                       <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
-                        <input
-                          type="email"
-                          required
-                          value={formData.customer_email}
-                          onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
-                          placeholder="ada@example.com"
-                          className="w-full h-12 pl-11 pr-4 rounded-full bg-sage-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-sage focus:outline-none transition-colors"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                      <label className="eyebrow text-deep text-[9px] block mb-2">— Phone number</label>
-                      <div className="relative">
-                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
-                        <input
-                          type="tel"
-                          required
-                          value={formData.customer_phone}
-                          onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                          placeholder="+234 XXX XXX XXXX"
-                          className="w-full h-12 pl-11 pr-4 rounded-full bg-deep-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-deep focus:outline-none transition-colors"
-                        />
+                        <Clock3 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
+                        <input required type="time" value={formData.appointment_time} onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })} className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep focus:border-sage focus:outline-none transition-colors" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="eyebrow text-deep text-[9px] block mb-2">— Preferred date</label>
+                      <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Additional notes (optional)</label>
                       <div className="relative">
-                        <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
-                        <input
-                          type="date"
-                          required
-                          value={formData.appointment_date}
-                          onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })}
-                          min={new Date().toISOString().split('T')[0]}
-                          className="w-full h-12 pl-11 pr-4 rounded-full bg-mauve-tint border-2 border-transparent text-deep text-sm font-light focus:border-mauve focus:outline-none transition-colors"
-                        />
+                        <MessageSquare className="absolute left-4 top-3.5 h-4 w-4 text-deep/30" strokeWidth={1.5} />
+                        <textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Any special requests or preferences..." rows={3} className="w-full pl-11 pr-4 py-3 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-deep focus:outline-none transition-colors resize-none" />
                       </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="eyebrow text-deep text-[9px] block mb-2">— Preferred time</label>
-                    <div className="relative">
-                      <Clock3 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
-                      <input
-                        type="time"
-                        required
-                        value={formData.appointment_time}
-                        onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })}
-                        className="w-full h-12 pl-11 pr-4 rounded-full bg-sage-tint border-2 border-transparent text-deep text-sm font-light focus:border-sage focus:outline-none transition-colors"
-                      />
+                    <button type="submit" className="w-full py-3.5 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                      Continue to Payment <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+                    </button>
+                  </form>
+                </motion.div>
+              )}
+
+              {/* ══ STEP 3 — Gateway selection ═══════════════════════════ */}
+              {step === 3 && selectedService && (
+                <motion.div key="step-3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <button onClick={() => setStep(2)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
+                    <ArrowLeft className="h-4 w-4" /> Back to details
+                  </button>
+
+                  {/* Amount summary */}
+                  <div className="flex items-center justify-between mb-8 px-5 py-4 rounded-2xl bg-deep-tint border border-deep/10">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Booking total</p>
+                      <p className="font-display text-lg text-deep">{selectedService.name}</p>
                     </div>
+                    <p className="font-display text-2xl text-deep">₦{selectedService.price.toLocaleString()}</p>
                   </div>
 
-                  <div>
-                    <label className="eyebrow text-deep text-[9px] block mb-2">— Additional notes (optional)</label>
-                    <div className="relative">
-                      <MessageSquare className="absolute left-4 top-4 h-4 w-4 text-deep/40" />
-                      <textarea
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder="Any special requests or information we should know..."
-                        rows={4}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-deep-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-deep focus:outline-none transition-colors resize-none"
-                      />
-                    </div>
+                  <p className="text-sm text-deep/50 font-light mb-5">Choose your preferred payment provider.</p>
+
+                  <div className="space-y-3">
+                    {/* Paystack */}
+                    <button
+                      onClick={handleSelectPaystack}
+                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#00C46E] hover:shadow-[0_0_0_4px_rgba(0,196,110,0.08)] transition-all text-left"
+                    >
+                      <div className="h-12 w-12 rounded-xl bg-[#00C46E]/10 flex items-center justify-center shrink-0">
+                        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
+                          <rect width="32" height="32" rx="6" fill="#00C46E" />
+                          <path d="M8 11h16M8 16h12M8 21h8" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-deep text-sm">Paystack</p>
+                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Card, bank transfer, USSD & more</p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00C46E] transition-colors shrink-0" strokeWidth={1.5} />
+                    </button>
+
+                    {/* Moniwave */}
+                    <button
+                      onClick={handleSelectMoniwave}
+                      disabled={loading}
+                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#FF6B00] hover:shadow-[0_0_0_4px_rgba(255,107,0,0.08)] transition-all text-left disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <div className="h-12 w-12 rounded-xl bg-[#FF6B00]/10 flex items-center justify-center shrink-0">
+                        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
+                          <rect width="32" height="32" rx="6" fill="#FF6B00" />
+                          <circle cx="16" cy="16" r="6" stroke="white" strokeWidth="2.5" />
+                          <path d="M16 10v12M10 16h12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-deep text-sm">Moniwave</p>
+                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Fast, secure Nigerian payments</p>
+                      </div>
+                      {loading && gateway === "moniwave" ? (
+                        <span className="h-4 w-4 border-2 border-[#FF6B00]/30 border-t-[#FF6B00] rounded-full animate-spin shrink-0" />
+                      ) : (
+                        <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#FF6B00] transition-colors shrink-0" strokeWidth={1.5} />
+                      )}
+                    </button>
                   </div>
+                </motion.div>
+              )}
 
-                  <button
-                    type="submit"
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-sage px-6 py-4 text-sm font-medium text-ivory transition hover:bg-sage-dark"
-                  >
-                    Continue to Payment
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </form>
-              </div>
-            )}
-
-            {/* Step 3: Payment Method Selection */}
-            {step === 3 && selectedService && !paymentMethod && (
-              <div>
-                <div className="mb-8">
-                  <button
-                    onClick={() => setStep(2)}
-                    className="inline-flex items-center gap-2 text-sm text-deep/70 hover:text-deep mb-4"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to details
-                  </button>
-                  <p className="text-xs uppercase tracking-wider text-deep font-medium mb-2">Choose Payment Method</p>
-                  <h2 className="font-display text-3xl sm:text-4xl font-light text-deep">
-                    How would you like to pay?
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button
-                    onClick={() => setPaymentMethod("card")}
-                    className="group p-6 rounded-2xl border-2 border-mauve bg-mauve-tint hover:bg-mauve hover:shadow-lg transition-all"
-                  >
-                    <CreditCard className="h-8 w-8 text-mauve group-hover:text-ivory mb-4 transition-colors" />
-                    <h3 className="font-display text-xl font-light text-deep group-hover:text-ivory mb-2 transition-colors">
-                      Card Payment
-                    </h3>
-                    <p className="text-sm text-deep/70 group-hover:text-ivory/80 transition-colors">
-                      Pay securely with Paystack
-                    </p>
+              {/* ══ STEP 4 — Paystack sub-methods ═══════════════════════ */}
+              {step === 4 && selectedService && gateway === "paystack" && !paymentMethod && (
+                <motion.div key="step-4-choose" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <button onClick={() => { setStep(3); setGateway(null); }} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
+                    <ArrowLeft className="h-4 w-4" /> Back to gateway
                   </button>
 
-                  <button
-                    onClick={() => setPaymentMethod("transfer")}
-                    className="group p-6 rounded-2xl border-2 border-sage bg-sage-tint hover:bg-sage hover:shadow-lg transition-all"
-                  >
-                    <Building2 className="h-8 w-8 text-sage group-hover:text-ivory mb-4 transition-colors" />
-                    <h3 className="font-display text-xl font-light text-deep group-hover:text-ivory mb-2 transition-colors">
-                      Bank Transfer
-                    </h3>
-                    <p className="text-sm text-deep/70 group-hover:text-ivory/80 transition-colors">
-                      Transfer to our account
-                    </p>
-                  </button>
-                </div>
-              </div>
-            )}
+                  <p className="text-sm text-deep/50 font-light mb-5">How would you like to pay via Paystack?</p>
 
-            {/* Card Payment View */}
-            {step === 3 && selectedService && paymentMethod === "card" && (
-              <div>
-                <div className="mb-8">
-                  <button
-                    onClick={() => setPaymentMethod(null)}
-                    className="inline-flex items-center gap-2 text-sm text-deep/70 hover:text-deep mb-4"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to payment methods
-                  </button>
-                  <p className="text-xs uppercase tracking-wider text-mauve font-medium mb-2">Card Payment</p>
-                  <h2 className="font-display text-3xl sm:text-4xl font-light text-deep">
-                    Review & Pay
-                  </h2>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="rounded-2xl border-2 border-deep/10 bg-mauve-tint p-6">
-                    <h3 className="font-medium text-deep mb-4">Booking Summary</h3>
-                    
-                    <div className="space-y-3 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-deep/70">Service</span>
-                        <span className="font-medium text-deep">{selectedService.name}</span>
+                  <div className="space-y-3">
+                    {/* Card */}
+                    <button
+                      onClick={() => setPaymentMethod("card")}
+                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-mauve hover:shadow-[0_0_0_4px_rgba(138,111,136,0.08)] transition-all text-left"
+                    >
+                      <div className="h-12 w-12 rounded-xl bg-mauve-tint flex items-center justify-center shrink-0">
+                        <CreditCard className="h-5 w-5 text-mauve" strokeWidth={1.5} />
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-deep/70">Date</span>
-                        <span className="font-medium text-deep">{new Date(formData.appointment_date).toLocaleDateString()}</span>
+                      <div className="flex-1">
+                        <p className="font-medium text-deep text-sm">Debit / Credit Card</p>
+                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Visa, Mastercard, Verve — secure checkout</p>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-deep/70">Time</span>
-                        <span className="font-medium text-deep">{formData.appointment_time}</span>
+                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-mauve transition-colors shrink-0" strokeWidth={1.5} />
+                    </button>
+
+                    {/* Transfer */}
+                    <button
+                      onClick={() => setPaymentMethod("transfer")}
+                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-sage hover:shadow-[0_0_0_4px_rgba(79,114,136,0.08)] transition-all text-left"
+                    >
+                      <div className="h-12 w-12 rounded-xl bg-sage-tint flex items-center justify-center shrink-0">
+                        <Building2 className="h-5 w-5 text-sage" strokeWidth={1.5} />
                       </div>
-                      <div className="border-t border-deep/10 pt-3 flex justify-between">
-                        <span className="text-deep/70">Total Amount</span>
-                        <span className="font-display text-xl font-medium text-mauve">
-                          ₦{selectedService.price.toLocaleString()}
-                        </span>
+                      <div className="flex-1">
+                        <p className="font-medium text-deep text-sm">Bank Transfer</p>
+                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Transfer directly from your bank account</p>
                       </div>
+                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-sage transition-colors shrink-0" strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ══ STEP 4 / Card payment ════════════════════════════════ */}
+              {step === 4 && selectedService && paymentMethod === "card" && (
+                <motion.div key="step-4-card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <button onClick={() => setPaymentMethod(null)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
+                    <ArrowLeft className="h-4 w-4" /> Back to payment options
+                  </button>
+
+                  {/* Summary card */}
+                  <div className="p-5 rounded-2xl bg-mauve-tint border border-mauve/20 mb-6 space-y-3">
+                    <h3 className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Booking summary</h3>
+                    {[
+                      { label: "Service",  value: selectedService.name },
+                      { label: "Date",     value: new Date(formData.appointment_date).toLocaleDateString("en-NG", { weekday: "long", day: "numeric", month: "long" }) },
+                      { label: "Time",     value: formData.appointment_time },
+                      { label: "Customer", value: formData.customer_name },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="flex items-center justify-between text-sm">
+                        <span className="text-deep/50 font-light">{label}</span>
+                        <span className="text-deep font-light">{value}</span>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between pt-3 border-t border-mauve/20">
+                      <span className="text-sm text-deep font-light">Total</span>
+                      <span className="font-display text-2xl text-mauve">₦{selectedService.price.toLocaleString()}</span>
                     </div>
                   </div>
 
                   <button
                     onClick={handleCardPayment}
                     disabled={loading}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-mauve px-6 py-4 text-sm font-medium text-ivory transition hover:bg-mauve-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {loading ? (
-                      <>Processing...</>
+                      <><span className="h-4 w-4 border-2 border-ivory/30 border-t-ivory rounded-full animate-spin" /> Processing…</>
                     ) : (
-                      <>
-                        <CreditCard className="h-4 w-4" />
-                        Pay ₦{selectedService.price.toLocaleString()} with Paystack
-                      </>
+                      <><CreditCard className="h-4 w-4" strokeWidth={1.5} /> Pay ₦{selectedService.price.toLocaleString()} with Paystack</>
                     )}
                   </button>
-                  <p className="text-xs text-center text-deep/60">
-                    Secure payment powered by Paystack
-                  </p>
-                </div>
-              </div>
-            )}
+                  <p className="mt-3 text-[11px] text-center text-deep/40 font-light">Secured by Paystack — 256-bit SSL encryption</p>
+                </motion.div>
+              )}
 
-            {/* Bank Transfer View */}
-            {step === 3 && selectedService && paymentMethod === "transfer" && (
-              <div>
-                <div className="mb-8">
-                  <button
-                    onClick={() => setPaymentMethod(null)}
-                    className="inline-flex items-center gap-2 text-sm text-deep/70 hover:text-deep mb-4"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to payment methods
+              {/* ══ STEP 4 / Bank transfer ═══════════════════════════════ */}
+              {step === 4 && selectedService && paymentMethod === "transfer" && (
+                <motion.div key="step-4-transfer" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <button onClick={() => setPaymentMethod(null)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
+                    <ArrowLeft className="h-4 w-4" /> Back to payment options
                   </button>
-                  <p className="text-xs uppercase tracking-wider text-sage font-medium mb-2">Bank Transfer</p>
-                  <h2 className="font-display text-3xl sm:text-4xl font-light text-deep">
-                    Complete your transfer
-                  </h2>
-                </div>
 
-                <div className="space-y-6">
-                  <div className="rounded-2xl border-2 border-sage bg-sage-tint p-6">
-                    <h3 className="font-medium text-deep mb-4 flex items-center gap-2">
-                      <Building2 className="h-5 w-5 text-sage" />
-                      Bank Account Details
+                  <div className="p-5 rounded-2xl bg-sage-tint border border-sage/20 space-y-4 mb-5">
+                    <h3 className="text-[10px] uppercase tracking-wider text-deep/40 font-light flex items-center gap-2">
+                      <Building2 className="h-3.5 w-3.5 text-sage" strokeWidth={1.5} /> Bank account details
                     </h3>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-xs text-deep/70 mb-1">Bank Name</p>
-                        <div className="flex items-center justify-between bg-ivory rounded-xl p-3">
-                          <p className="font-medium text-deep">GTBank</p>
-                          <button
-                            onClick={() => copyToClipboard("GTBank")}
-                            className="p-1.5 rounded-lg hover:bg-sage-tint transition-colors"
-                          >
-                            {copied ? <Check className="h-4 w-4 text-sage" /> : <Copy className="h-4 w-4 text-deep/40" />}
-                          </button>
-                        </div>
-                      </div>
 
-                      <div>
-                        <p className="text-xs text-deep/70 mb-1">Account Number</p>
-                        <div className="flex items-center justify-between bg-ivory rounded-xl p-3">
-                          <p className="font-display text-lg font-medium text-deep">0123456789</p>
-                          <button
-                            onClick={() => copyToClipboard("0123456789")}
-                            className="p-1.5 rounded-lg hover:bg-sage-tint transition-colors"
-                          >
-                            {copied ? <Check className="h-4 w-4 text-sage" /> : <Copy className="h-4 w-4 text-deep/40" />}
-                          </button>
+                    {[
+                      { label: "Bank name",     value: "GTBank (Guaranty Trust Bank)" },
+                      { label: "Account name",  value: "Skin Essential Plus Ltd" },
+                      { label: "Account number", value: "0123456789" },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">{label}</p>
+                          <p className="text-sm font-medium text-deep mt-0.5">{value}</p>
                         </div>
+                        <button
+                          onClick={() => copyToClipboard(value)}
+                          className="h-8 w-8 rounded-full bg-white border border-sage/30 flex items-center justify-center hover:bg-sage hover:border-sage hover:text-ivory text-sage transition-all"
+                        >
+                          {copied ? <Check className="h-3.5 w-3.5" strokeWidth={2} /> : <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />}
+                        </button>
                       </div>
+                    ))}
 
-                      <div>
-                        <p className="text-xs text-deep/70 mb-1">Account Name</p>
-                        <div className="flex items-center justify-between bg-ivory rounded-xl p-3">
-                          <p className="font-medium text-deep">Skin Essential Plus Ltd</p>
-                          <button
-                            onClick={() => copyToClipboard("Skin Essential Plus Ltd")}
-                            className="p-1.5 rounded-lg hover:bg-sage-tint transition-colors"
-                          >
-                            {copied ? <Check className="h-4 w-4 text-sage" /> : <Copy className="h-4 w-4 text-deep/40" />}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div>
-                        <p className="text-xs text-deep/70 mb-1">Amount to Transfer</p>
-                        <div className="bg-ivory rounded-xl p-3">
-                          <p className="font-display text-2xl font-medium text-sage">
-                            ₦{selectedService.price.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
+                    <div className="pt-3 border-t border-sage/20">
+                      <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Exact amount</p>
+                      <p className="font-display text-2xl text-sage mt-0.5">₦{selectedService.price.toLocaleString()}</p>
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border-2 border-deep/10 bg-mauve-tint p-6">
-                    <h3 className="font-medium text-deep mb-3">Next Steps</h3>
-                    <ol className="space-y-2 text-sm text-deep/70">
-                      <li className="flex gap-3">
-                        <span className="font-medium text-mauve">1.</span>
-                        <span>Transfer ₦{selectedService.price.toLocaleString()} to the account above</span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="font-medium text-mauve">2.</span>
-                        <span>Take a screenshot of your payment confirmation</span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="font-medium text-mauve">3.</span>
-                        <span>Send proof to <strong className="text-deep">+234 901 234 5678</strong> on WhatsApp</span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="font-medium text-mauve">4.</span>
-                        <span>We'll confirm your booking within 24 hours</span>
-                      </li>
+                  {/* Instructions */}
+                  <div className="p-4 rounded-2xl bg-mauve-tint border border-mauve/20 mb-5">
+                    <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light mb-3">Next steps</p>
+                    <ol className="space-y-2">
+                      {[
+                        "Transfer the exact amount to the account above.",
+                        "Screenshot your payment confirmation.",
+                        `Send proof to +234 901 234 5678 on WhatsApp with reference: APPT-${formData.customer_name.split(" ")[0]?.toUpperCase() ?? "REF"}.`,
+                        "We'll confirm your booking within a few hours.",
+                      ].map((step, i) => (
+                        <li key={i} className="flex gap-2.5 text-xs text-deep/70 font-light">
+                          <span className="font-medium text-mauve shrink-0">{i + 1}.</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
                     </ol>
                   </div>
 
                   <button
                     onClick={handleBankTransfer}
                     disabled={loading}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-sage px-6 py-4 text-sm font-medium text-ivory transition hover:bg-sage-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60"
                   >
                     {loading ? (
-                      <>Creating booking...</>
+                      <><span className="h-4 w-4 border-2 border-ivory/30 border-t-ivory rounded-full animate-spin" /> Creating booking…</>
                     ) : (
-                      <>
-                        <CheckCircle2 className="h-4 w-4" />
-                        I've Made the Transfer
-                      </>
+                      <><CheckCircle2 className="h-4 w-4" strokeWidth={1.5} /> I&rsquo;ve completed the transfer</>
                     )}
                   </button>
-                  <p className="text-xs text-center text-deep/60">
-                    Your booking will be confirmed once payment is verified
-                  </p>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+
+            </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      <SuccessNotification
-        {...notification}
-        onClose={hideSuccess}
-      />
+      <SuccessNotification {...notification} onClose={hideSuccess} />
     </>
   );
 }
