@@ -158,7 +158,7 @@ export function ServicesGrid(): React.ReactElement {
   return (
     <>
       {/* HERO SECTION WITH SEARCH */}
-      <section className="relative py-12 sm:py-16 overflow-hidden">
+      <section className="relative pt-28 sm:pt-36 pb-12 sm:pb-16 overflow-hidden">
         {/* Vibrant animated gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-mauve via-sage/80 to-deep">
           <motion.div
@@ -331,15 +331,59 @@ export function ServicesGrid(): React.ReactElement {
                     const items = servicesByCategory.get(cat.id) ?? [];
                     if (!items.length) return null;
 
+                    const Icon = cat.icon;
+                    const accentBg: Record<typeof cat.color, string> = {
+                      mauve: "bg-mauve",
+                      sage: "bg-sage",
+                      deep: "bg-deep",
+                      mixed: "bg-mauve",
+                    };
+                    const accentText: Record<typeof cat.color, string> = {
+                      mauve: "text-mauve",
+                      sage: "text-sage",
+                      deep: "text-deep",
+                      mixed: "text-deep",
+                    };
+                    const accentBorder: Record<typeof cat.color, string> = {
+                      mauve: "border-mauve",
+                      sage: "border-sage",
+                      deep: "border-deep",
+                      mixed: "border-deep",
+                    };
+                    const accentBgLight: Record<typeof cat.color, string> = {
+                      mauve: "bg-mauve/10",
+                      sage: "bg-sage/10",
+                      deep: "bg-deep/10",
+                      mixed: "bg-mauve/10",
+                    };
+
                     return (
                       <section key={cat.id} id={cat.id} className="scroll-mt-28">
-                        <div className="mb-6">
-                          <h3 className="font-display text-3xl font-light text-deep mb-2">
-                            {cat.name}
-                          </h3>
-                          <p className="text-sm text-deep/60">
-                            {items.length} treatment{items.length === 1 ? "" : "s"} available
-                          </p>
+                        <div className={cn(
+                          "relative mb-8 flex items-center gap-5 rounded-2xl border-l-[5px] px-6 py-5",
+                          accentBorder[cat.color],
+                          accentBgLight[cat.color]
+                        )}>
+                          <div className={cn(
+                            "shrink-0 h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg",
+                            accentBg[cat.color]
+                          )}>
+                            <Icon className="h-7 w-7 text-ivory" strokeWidth={1.5} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-display text-3xl font-light text-deep leading-tight">
+                              {cat.name}
+                            </h3>
+                            <p className={cn("text-sm font-light italic mt-1", accentText[cat.color])}>
+                              {cat.tagline}
+                            </p>
+                          </div>
+                          <div className={cn(
+                            "shrink-0 px-4 py-2 rounded-full text-ivory text-xs font-medium uppercase tracking-wider",
+                            accentBg[cat.color]
+                          )}>
+                            {items.length} treatment{items.length === 1 ? "" : "s"}
+                          </div>
                         </div>
 
                         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">

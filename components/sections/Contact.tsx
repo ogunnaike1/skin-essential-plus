@@ -79,7 +79,7 @@ export function Contact(): React.ReactElement {
             className="lg:col-span-7 relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] rounded-3xl overflow-hidden shadow-glass-lg border border-white/50 bg-ivory"
           >
             <iframe
-              src="https://www.openstreetmap.org/export/embed.html?bbox=3.8310%2C7.3650%2C3.8710%2C7.4010&layer=mapnik&marker=7.3830%2C3.8510"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=3.4558%2C6.4114%2C3.4958%2C6.4514&layer=mapnik&marker=6.4314%2C3.4758"
               className="absolute inset-0 h-full w-full grayscale-[0.3] contrast-[0.95] saturate-[0.85]"
               style={{ filter: "hue-rotate(-10deg)" }}
               loading="lazy"

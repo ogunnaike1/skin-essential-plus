@@ -137,7 +137,7 @@ export function ProductsGrid(): React.ReactElement {
   return (
     <>
       {/* HERO SECTION WITH SEARCH */}
-      <section className="relative py-12 sm:py-16 overflow-hidden">
+      <section className="relative pt-28 sm:pt-36 pb-12 sm:pb-16 overflow-hidden">
         {/* Vibrant animated gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-sage via-mauve/80 to-deep">
           <motion.div
@@ -651,6 +651,21 @@ function ProductCard({
     sage: "text-sage",
     deep: "text-deep",
   };
+  const accentBorder: Record<typeof product.accent, string> = {
+    mauve: "border-mauve/25 group-hover:border-mauve/60",
+    sage:  "border-sage/25 group-hover:border-sage/60",
+    deep:  "border-deep/20 group-hover:border-deep/50",
+  };
+  const accentGradient: Record<typeof product.accent, string> = {
+    mauve: "from-mauve/10 via-transparent",
+    sage:  "from-sage/10 via-transparent",
+    deep:  "from-deep/8 via-transparent",
+  };
+  const accentCartHover: Record<typeof product.accent, string> = {
+    mauve: "hover:bg-ivory hover:text-mauve hover:shadow-[0_0_16px_rgba(138,111,136,0.5)]",
+    sage:  "hover:bg-ivory hover:text-sage hover:shadow-[0_0_16px_rgba(79,114,136,0.5)]",
+    deep:  "hover:bg-ivory hover:text-deep hover:shadow-[0_0_16px_rgba(71,103,106,0.5)]",
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -662,7 +677,7 @@ function ProductCard({
 
   return (
     <motion.article
-      initial={{ opacity: 1, y: 24 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{
@@ -670,18 +685,36 @@ function ProductCard({
         delay: (index % 3) * 0.05,
         ease: [0.16, 1, 0.3, 1],
       }}
-      className="group relative flex flex-col rounded-xl bg-white/60 backdrop-blur-md border border-white/80 overflow-hidden shadow-[0_8px_32px_rgba(71,103,106,0.12),inset_0_1px_0_rgba(255,255,255,0.8)] transition-[border-color,box-shadow] duration-300 hover:border-white hover:shadow-[0_16px_48px_rgba(71,103,106,0.18),inset_0_1px_0_rgba(255,255,255,0.9)]"
+      className={cn(
+        "group relative flex flex-col rounded-2xl overflow-hidden border transition-all duration-300",
+        "bg-white/25 backdrop-blur-[3px]",
+        "shadow-[0_4px_24px_rgba(71,103,106,0.08),inset_0_1px_0_rgba(255,255,255,0.9)]",
+        "hover:bg-white/40 hover:shadow-[0_12px_40px_rgba(71,103,106,0.14),inset_0_1px_0_rgba(255,255,255,1)]",
+        accentBorder[product.accent]
+      )}
     >
-      <div className={cn("h-0.5 w-full shrink-0", accentBg[product.accent])} />
+      {/* Accent colour top bar */}
+      <div className={cn("h-[3px] w-full shrink-0", accentBg[product.accent])} />
 
-      <div className="relative aspect-[4/3] overflow-hidden bg-deep-tint">
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        {/* Permanent accent glass tint over image */}
+        <div className={cn(
+          "absolute inset-0 z-10 transition-opacity duration-500",
+          product.accent === "mauve" && "bg-gradient-to-br from-mauve/30 via-mauve/10 to-transparent",
+          product.accent === "sage"  && "bg-gradient-to-br from-sage/30 via-sage/10 to-transparent",
+          product.accent === "deep"  && "bg-gradient-to-br from-deep/30 via-deep/10 to-transparent"
+        )} />
+        {/* Extra brightness on hover */}
+        <div className={cn("absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br", accentGradient[product.accent])} />
+
         {product.image_url ? (
           <Image
             src={product.image_url}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-mauve-tint">
@@ -689,36 +722,38 @@ function ProductCard({
           </div>
         )}
 
-        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-          {product.is_new ? (
-            <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-sage text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
+        {/* Badges */}
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-20">
+          {product.is_new && (
+            <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-sage text-ivory text-[8px] uppercase tracking-[0.15em] font-semibold shadow-md">
               New
             </span>
-          ) : null}
-          {product.is_bestseller ? (
-            <span className="inline-flex self-start items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-mauve text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
-              <Sparkles className="h-2 w-2" strokeWidth={1.75} />
+          )}
+          {product.is_bestseller && (
+            <span className="inline-flex self-start items-center gap-0.5 px-2 py-0.5 rounded-full bg-mauve text-ivory text-[8px] uppercase tracking-[0.15em] font-semibold shadow-md">
+              <Sparkles className="h-2 w-2" strokeWidth={2} />
               Bestseller
             </span>
-          ) : null}
-          {product.is_exclusive ? (
-            <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-deep text-ivory text-[8px] uppercase tracking-[0.15em] font-medium shadow-sm">
+          )}
+          {product.is_exclusive && (
+            <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-deep text-ivory text-[8px] uppercase tracking-[0.15em] font-semibold shadow-md">
               Exclusive
             </span>
-          ) : null}
-          {hasDiscount ? (
-            <span className="inline-flex self-start px-1.5 py-0.5 rounded-full bg-ivory text-mauve text-[8px] uppercase tracking-[0.15em] font-semibold shadow-sm tabular-nums">
+          )}
+          {hasDiscount && (
+            <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-ivory/90 text-mauve text-[8px] uppercase tracking-[0.15em] font-bold shadow-md tabular-nums">
               −{discountPercent}%
             </span>
-          ) : null}
+          )}
         </div>
 
+        {/* Favourite button */}
         <button
           type="button"
           onClick={() => onToggleFavorite(product.id, product.name)}
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           aria-pressed={isFavorite}
-          className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full bg-ivory flex items-center justify-center transition-colors duration-200 hover:bg-mauve-tint shadow-sm"
+          className="absolute top-2.5 right-2.5 z-20 h-7 w-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center transition-all duration-200 hover:bg-white shadow-sm"
         >
           <Heart
             className={cn(
@@ -729,69 +764,72 @@ function ProductCard({
           />
         </button>
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          aria-label={`Add ${product.name} to cart`}
-          className={cn(
-            "absolute bottom-2 right-2 z-10 px-3 py-2 rounded-full flex items-center justify-center gap-1.5 text-ivory shadow-lg hover:scale-105 transition-transform duration-200",
-            accentBg[product.accent]
-          )}
-        >
-          <ShoppingBag className="h-3.5 w-3.5" strokeWidth={1.75} />
-          <span className="text-[10px] font-medium uppercase tracking-wider">Add to Cart</span>
-        </button>
+        {/* Add to cart — slides up on hover */}
+        <div className="absolute bottom-0 inset-x-0 z-20 p-2.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-[0.16,1,0.3,1]">
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            aria-label={`Add ${product.name} to cart`}
+            className={cn(
+              "w-full py-2.5 rounded-xl flex items-center justify-center gap-2 text-ivory text-[10px] font-semibold uppercase tracking-wider shadow-lg transition-all duration-300",
+              accentBg[product.accent],
+              accentCartHover[product.accent]
+            )}
+          >
+            <ShoppingBag className="h-3.5 w-3.5" strokeWidth={2} />
+            Add to Cart
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-3 bg-white/50">
-        <p className={cn("eyebrow text-[8px] mb-1", accentText[product.accent])}>
+      {/* Info panel */}
+      <div className="flex-1 flex flex-col p-3.5 bg-white/15">
+        <p className={cn("eyebrow text-[8px] mb-1 font-semibold tracking-widest", accentText[product.accent])}>
           {product.tagline}
         </p>
 
-        <h3 className="font-display text-lg font-semibold text-deep leading-snug tracking-tight mb-1.5 line-clamp-2">
+        <h3 className="font-display text-base font-semibold text-deep leading-snug tracking-tight mb-1.5 line-clamp-2">
           {product.name}
         </h3>
 
-        <div className="flex items-center gap-2 text-[10px] text-deep font-light mb-2">
+        <div className="flex items-center gap-1.5 text-[9px] text-deep/50 font-light mb-2">
           <span className="truncate">{product.key_ingredient}</span>
-          <span className="text-deep/30">·</span>
-          <span>{product.volume}</span>
+          <span className="text-deep/20">·</span>
+          <span className="shrink-0">{product.volume}</span>
         </div>
 
         {(isLowStock || isPreOrder) && (
-          <div
-            className={cn(
-              "inline-flex items-center gap-1 self-start px-1.5 py-0.5 rounded-full text-[8px] uppercase tracking-[0.15em] font-medium mb-2",
-              isLowStock ? "bg-mauve-tint text-mauve" : "bg-sage-tint text-sage"
-            )}
-          >
-            <span
-              className={cn(
-                "h-1 w-1 rounded-full animate-pulse-soft",
-                isLowStock ? "bg-mauve" : "bg-sage"
-              )}
-            />
+          <div className={cn(
+            "inline-flex items-center gap-1 self-start px-2 py-0.5 rounded-full text-[8px] uppercase tracking-[0.12em] font-semibold mb-2",
+            isLowStock ? "bg-mauve/10 text-mauve" : "bg-sage/10 text-sage"
+          )}>
+            <span className={cn("h-1 w-1 rounded-full animate-pulse-soft", isLowStock ? "bg-mauve" : "bg-sage")} />
             {isLowStock ? "Low stock" : "Pre-order"}
           </div>
         )}
 
-        <div className="mt-auto pt-2 border-t border-deep/10 flex items-baseline justify-between">
+        <div className={cn(
+          "mt-auto -mx-3.5 -mb-3.5 px-3.5 py-2.5 flex items-center justify-between rounded-b-2xl",
+          product.accent === "mauve" && "bg-mauve",
+          product.accent === "sage"  && "bg-sage",
+          product.accent === "deep"  && "bg-deep"
+        )}>
           <div className="flex items-baseline gap-1.5">
-            {hasDiscount ? (
-              <span className="text-[10px] text-deep/50 line-through tabular-nums">
+            {hasDiscount && (
+              <span className="text-[9px] text-white/50 line-through tabular-nums">
                 {formatShopPrice(product.original_price!)}
               </span>
-            ) : null}
-            <span className={cn("font-display text-lg font-light tabular-nums", accentText[product.accent])}>
+            )}
+            <span className="font-display text-xl font-bold tabular-nums tracking-tight text-white">
               {formatShopPrice(product.price)}
             </span>
           </div>
           <a
             href={`#product-${product.id}`}
-            className="text-[9px] uppercase tracking-[0.15em] text-deep hover:text-mauve transition-colors inline-flex items-center gap-0.5"
+            className="text-[9px] uppercase tracking-[0.12em] transition-opacity inline-flex items-center gap-0.5 font-medium text-white/70 hover:text-white"
           >
             Details
-            <ArrowUpRight className="h-2 w-2" strokeWidth={1.5} />
+            <ArrowUpRight className="h-2.5 w-2.5" strokeWidth={1.5} />
           </a>
         </div>
       </div>

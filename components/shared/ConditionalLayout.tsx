@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Footer } from "@/components/sections/Footer";
+import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,6 +20,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
       <Navbar />
       {children}
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }

@@ -12,6 +12,8 @@ import {
   Sparkles,
   Star,
   Award,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { getProducts, deleteProduct } from "@/lib/supabase/products-api";
@@ -23,6 +25,8 @@ export default function ProductsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadProducts = async () => {
     try {
@@ -41,15 +45,17 @@ export default function ProductsManagement() {
     loadProducts();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-
+  const handleDelete = async () => {
+    if (!productToDelete) return;
+    setDeleting(true);
     try {
-      await deleteProduct(id);
+      await deleteProduct(productToDelete.id);
+      setProductToDelete(null);
       await loadProducts();
     } catch (error) {
       console.error("Error deleting product:", error);
-      alert("Failed to delete product");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -277,7 +283,7 @@ export default function ProductsManagement() {
                           <Edit2 className="h-3.5 w-3.5" />
                         </button>
                         <button
-                          onClick={() => handleDelete(product.id)}
+                          onClick={() => setProductToDelete(product)}
                           className="h-8 w-8 rounded-lg bg-mauve-tint text-mauve hover:bg-mauve hover:text-ivory transition-colors flex items-center justify-center"
                           title="Delete product"
                         >
@@ -315,6 +321,71 @@ export default function ProductsManagement() {
         onSuccess={handleModalSuccess}
         editProduct={editingProduct}
       />
+
+      {/* Delete Confirmation Modal */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="relative bg-ivory rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+            {/* Top accent */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-mauve via-mauve/60 to-transparent" />
+
+            <div className="p-8">
+              {/* Icon */}
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-mauve-tint mb-6">
+                <AlertTriangle className="h-7 w-7 text-mauve" strokeWidth={1.5} />
+              </div>
+
+              <h3 className="font-display text-2xl font-light text-deep mb-2">
+                Delete product?
+              </h3>
+              <p className="text-sm text-deep/60 leading-relaxed mb-1">
+                You are about to permanently delete:
+              </p>
+              <p className="text-sm font-medium text-deep mb-6">
+                "{productToDelete.name}"
+              </p>
+              <p className="text-xs text-deep/40 mb-8">
+                This action cannot be undone.
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setProductToDelete(null)}
+                  disabled={deleting}
+                  className="flex-1 h-12 rounded-full border-2 border-deep/10 bg-white text-deep text-sm font-medium hover:bg-deep-tint transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex-1 h-12 rounded-full bg-mauve text-ivory text-sm font-medium hover:bg-mauve-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setProductToDelete(null)}
+              disabled={deleting}
+              className="absolute top-4 right-4 p-2 rounded-full bg-deep-tint text-deep hover:bg-mauve-tint hover:text-mauve transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

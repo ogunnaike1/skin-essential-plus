@@ -26,8 +26,8 @@ export const SITE = {
   description:
     "Premium skincare, spa therapy, and beauty rituals crafted for the modern connoisseur.",
   email: "hello@skinessentialplus.com",
-  phone: "+234 800 123 4567",
-  address: "No 2, Alaafia Avenue, Opposite IDC Primary School, Akobo, Ibadan",
+  phone: "+234 814 830 3684",
+  address: "Plot 234, Admiralty Way, Lekki Phase 1, Lagos, Nigeria",
   hours: "Mon–Sat · 9:00 AM – 8:00 PM",
 } as const;
 

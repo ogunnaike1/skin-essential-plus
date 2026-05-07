@@ -756,7 +756,7 @@ export default function BookAppointmentModal({
                       {[
                         "Transfer the exact amount to the account above.",
                         "Screenshot your payment confirmation.",
-                        `Send proof to +234 901 234 5678 on WhatsApp with reference: APPT-${formData.customer_name.split(" ")[0]?.toUpperCase() ?? "REF"}.`,
+                        `Send proof to +234 814 830 3684 on WhatsApp with reference: APPT-${formData.customer_name.split(" ")[0]?.toUpperCase() ?? "REF"}.`,
                         "We'll confirm your booking within a few hours.",
                       ].map((step, i) => (
                         <li key={i} className="flex gap-2.5 text-xs text-deep/70 font-light">

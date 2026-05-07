@@ -58,6 +58,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
   });
 
   useEffect(() => {
+    hideSuccess();
     if (editProduct) {
       setFormData({
         name: editProduct.name,

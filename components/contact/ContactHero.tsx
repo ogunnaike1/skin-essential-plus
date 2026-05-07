@@ -11,8 +11,8 @@ export function ContactHero(): React.ReactElement {
     {
       icon: Phone,
       label: "Phone",
-      value: "+234 (0) 901 234 5678",
-      href: "tel:+2349012345678",
+      value: "+234 814 830 3684",
+      href: "tel:+2348148303684",
       color: "mauve" as const,
     },
     {
@@ -36,8 +36,8 @@ export function ContactHero(): React.ReactElement {
     {
       icon: MapPin,
       label: "Location",
-      value: "12 Serenity Avenue, Victoria Island, Lagos",
-      href: "https://maps.google.com/?q=Victoria+Island+Lagos+Nigeria",
+      value: "Plot 234, Admiralty Way, Lekki Phase 1, Lagos",
+      href: "https://maps.google.com/?q=Plot+234+Admiralty+Way+Lekki+Phase+1+Lagos+Nigeria",
       color: "deep" as const,
     },
     {

@@ -39,6 +39,20 @@ const TIMELINE: readonly TimelineEntry[] = [
       "Introduction of the Skin Essential Plus complete skincare program — a holistic journey, not just a transaction.",
     color: "#8A6F88",
   },
+  {
+    year: "2025",
+    title: "Scaling with intention",
+    description:
+      "Deepening our community roots and welcoming a growing clientele who trust us with their most intimate transformation.",
+    color: "#4F7288",
+  },
+  {
+    year: "2026",
+    title: "Present & evolving",
+    description:
+      "Today, Skin Essential Plus continues to set the standard for premium skincare in Ibadan — and the journey is just beginning.",
+    color: "#47676A",
+  },
 ] as const;
 
 export function OurStory(): React.ReactElement {
@@ -92,7 +106,7 @@ export function OurStory(): React.ReactElement {
             className="lg:col-span-7 relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(71,103,106,0.15)]"
           >
             <Image
-              src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1400&q=85&auto=format&fit=crop"
+              src="https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg"
               alt="A treatment ritual in progress"
               fill
               sizes="(max-width: 1024px) 100vw, 60vw"
@@ -110,7 +124,7 @@ export function OurStory(): React.ReactElement {
           >
             <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(71,103,106,0.15)]">
               <Image
-                src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&q=85&auto=format&fit=crop"
+                src="https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg"
                 alt="Detail of a skincare treatment"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
@@ -149,7 +163,7 @@ export function OurStory(): React.ReactElement {
           <div className="relative">
             <div className="hidden md:block absolute top-[30px] left-0 right-0 h-px bg-gradient-to-r from-mauve via-sage to-deep" />
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 md:gap-6">
               {TIMELINE.map((entry, i) => (
                 <motion.div
                   key={entry.year}
