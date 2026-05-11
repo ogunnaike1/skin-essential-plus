@@ -20,10 +20,10 @@ function Stat({ value, label, delay }: StatProps): React.ReactElement {
       transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
       className="flex flex-col"
     >
-      <span className="font-display text-5xl sm:text-6xl font-light text-deep tracking-tight leading-none">
+      <span className="font-display text-3xl sm:text-5xl lg:text-6xl font-light text-deep tracking-tight leading-none">
         {value}
       </span>
-      <span className="eyebrow text-mauve mt-3">{label}</span>
+      <span className="eyebrow text-mauve mt-2 text-[9px] sm:text-[10px] leading-tight">{label}</span>
     </motion.div>
   );
 }

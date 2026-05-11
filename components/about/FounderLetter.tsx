@@ -38,9 +38,6 @@ export function FounderLetter(): React.ReactElement {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mb-16 sm:mb-20 text-center"
         >
-          <span className="eyebrow text-mauve text-[11px] block mb-5">
-            — Chapter Four
-          </span>
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-light leading-[1.02] tracking-tight text-ivory text-balance">
             A Personal Note from Our Founder.
           </h2>

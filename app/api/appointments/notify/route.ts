@@ -221,7 +221,101 @@ export async function POST(request: NextRequest) {
     });
 
     if (emailError) {
-      console.error("Email send failed:", emailError);
+      console.error("Brand email send failed:", emailError);
+    }
+
+    // ── 6. Send confirmation email to customer ─────────────────────
+    const { error: customerEmailError } = await resend.emails.send({
+      from: `${BRAND_NAME} <onboarding@resend.dev>`,
+      to: [appointment.customer_email],
+      subject: `Your Appointment is Confirmed — ${appointment.service_name}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #2D2D2D; background-color: #FAF9F7; margin: 0; padding: 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 24px rgba(71,103,106,0.10);">
+
+    <!-- Accent bar -->
+    <tr>
+      <td style="padding: 0; height: 5px; background: linear-gradient(to right, #8A6F88, #4F7288, #47676A);"></td>
+    </tr>
+
+    <!-- Header -->
+    <tr>
+      <td style="padding: 36px 36px 24px;">
+        <p style="margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #8A6F88;">Skin Essential Plus</p>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D; line-height: 1.2;">Your Appointment is Confirmed ✓</h1>
+        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">Hi ${appointment.customer_name.split(" ")[0]}, we're looking forward to seeing you!</p>
+      </td>
+    </tr>
+
+    <!-- Booking summary card -->
+    <tr>
+      <td style="padding: 0 36px 20px;">
+        <div style="background: #F0F4F5; border-radius: 14px; padding: 22px;">
+          <p style="margin: 0 0 14px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #4F7288;">— Your Booking</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding: 6px 0; font-size: 13px; color: #6B6B6B; width: 40%;">Service</td>
+              <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #2D2D2D; text-align: right;">${appointment.service_name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; font-size: 13px; color: #6B6B6B;">Date</td>
+              <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #2D2D2D; text-align: right;">${formattedDate}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; font-size: 13px; color: #6B6B6B;">Time</td>
+              <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #2D2D2D; text-align: right;">${formattedTime}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; font-size: 13px; color: #6B6B6B;">Amount Paid</td>
+              <td style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #47676A; text-align: right;">${formattedAmount}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; font-size: 13px; color: #6B6B6B;">Reference</td>
+              <td style="padding: 6px 0; font-size: 12px; font-family: monospace; color: #2D2D2D; text-align: right;">${reference}</td>
+            </tr>
+            ${appointment.notes ? `
+            <tr>
+              <td style="padding: 6px 0; font-size: 13px; color: #6B6B6B; vertical-align: top;">Notes</td>
+              <td style="padding: 6px 0; font-size: 13px; color: #2D2D2D; text-align: right;">${appointment.notes}</td>
+            </tr>` : ""}
+          </table>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Location card -->
+    <tr>
+      <td style="padding: 0 36px 28px;">
+        <div style="background: #F5F3F1; border-radius: 14px; padding: 22px;">
+          <p style="margin: 0 0 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #8A6F88;">— Find Us</p>
+          <p style="margin: 0 0 4px; font-size: 13px; font-weight: 600; color: #2D2D2D;">No 2, Alaafia Avenue</p>
+          <p style="margin: 0 0 10px; font-size: 13px; color: #6B6B6B;">Opposite IDC Primary School, Akobo, Ibadan</p>
+          <p style="margin: 0; font-size: 13px; color: #6B6B6B;">📞 +234 814 830 3684 &nbsp;·&nbsp; Mon–Sat · 9:00 AM – 8:00 PM</p>
+        </div>
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="padding: 20px 36px; background: #F5F3F1; text-align: center; border-top: 1px solid #E8E4E0;">
+        <p style="margin: 0 0 4px; font-size: 11px; color: #8A6F88;">Questions? Reply to this email or WhatsApp us at +234 814 830 3684.</p>
+        <p style="margin: 0; font-size: 11px; color: #aaa;">© ${new Date().getFullYear()} Skin Essential Plus. All rights reserved.</p>
+      </td>
+    </tr>
+
+  </table>
+</body>
+</html>`,
+    });
+
+    if (customerEmailError) {
+      console.error("Customer email send failed:", customerEmailError);
     }
 
     return NextResponse.json({ success: true });

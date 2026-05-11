@@ -40,12 +40,10 @@ export function ServiceCard({
   const isLowAvailability =
     service.slotsAvailable > 0 && service.slotsAvailable <= 1;
 
-  const accentText: Record<typeof accentColor, string> = {
-    mauve: "text-mauve",
-    sage: "text-sage",
-    deep: "text-deep",
-    mixed: "text-deep",
-  };
+  const isOnSale = !!(service.originalPrice && service.originalPrice > service.price);
+  const discountPct = isOnSale
+    ? Math.round(((service.originalPrice! - service.price) / service.originalPrice!) * 100)
+    : 0;
 
   const accentBg: Record<typeof accentColor, string> = {
     mauve: "bg-mauve",
@@ -92,12 +90,16 @@ export function ServiceCard({
         />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-deep/50 to-transparent pointer-events-none" />
 
-        {/* Top-left: single tag + optional popular/new */}
+        {/* Top-left: single tag + optional popular/new/sale */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
           <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-ivory text-deep text-[9px] uppercase tracking-[0.15em] font-medium shadow-sm">
             {service.tag}
           </span>
-          {service.popular ? (
+          {isOnSale ? (
+            <span className="inline-flex self-start px-2 py-0.5 rounded-full bg-mauve text-ivory text-[9px] uppercase tracking-[0.15em] font-medium shadow-sm">
+              -{discountPct}% off
+            </span>
+          ) : service.popular ? (
             <span className="inline-flex self-start items-center gap-1 px-2 py-0.5 rounded-full bg-mauve text-ivory text-[9px] uppercase tracking-[0.15em] font-medium shadow-sm">
               <Sparkles className="h-2.5 w-2.5" strokeWidth={1.75} />
               Popular
@@ -215,27 +217,30 @@ export function ServiceCard({
           </span>
         </div>
 
-        {/* Price + details link */}
-        <div className="flex items-baseline justify-between mb-3">
-          <p
-            className={cn(
-              "font-display text-xl sm:text-2xl font-light leading-none tabular-nums",
-              accentText[accentColor]
-            )}
-          >
+        {/* Price row in body */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className={cn("font-display text-xl font-light leading-none tabular-nums", isOnSale ? "text-mauve" : "text-deep")}>
             {formatPrice(service.price)}
-          </p>
-          <a
-            href={`#details-${service.id}`}
-            className="text-[10px] uppercase tracking-[0.15em] text-deep hover:text-deep transition-colors inline-flex items-center gap-1"
-          >
-            Details
-            <ArrowUpRight className="h-2.5 w-2.5" strokeWidth={1.5} />
-          </a>
+          </span>
+          {isOnSale && (
+            <>
+              <span className="font-display text-sm font-light leading-none tabular-nums text-deep/40 line-through">
+                {formatPrice(service.originalPrice!)}
+              </span>
+              <span className="px-1.5 py-0.5 rounded-full bg-mauve text-ivory text-[9px] font-medium tabular-nums">
+                −{discountPct}%
+              </span>
+            </>
+          )}
         </div>
+        {isOnSale && (
+          <p className="text-[10px] text-mauve/80 font-medium mb-3">
+            You save {formatPrice(service.originalPrice! - service.price)}
+          </p>
+        )}
 
-        {/* CTAs — tight, solid */}
-        <div className="mt-auto flex items-stretch gap-1.5">
+        {/* CTAs */}
+        <div className="mt-auto flex items-stretch gap-1.5 mb-3">
           <button
             type="button"
             onClick={() => onViewEmployees(service)}
@@ -252,16 +257,44 @@ export function ServiceCard({
               "flex-1 inline-flex items-center justify-center gap-1 px-2 py-2 rounded-full font-sans text-[9px] uppercase tracking-[0.15em] transition-colors duration-200 cursor-pointer border",
               isFullyBooked
                 ? "bg-deep/10 text-deep cursor-not-allowed border-deep/10"
-                : cn(
-                    accentBg[accentColor],
-                    "text-ivory border-transparent hover:bg-deep-dark"
-                  )
+                : cn(accentBg[accentColor], "text-ivory border-transparent hover:opacity-90")
             )}
           >
             <CalendarCheck className="h-2.5 w-2.5" strokeWidth={1.75} />
             <span>{isFullyBooked ? "Waitlist" : "Book"}</span>
           </button>
         </div>
+      </div>
+
+      {/* Coloured price footer — mirrors ProductCard */}
+      <div
+        className={cn(
+          "shrink-0 px-4 py-2.5 flex items-center justify-between",
+          accentBg[accentColor]
+        )}
+      >
+        <div className="flex items-baseline gap-1.5">
+          {isOnSale ? (
+            <span className="text-[10px] text-ivory/50 line-through tabular-nums">
+              {formatPrice(service.originalPrice!)}
+            </span>
+          ) : null}
+          <span className="font-display text-xl font-light tabular-nums tracking-tight text-ivory">
+            {formatPrice(service.price)}
+          </span>
+          {isOnSale ? (
+            <span className="text-[9px] text-ivory/70 font-medium tabular-nums">
+              −{discountPct}%
+            </span>
+          ) : null}
+        </div>
+        <a
+          href={`#details-${service.id}`}
+          className="text-[9px] uppercase tracking-[0.12em] text-ivory/70 hover:text-ivory transition-colors inline-flex items-center gap-0.5 font-medium"
+        >
+          Details
+          <ArrowUpRight className="h-2.5 w-2.5" strokeWidth={1.5} />
+        </a>
       </div>
     </motion.article>
   );

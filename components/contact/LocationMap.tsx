@@ -8,19 +8,19 @@ export function LocationMap(): React.ReactElement {
     {
       icon: MapPin,
       label: "Address",
-      value: "Plot 234, Admiralty Way\nLekki Phase 1, Lagos\nNigeria",
+      value: "No 2, Alaafia Avenue\nOpposite IDC Primary School\nAkobo, Ibadan",
       color: "mauve" as const,
     },
     {
       icon: Clock,
       label: "Hours",
-      value: "Monday – Saturday\n9:00 AM – 7:00 PM\nSunday: Closed",
+      value: "Monday – Saturday\n9:00 AM – 8:00 PM\nSunday: Closed",
       color: "sage" as const,
     },
     {
       icon: Phone,
       label: "Reception",
-      value: "+234 (0) 901 234 5678\nhello@skinessential.ng",
+      value: "+234 814 830 3684\nhello@skinessentialplus.com",
       color: "deep" as const,
     },
   ];
@@ -43,23 +43,19 @@ export function LocationMap(): React.ReactElement {
               Our <em className="not-italic text-deep">location</em>
             </h2>
             <p className="text-sm sm:text-base font-light text-deep max-w-2xl mx-auto">
-              Find us in the heart of Lekki. Walk-ins welcome, but appointments are recommended.
+              Find us in Akobo, Ibadan. Walk-ins welcome, but appointments are recommended.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2 rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(71,103,106,0.12)] border-2 border-deep/10">
-              <div className="relative aspect-[16/10] bg-sage-tint">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <MapPin className="h-12 w-12 text-sage mx-auto mb-4" strokeWidth={1.5} />
-                    <p className="text-sm font-light text-deep mb-4">Map placeholder</p>
-                    <a href="https://maps.google.com/?q=Lekki+Phase+1+Lagos" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-sage text-ivory text-[11px] uppercase tracking-[0.2em] font-medium hover:bg-sage/90 transition-colors">
-                      <Navigation className="h-3.5 w-3.5" strokeWidth={1.5} />
-                      Get directions
-                    </a>
-                  </div>
-                </div>
+              <div className="relative aspect-[16/10]">
+                <iframe
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=3.9193%2C7.4127%2C3.9593%2C7.4427&layer=mapnik&marker=7.4277%2C3.9393"
+                  className="absolute inset-0 h-full w-full"
+                  loading="lazy"
+                  title="Skin Essential Plus location — Akobo, Ibadan"
+                />
               </div>
             </div>
 
@@ -88,7 +84,7 @@ export function LocationMap(): React.ReactElement {
               })}
 
               <motion.a
-                href="https://maps.google.com/?q=Lekki+Phase+1+Lagos"
+                href="https://maps.google.com/?q=No+2+Alaafia+Avenue+Akobo+Ibadan+Nigeria"
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ opacity: 0, x: 20 }}

@@ -171,7 +171,7 @@ export function BeforeAfter(): React.ReactElement {
               transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className="mt-4 text-base sm:text-lg text-deep font-light leading-relaxed"
             >
-              Wake up every morning with perfectly curled, voluminous lashes that last 4-6 weeks. No mascara needed.
+              Wake up every morning with perfectly curled, voluminous lashes that last well over a year. No mascara needed.
             </motion.p>
 
             <motion.ul
@@ -185,7 +185,7 @@ export function BeforeAfter(): React.ReactElement {
                 'Premium synthetic silk fibers',
                 'Custom curl, length & volume',
                 'Waterproof & sweat-resistant',
-                'Lasts 4-6 weeks with fills',
+                'Lasts well over a year with proper care',
               ].map((feature, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-mauve shrink-0" />
@@ -209,7 +209,7 @@ export function BeforeAfter(): React.ReactElement {
 
             <div className="mt-14 grid grid-cols-3 gap-6 border-t border-deep/15 pt-10">
               <Stat value="90min" label="Application" delay={0.3} />
-              <Stat value="4-6wk" label="Lasting" delay={0.4} />
+              <Stat value="1year+" label="Lasting" delay={0.4} />
               <Stat value="100+" label="Per Eye" delay={0.5} />
             </div>
           </div>

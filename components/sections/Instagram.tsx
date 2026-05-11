@@ -55,7 +55,7 @@ export function Instagram(): React.ReactElement {
           description="A living journal of treatments, textures, and small moments of beauty — captured from behind our doors."
         />
 
-        <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
           {SOCIAL_IMAGES.map((img, i) => (
             <Tile key={img.id} image={img} index={i} />
           ))}

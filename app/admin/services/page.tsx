@@ -22,6 +22,7 @@ interface Service {
   category: string;
   description: string;
   price: number;
+  original_price?: number;
   duration: number;
   image_url: string | null;
   is_active: boolean;
@@ -47,6 +48,7 @@ export default function ServicesManagement() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
 
@@ -88,7 +90,11 @@ export default function ServicesManagement() {
   const filteredServices = services.filter((service) => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === "all" || service.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    const matchesStatus =
+      filterStatus === "all" ||
+      (filterStatus === "active" && service.is_active) ||
+      (filterStatus === "inactive" && !service.is_active);
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   // Get unique categories
@@ -171,6 +177,16 @@ export default function ServicesManagement() {
           ))}
         </select>
 
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as "all" | "active" | "inactive")}
+          className="h-12 px-4 rounded-full border-2 border-deep/10 bg-ivory text-sm text-deep focus:border-mauve focus:outline-none transition-colors"
+        >
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+
         <button
           onClick={() => setShowAddModal(true)}
           className="h-12 px-6 rounded-full bg-mauve text-ivory hover:bg-mauve-dark transition-colors flex items-center gap-2 whitespace-nowrap"
@@ -247,17 +263,37 @@ export default function ServicesManagement() {
                   </p>
                 </div>
                 
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-deep/10">
-                  <div>
-                    <p className="text-xs text-deep/60">Price</p>
-                    <p className="font-display text-2xl text-mauve">
-                      ₦{service.price.toLocaleString()}
-                    </p>
+                <div className="mb-4 pb-4 border-b border-deep/10">
+                  <div className="flex items-start justify-between gap-3">
+                    {/* Sale Price */}
+                    <div className="flex-1 rounded-xl bg-mauve-tint border border-mauve/20 px-3 py-2">
+                      <p className="text-[10px] uppercase tracking-wider text-mauve/70 mb-0.5">Sale Price</p>
+                      <p className="font-display text-xl text-mauve">
+                        ₦{service.price.toLocaleString()}
+                      </p>
+                    </div>
+                    {/* Original Price */}
+                    <div className="flex-1 rounded-xl bg-deep-tint border border-deep/10 px-3 py-2">
+                      <p className="text-[10px] uppercase tracking-wider text-deep/50 mb-0.5">Original Price</p>
+                      {service.original_price ? (
+                        <p className={`font-display text-xl ${service.original_price > service.price ? 'text-deep/40 line-through' : 'text-deep'}`}>
+                          ₦{service.original_price.toLocaleString()}
+                        </p>
+                      ) : (
+                        <p className="font-display text-xl text-deep/30">—</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-deep/60">Duration</p>
-                    <p className="text-lg text-deep">{service.duration} min</p>
-                  </div>
+                  {service.original_price && service.original_price > service.price && (
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="px-2 py-0.5 rounded-full bg-mauve text-ivory text-[9px] uppercase tracking-wider font-medium">
+                        −{Math.round(((service.original_price - service.price) / service.original_price) * 100)}% off
+                      </span>
+                      <span className="text-[10px] text-deep/50">
+                        Save ₦{(service.original_price - service.price).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-2">

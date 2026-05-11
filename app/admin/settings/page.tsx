@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Settings as SettingsIcon,
@@ -20,7 +20,28 @@ import {
   Facebook,
   Twitter,
   Upload,
+  Calendar,
+  Clock,
+  X,
+  Plus,
+  AlertCircle,
 } from "lucide-react";
+
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+interface BusinessHour {
+  id: number;
+  day_of_week: number;
+  is_open: boolean;
+  open_time: string;
+  close_time: string;
+}
+
+interface BlockedDate {
+  id: string;
+  date: string;
+  reason?: string;
+}
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
@@ -74,6 +95,95 @@ export default function SettingsPage() {
     emailOnNewReview: true,
   });
 
+  // Availability Settings
+  const [businessHours, setBusinessHours] = useState<BusinessHour[]>([]);
+  const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
+  const [availLoading, setAvailLoading] = useState(false);
+  const [availSaving, setAvailSaving] = useState(false);
+  const [availSaved, setAvailSaved] = useState(false);
+  const [availError, setAvailError] = useState("");
+  const [newBlockDate, setNewBlockDate] = useState("");
+  const [newBlockReason, setNewBlockReason] = useState("");
+  const [blockSaving, setBlockSaving] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "availability" && businessHours.length === 0) {
+      loadAvailability();
+    }
+  }, [activeTab]);
+
+  const loadAvailability = async () => {
+    setAvailLoading(true);
+    try {
+      const [hoursRes, datesRes] = await Promise.all([
+        fetch("/api/admin/business-hours").then((r) => r.json()),
+        fetch("/api/admin/blocked-dates").then((r) => r.json()),
+      ]);
+      setBusinessHours(hoursRes.hours ?? []);
+      setBlockedDates(datesRes.dates ?? []);
+    } catch {
+      setAvailError("Failed to load availability settings.");
+    } finally {
+      setAvailLoading(false);
+    }
+  };
+
+  const handleSaveAvailability = async () => {
+    setAvailSaving(true);
+    setAvailError("");
+    try {
+      const res = await fetch("/api/admin/business-hours", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hours: businessHours }),
+      });
+      if (!res.ok) throw new Error();
+      setAvailSaved(true);
+      setTimeout(() => setAvailSaved(false), 3000);
+    } catch {
+      setAvailError("Failed to save. Please try again.");
+    } finally {
+      setAvailSaving(false);
+    }
+  };
+
+  const handleAddBlockedDate = async () => {
+    if (!newBlockDate) return;
+    setBlockSaving(true);
+    try {
+      const res = await fetch("/api/admin/blocked-dates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: newBlockDate, reason: newBlockReason }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setBlockedDates((prev) => [...prev, data.date].sort((a, b) => a.date.localeCompare(b.date)));
+      setNewBlockDate("");
+      setNewBlockReason("");
+    } catch {
+      setAvailError("Failed to block date.");
+    } finally {
+      setBlockSaving(false);
+    }
+  };
+
+  const handleRemoveBlockedDate = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/blocked-dates/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setBlockedDates((prev) => prev.filter((d) => d.id !== id));
+    } catch {
+      setAvailError("Failed to remove blocked date.");
+    }
+  };
+
+  const updateHour = (day: number, field: keyof BusinessHour, value: boolean | string) => {
+    setBusinessHours((prev) =>
+      prev.map((h) => (h.day_of_week === day ? { ...h, [field]: value } : h))
+    );
+  };
+
   const handleSave = async () => {
     setSaving(true);
     
@@ -87,11 +197,12 @@ export default function SettingsPage() {
   };
 
   const tabs = [
-    { id: "general", label: "General", icon: Store },
-    { id: "email", label: "Email", icon: Mail },
-    { id: "payment", label: "Payment", icon: CreditCard },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "branding", label: "Branding", icon: ImageIcon },
+    { id: "general",      label: "General",      icon: Store      },
+    { id: "email",        label: "Email",         icon: Mail       },
+    { id: "payment",      label: "Payment",       icon: CreditCard },
+    { id: "notifications",label: "Notifications", icon: Bell       },
+    { id: "branding",     label: "Branding",      icon: ImageIcon  },
+    { id: "availability", label: "Availability",  icon: Calendar   },
   ];
 
   return (
@@ -650,8 +761,168 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {/* Save Button */}
-            <div className="mt-8 pt-6 border-t-2 border-deep/10 flex justify-end gap-3">
+            {/* ── Availability Settings ─────────────────────────── */}
+            {activeTab === "availability" && (
+              <div className="space-y-8">
+                <div>
+                  <h3 className="font-display text-2xl font-light text-deep mb-1">Availability</h3>
+                  <p className="text-sm text-deep/60">Set working days, hours, and block specific dates.</p>
+                </div>
+
+                {availError && (
+                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-200">
+                    <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
+                    <p className="text-sm text-red-500">{availError}</p>
+                  </div>
+                )}
+
+                {availLoading ? (
+                  <div className="flex items-center gap-2 py-8 justify-center">
+                    <Loader2 className="h-5 w-5 animate-spin text-mauve" />
+                    <span className="text-sm text-deep/50">Loading…</span>
+                  </div>
+                ) : (
+                  <>
+                    {/* Working days & hours */}
+                    <div>
+                      <h4 className="text-sm uppercase tracking-wider font-medium text-deep mb-4 flex items-center gap-2">
+                        <Clock className="h-4 w-4" /> Working Days &amp; Hours
+                      </h4>
+                      <div className="space-y-3">
+                        {businessHours.map((h) => (
+                          <div
+                            key={h.day_of_week}
+                            className={`flex flex-wrap items-center gap-4 p-4 rounded-xl border-2 transition-colors ${
+                              h.is_open ? "border-sage/30 bg-sage-tint/30" : "border-deep/10 bg-ivory"
+                            }`}
+                          >
+                            {/* Day toggle */}
+                            <label className="flex items-center gap-2 cursor-pointer min-w-[130px]">
+                              <input
+                                type="checkbox"
+                                checked={h.is_open}
+                                onChange={(e) => updateHour(h.day_of_week, "is_open", e.target.checked)}
+                                className="h-4 w-4 rounded border-deep/20 text-sage focus:ring-sage"
+                              />
+                              <span className={`text-sm font-medium ${h.is_open ? "text-deep" : "text-deep/40"}`}>
+                                {DAY_NAMES[h.day_of_week]}
+                              </span>
+                            </label>
+
+                            {/* Time range */}
+                            {h.is_open && (
+                              <div className="flex items-center gap-2 flex-1 min-w-[220px]">
+                                <input
+                                  type="time"
+                                  value={h.open_time.substring(0, 5)}
+                                  onChange={(e) => updateHour(h.day_of_week, "open_time", e.target.value)}
+                                  className="h-9 px-3 rounded-lg border-2 border-deep/10 bg-white text-sm text-deep focus:border-sage focus:outline-none"
+                                />
+                                <span className="text-deep/40 text-sm">to</span>
+                                <input
+                                  type="time"
+                                  value={h.close_time.substring(0, 5)}
+                                  onChange={(e) => updateHour(h.day_of_week, "close_time", e.target.value)}
+                                  className="h-9 px-3 rounded-lg border-2 border-deep/10 bg-white text-sm text-deep focus:border-sage focus:outline-none"
+                                />
+                              </div>
+                            )}
+
+                            {!h.is_open && (
+                              <span className="text-xs text-deep/35 font-light">Closed</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 flex justify-end">
+                        <button
+                          onClick={handleSaveAvailability}
+                          disabled={availSaving}
+                          className="h-10 px-6 rounded-xl bg-sage text-ivory text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+                        >
+                          {availSaving ? (
+                            <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</>
+                          ) : availSaved ? (
+                            <><Check className="h-4 w-4" /> Saved!</>
+                          ) : (
+                            <><Save className="h-4 w-4" /> Save Hours</>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Blocked dates */}
+                    <div>
+                      <h4 className="text-sm uppercase tracking-wider font-medium text-deep mb-4 flex items-center gap-2">
+                        <Calendar className="h-4 w-4" /> Blocked Dates
+                      </h4>
+
+                      {/* Add new blocked date */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <input
+                          type="date"
+                          value={newBlockDate}
+                          onChange={(e) => setNewBlockDate(e.target.value)}
+                          className="h-10 px-3 rounded-lg border-2 border-deep/10 bg-white text-sm text-deep focus:border-mauve focus:outline-none"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Reason (optional)"
+                          value={newBlockReason}
+                          onChange={(e) => setNewBlockReason(e.target.value)}
+                          className="flex-1 min-w-[160px] h-10 px-3 rounded-lg border-2 border-deep/10 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-mauve focus:outline-none"
+                        />
+                        <button
+                          onClick={handleAddBlockedDate}
+                          disabled={!newBlockDate || blockSaving}
+                          className="h-10 px-5 rounded-lg bg-mauve text-ivory text-sm font-medium flex items-center gap-1.5 hover:opacity-90 transition-opacity disabled:opacity-40"
+                        >
+                          {blockSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                          Block Date
+                        </button>
+                      </div>
+
+                      {/* Blocked dates list */}
+                      {blockedDates.length === 0 ? (
+                        <p className="text-sm text-deep/40 font-light py-4 text-center border-2 border-dashed border-deep/10 rounded-xl">
+                          No dates blocked yet
+                        </p>
+                      ) : (
+                        <div className="space-y-2">
+                          {blockedDates.map((bd) => (
+                            <div
+                              key={bd.id}
+                              className="flex items-center justify-between px-4 py-3 rounded-xl border-2 border-mauve/20 bg-mauve-tint/30"
+                            >
+                              <div>
+                                <p className="text-sm font-medium text-deep">
+                                  {new Date(bd.date + "T12:00:00").toLocaleDateString("en-NG", {
+                                    weekday: "short", day: "numeric", month: "long", year: "numeric",
+                                  })}
+                                </p>
+                                {bd.reason && (
+                                  <p className="text-[11px] text-deep/50 font-light">{bd.reason}</p>
+                                )}
+                              </div>
+                              <button
+                                onClick={() => handleRemoveBlockedDate(bd.id)}
+                                className="h-7 w-7 rounded-full flex items-center justify-center text-deep/30 hover:text-mauve hover:bg-mauve-tint transition-all"
+                              >
+                                <X className="h-3.5 w-3.5" strokeWidth={1.5} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Save Button — hidden on availability tab (has its own save) */}
+            <div className={`mt-8 pt-6 border-t-2 border-deep/10 flex justify-end gap-3 ${activeTab === "availability" ? "hidden" : ""}`}>
               <button
                 onClick={handleSave}
                 disabled={saving}

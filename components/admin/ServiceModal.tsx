@@ -11,6 +11,7 @@ interface Service {
   category: string;
   description: string;
   price: number;
+  original_price?: number;
   duration: number;
   image_url: string | null;
   is_active: boolean;
@@ -54,18 +55,22 @@ export function ServiceModal({ isOpen, onClose, onSuccess, editService }: Servic
     category: "",
     description: "",
     price: 0,
+    original_price: "" as number | "",
     duration: 60,
     image_url: "",
     is_active: true,
   });
 
   useEffect(() => {
+    if (!isOpen) return;
+    hideSuccess();
     if (editService) {
       setFormData({
         name: editService.name,
         category: editService.category,
         description: editService.description,
         price: editService.price,
+        original_price: editService.original_price ?? "",
         duration: editService.duration,
         image_url: editService.image_url || "",
         is_active: editService.is_active,
@@ -77,6 +82,7 @@ export function ServiceModal({ isOpen, onClose, onSuccess, editService }: Servic
         category: "",
         description: "",
         price: 0,
+        original_price: "",
         duration: 60,
         image_url: "",
         is_active: true,
@@ -143,6 +149,7 @@ export function ServiceModal({ isOpen, onClose, onSuccess, editService }: Servic
       const serviceData = {
         ...formData,
         image_url: imageUrl || null,
+        original_price: formData.original_price === "" ? null : Number(formData.original_price),
       };
 
       if (editService) {
@@ -324,7 +331,7 @@ export function ServiceModal({ isOpen, onClose, onSuccess, editService }: Servic
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-deep mb-2">
-                    Price (₦) *
+                    Sale Price (₦) *
                   </label>
                   <input
                     type="number"
@@ -339,19 +346,36 @@ export function ServiceModal({ isOpen, onClose, onSuccess, editService }: Servic
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-deep mb-2">
-                    Duration (min) *
+                    Original Price (₦)
                   </label>
                   <input
                     type="number"
-                    required
-                    min="15"
-                    step="15"
-                    value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
+                    min="0"
+                    step="100"
+                    value={formData.original_price}
+                    onChange={(e) => setFormData({ ...formData, original_price: e.target.value === "" ? "" : Number(e.target.value) })}
                     className="w-full h-12 px-4 rounded-xl border-2 border-deep/10 bg-ivory text-deep focus:border-mauve focus:outline-none"
-                    placeholder="60"
+                    placeholder="Leave blank if no sale"
                   />
+                  <p className="mt-1 text-[11px] text-deep/40">Optional — fill to show a strikethrough price</p>
                 </div>
+              </div>
+
+              {/* Duration */}
+              <div>
+                <label className="block text-sm font-medium text-deep mb-2">
+                  Duration (min) *
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="15"
+                  step="15"
+                  value={formData.duration}
+                  onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
+                  className="w-full h-12 px-4 rounded-xl border-2 border-deep/10 bg-ivory text-deep focus:border-mauve focus:outline-none"
+                  placeholder="60"
+                />
               </div>
 
               {/* Active Toggle */}

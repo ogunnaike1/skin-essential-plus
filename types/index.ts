@@ -74,6 +74,7 @@ export interface ServiceItem {
   tag: string;            // e.g. "Service"
   description: string;
   price: number;          // in NGN
+  originalPrice?: number; // for "on sale"
   durationMinutes: number;
   slotsTotal: number;
   slotsAvailable: number;

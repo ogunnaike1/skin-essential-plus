@@ -33,7 +33,8 @@ export function transformServiceToItem(service: Service): ServiceItem {
     name: service.name,
     tag: 'Service', // Default tag, can be customized
     description: service.description,
-    price: service.price,
+    price: Number(service.price),
+    originalPrice: service.original_price != null ? Number(service.original_price) : undefined,
     durationMinutes: service.duration,
     slotsTotal: 10, // Default values
     slotsAvailable: 8, // Default values

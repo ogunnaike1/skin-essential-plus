@@ -7,7 +7,6 @@ import {
   Edit2,
   Trash2,
   Search,
-  Filter,
   Loader2,
   Sparkles,
   Star,
@@ -65,9 +64,17 @@ export default function ProductsManagement() {
     setEditingProduct(null);
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "in-stock" | "low-stock" | "out-of-stock">("all");
+
+  const categories = Array.from(new Set(products.map((p) => p.category))).sort();
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory === "all" || product.category === filterCategory;
+    const matchesStatus = filterStatus === "all" || product.stock_status === filterStatus;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   // Count featured products
   const newArrivalsCount = products.filter(p => p.is_new_arrival).length;
@@ -135,10 +142,27 @@ export default function ProductsManagement() {
           />
         </div>
 
-        <button className="h-12 px-6 rounded-full border-2 border-deep/10 bg-ivory hover:bg-mauve-tint transition-colors flex items-center gap-2">
-          <Filter className="h-4 w-4" />
-          <span className="text-sm font-medium">Filter</span>
-        </button>
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          className="h-12 px-4 rounded-full border-2 border-deep/10 bg-ivory text-sm text-deep focus:border-mauve focus:outline-none transition-colors"
+        >
+          <option value="all">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat} className="capitalize">{cat}</option>
+          ))}
+        </select>
+
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as "all" | "in-stock" | "low-stock" | "out-of-stock")}
+          className="h-12 px-4 rounded-full border-2 border-deep/10 bg-ivory text-sm text-deep focus:border-mauve focus:outline-none transition-colors"
+        >
+          <option value="all">All Stock</option>
+          <option value="in-stock">In Stock</option>
+          <option value="low-stock">Low Stock</option>
+          <option value="out-of-stock">Out of Stock</option>
+        </select>
 
         <button
           onClick={() => setShowAddModal(true)}

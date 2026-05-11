@@ -17,9 +17,21 @@ import {
   CheckCircle2,
   Sparkles,
 } from "lucide-react";
+import { z } from "zod";
 import { formatShopPrice } from "@/lib/shop-data";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 import type { CartItem } from "@/app/contexts/CartContext";
+
+const checkoutSchema = z.object({
+  name: z.string().min(2, "Please enter your full name"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z
+    .string()
+    .min(7, "Please enter a valid phone number")
+    .refine((v) => /^[+\d][\d\s\-().]{6,}$/.test(v), "Please enter a valid phone number"),
+});
+
+type CheckoutErrors = Partial<Record<keyof z.infer<typeof checkoutSchema>, string>>;
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -47,23 +59,54 @@ export function CheckoutModal({
   const [step, setStep] = useState<Step>("details");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const notifyOrder = (reference: string) => {
+    fetch("/api/orders/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerName: formData.name,
+        customerEmail: formData.email,
+        customerPhone: formData.phone,
+        items: items.map((i) => ({ name: i.product.name, quantity: i.quantity, price: i.product.price })),
+        subtotal,
+        discount,
+        total,
+        couponCode,
+        reference,
+      }),
+    }).catch((err) => console.error("Order notify failed:", err));
+  };
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
   });
+  const [errors, setErrors] = useState<CheckoutErrors>({});
 
   const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();
 
   const handleClose = () => {
     setStep("details");
     setFormData({ name: "", email: "", phone: "" });
+    setErrors({});
     setLoading(false);
     onClose();
   };
 
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const result = checkoutSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: CheckoutErrors = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as keyof CheckoutErrors;
+        if (!fieldErrors[field]) fieldErrors[field] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+    setErrors({});
     setStep("gateway");
   };
 
@@ -95,6 +138,7 @@ export function CheckoutModal({
           ],
         },
         callback: (response: { reference: string }) => {
+          notifyOrder(response.reference);
           showSuccess("generic-success", {
             title: "Payment Successful!",
             message: "Your order has been placed. We'll be in touch shortly.",
@@ -136,6 +180,7 @@ export function CheckoutModal({
         onLoadComplete: () => {},
         onComplete: (response: { paymentStatus: string; transactionReference: string }) => {
           if (response.paymentStatus === "PAID") {
+            notifyOrder(response.transactionReference);
             showSuccess("generic-success", {
               title: "Payment Successful!",
               message: "Your order has been placed. Thank you!",
@@ -256,14 +301,19 @@ export function CheckoutModal({
                     <div className="relative">
                       <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
                       <input
-                        required
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
+                        onChange={(e) => {
+                          setFormData((d) => ({ ...d, name: e.target.value }));
+                          setErrors((err) => ({ ...err, name: undefined }));
+                        }}
                         placeholder="Ifeoluwa Peters"
-                        className="w-full h-11 pl-10 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-mauve focus:outline-none transition-colors"
+                        className={`w-full h-11 pl-10 pr-4 rounded-xl border bg-white text-sm text-deep placeholder:text-deep/30 focus:outline-none transition-colors ${errors.name ? "border-mauve focus:border-mauve" : "border-deep/20 focus:border-mauve"}`}
                       />
                     </div>
+                    {errors.name && (
+                      <p className="text-[11px] text-mauve mt-1.5 pl-1">{errors.name}</p>
+                    )}
                   </div>
 
                   {/* Email */}
@@ -274,14 +324,19 @@ export function CheckoutModal({
                     <div className="relative">
                       <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
                       <input
-                        required
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData((d) => ({ ...d, email: e.target.value }))}
+                        onChange={(e) => {
+                          setFormData((d) => ({ ...d, email: e.target.value }));
+                          setErrors((err) => ({ ...err, email: undefined }));
+                        }}
                         placeholder="you@example.com"
-                        className="w-full h-11 pl-10 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-mauve focus:outline-none transition-colors"
+                        className={`w-full h-11 pl-10 pr-4 rounded-xl border bg-white text-sm text-deep placeholder:text-deep/30 focus:outline-none transition-colors ${errors.email ? "border-mauve focus:border-mauve" : "border-deep/20 focus:border-mauve"}`}
                       />
                     </div>
+                    {errors.email && (
+                      <p className="text-[11px] text-mauve mt-1.5 pl-1">{errors.email}</p>
+                    )}
                   </div>
 
                   {/* Phone */}
@@ -292,14 +347,19 @@ export function CheckoutModal({
                     <div className="relative">
                       <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
                       <input
-                        required
                         type="tel"
                         value={formData.phone}
-                        onChange={(e) => setFormData((d) => ({ ...d, phone: e.target.value }))}
+                        onChange={(e) => {
+                          setFormData((d) => ({ ...d, phone: e.target.value }));
+                          setErrors((err) => ({ ...err, phone: undefined }));
+                        }}
                         placeholder="+234 800 000 0000"
-                        className="w-full h-11 pl-10 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-mauve focus:outline-none transition-colors"
+                        className={`w-full h-11 pl-10 pr-4 rounded-xl border bg-white text-sm text-deep placeholder:text-deep/30 focus:outline-none transition-colors ${errors.phone ? "border-mauve focus:border-mauve" : "border-deep/20 focus:border-mauve"}`}
                       />
                     </div>
+                    {errors.phone && (
+                      <p className="text-[11px] text-mauve mt-1.5 pl-1">{errors.phone}</p>
+                    )}
                   </div>
 
                   <button

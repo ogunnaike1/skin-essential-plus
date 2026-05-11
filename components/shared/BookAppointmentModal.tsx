@@ -1,16 +1,57 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import {
   X, CalendarDays, Clock3, User, Mail, MessageSquare,
   ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard,
   Building2, Copy, Check, Sparkles, Search, ChevronDown,
+  Loader2, AlertCircle, Lock,
 } from "lucide-react";
+
+interface TimeSlot {
+  start: string;
+  end: string;
+  label: string;
+  count: number;
+  max: number;
+  full: boolean;
+  locked: boolean;
+}
+
+type SlotStatus = "idle" | "loading" | "loaded" | "closed" | "error";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { z } from "zod";
 import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
 import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
+
+const today = new Date().toISOString().split("T")[0]!;
+
+const detailsSchema = z.object({
+  customer_name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(80, "Name is too long"),
+  customer_email: z
+    .string()
+    .email("Enter a valid email address"),
+  customer_phone: z
+    .string()
+    .min(7, "Enter a valid phone number")
+    .max(20, "Phone number is too long")
+    .regex(/^[+\d\s\-()]+$/, "Phone number contains invalid characters"),
+  appointment_date: z
+    .string()
+    .min(1, "Select a date")
+    .refine((d) => d >= today, "Date must be today or in the future"),
+  start_time: z
+    .string()
+    .min(1, "Select a time"),
+  notes: z.string().max(500, "Notes must be under 500 characters").optional(),
+});
+
+type DetailsFormErrors = Partial<Record<keyof z.infer<typeof detailsSchema>, string>>;
 
 const getServiceCategory = (service: Service): string =>
   (service as any).category_name || (service as any).category || "Other";
@@ -62,6 +103,12 @@ export default function BookAppointmentModal({
   const [copied, setCopied]               = useState(false);
   const [search, setSearch]               = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [fieldErrors, setFieldErrors]     = useState<DetailsFormErrors>({});
+  const [slotStatus, setSlotStatus]       = useState<SlotStatus>("idle");
+  const [slots, setSlots]                 = useState<TimeSlot[]>([]);
+  const [closedReason, setClosedReason]   = useState("");
+  const [selectedSlot, setSelectedSlot]   = useState<TimeSlot | null>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();
 
@@ -84,6 +131,31 @@ export default function BookAppointmentModal({
       setStep(2);
     }
   }, [preselectedService, isOpen]);
+
+  useEffect(() => {
+    if (!formData.appointment_date) {
+      setSlotStatus("idle");
+      setSlots([]);
+      setSelectedSlot(null);
+      return;
+    }
+    setSlotStatus("loading");
+    setSelectedSlot(null);
+    setFormData((d) => ({ ...d, start_time: "" }));
+
+    fetch(`/api/availability?date=${formData.appointment_date}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!data.isOpen) {
+          setClosedReason(data.reason ?? "Not available on this date.");
+          setSlotStatus("closed");
+        } else {
+          setSlots(data.slots ?? []);
+          setSlotStatus("loaded");
+        }
+      })
+      .catch(() => setSlotStatus("error"));
+  }, [formData.appointment_date]);
 
   const loadServices = async () => {
     try {
@@ -149,8 +221,19 @@ export default function BookAppointmentModal({
     setSearch("");
     setExpandedCategories(new Set(categories.length > 0 ? [categories[0]!.id] : []));
     setFormData({ customer_name: "", customer_email: "", customer_phone: "", appointment_date: "", start_time: "", notes: "" });
+    setFieldErrors({});
+    setSlotStatus("idle");
+    setSlots([]);
+    setSelectedSlot(null);
+    setClosedReason("");
     hideSuccess();
     onClose();
+  };
+
+  const handleSlotSelect = (slot: TimeSlot) => {
+    setSelectedSlot(slot);
+    setFormData((d) => ({ ...d, start_time: slot.start }));
+    setFieldErrors((p) => ({ ...p, start_time: undefined }));
   };
 
   const toggleCategory = (id: string) =>
@@ -168,6 +251,17 @@ export default function BookAppointmentModal({
   // ── Step 2 submit → Step 3 (gateway) ──────────────────────────
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const result = detailsSchema.safeParse(formData);
+    if (!result.success) {
+      const errs: DetailsFormErrors = {};
+      result.error.issues.forEach((issue: z.core.$ZodIssue) => {
+        const field = issue.path[0] as keyof DetailsFormErrors;
+        if (field && !errs[field]) errs[field] = issue.message;
+      });
+      setFieldErrors(errs);
+      return;
+    }
+    setFieldErrors({});
     setStep(3);
   };
 
@@ -198,8 +292,27 @@ export default function BookAppointmentModal({
         paymentDescription: `Appointment: ${selectedService.name}`,
         onLoadStart: () => {},
         onLoadComplete: () => {},
-        onComplete: (response: { paymentStatus: string; transactionReference: string }) => {
+        onComplete: async (response: { paymentStatus: string; transactionReference: string }) => {
           if (response.paymentStatus === "PAID") {
+            try {
+              const durationMins = Number(getServiceDuration(selectedService)) || 60;
+              const endTime = selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins);
+              const appointment = await createAppointment({
+                ...formData,
+                service_id: selectedService.id,
+                service_name: selectedService.name,
+                service_price: selectedService.price,
+                end_time: endTime,
+                duration_minutes: durationMins,
+              } as CreateAppointmentData);
+              fetch("/api/appointments/notify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ appointmentId: appointment.id, reference: response.transactionReference }),
+              }).catch((err) => console.error("Notify failed:", err));
+            } catch (err) {
+              console.error("Appointment create failed after Moniwave:", err);
+            }
             showSuccess("appointment-booked", {
               title: "Payment Confirmed!",
               message: `Your appointment for ${selectedService.name} is confirmed`,
@@ -231,7 +344,7 @@ export default function BookAppointmentModal({
     setLoading(true);
     try {
       const durationMins = Number(getServiceDuration(selectedService)) || 60;
-      const endTime = computeEndTime(formData.start_time, durationMins);
+      const endTime = selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins);
 
       const appointment = await createAppointment({
         ...formData,
@@ -297,7 +410,7 @@ export default function BookAppointmentModal({
         service_id: selectedService.id,
         service_name: selectedService.name,
         service_price: selectedService.price,
-        end_time: computeEndTime(formData.start_time, durationMins),
+        end_time: selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins),
         duration_minutes: durationMins,
       } as CreateAppointmentData);
       showSuccess("appointment-booked", {
@@ -314,8 +427,6 @@ export default function BookAppointmentModal({
   };
 
   if (!isOpen) return null;
-
-  const stepIcon = { 1: "✦", 2: "✦", 3: "✦", 4: "✦" };
 
   return (
     <>
@@ -487,15 +598,29 @@ export default function BookAppointmentModal({
                         <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Full name</label>
                         <div className="relative">
                           <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                          <input required type="text" value={formData.customer_name} onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })} placeholder="Ada Okafor" className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-mauve focus:outline-none transition-colors" />
+                          <input
+                            type="text"
+                            value={formData.customer_name}
+                            onChange={(e) => { setFormData({ ...formData, customer_name: e.target.value }); setFieldErrors((p) => ({ ...p, customer_name: undefined })); }}
+                            placeholder="Ada Okafor"
+                            className={`w-full h-11 pl-11 pr-4 rounded-xl border bg-white text-sm text-deep placeholder:text-deep/30 focus:outline-none transition-colors ${fieldErrors.customer_name ? "border-red-400 focus:border-red-400" : "border-deep/20 focus:border-mauve"}`}
+                          />
                         </div>
+                        {fieldErrors.customer_name && <p className="mt-1 text-[11px] text-red-500">{fieldErrors.customer_name}</p>}
                       </div>
                       <div>
                         <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Email address</label>
                         <div className="relative">
                           <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                          <input required type="email" value={formData.customer_email} onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })} placeholder="ada@example.com" className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-sage focus:outline-none transition-colors" />
+                          <input
+                            type="email"
+                            value={formData.customer_email}
+                            onChange={(e) => { setFormData({ ...formData, customer_email: e.target.value }); setFieldErrors((p) => ({ ...p, customer_email: undefined })); }}
+                            placeholder="ada@example.com"
+                            className={`w-full h-11 pl-11 pr-4 rounded-xl border bg-white text-sm text-deep placeholder:text-deep/30 focus:outline-none transition-colors ${fieldErrors.customer_email ? "border-red-400 focus:border-red-400" : "border-deep/20 focus:border-sage"}`}
+                          />
                         </div>
+                        {fieldErrors.customer_email && <p className="mt-1 text-[11px] text-red-500">{fieldErrors.customer_email}</p>}
                       </div>
                     </div>
 
@@ -504,32 +629,134 @@ export default function BookAppointmentModal({
                         <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Phone number</label>
                         <div className="relative">
                           <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                          <input required type="tel" value={formData.customer_phone} onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })} placeholder="+234 800 000 0000" className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-deep focus:outline-none transition-colors" />
+                          <input
+                            type="tel"
+                            value={formData.customer_phone}
+                            onChange={(e) => { setFormData({ ...formData, customer_phone: e.target.value }); setFieldErrors((p) => ({ ...p, customer_phone: undefined })); }}
+                            placeholder="+234 800 000 0000"
+                            className={`w-full h-11 pl-11 pr-4 rounded-xl border bg-white text-sm text-deep placeholder:text-deep/30 focus:outline-none transition-colors ${fieldErrors.customer_phone ? "border-red-400 focus:border-red-400" : "border-deep/20 focus:border-deep"}`}
+                          />
                         </div>
+                        {fieldErrors.customer_phone && <p className="mt-1 text-[11px] text-red-500">{fieldErrors.customer_phone}</p>}
                       </div>
                       <div>
                         <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Preferred date</label>
-                        <div className="relative">
-                          <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                          <input required type="date" value={formData.appointment_date} min={new Date().toISOString().split("T")[0]} onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })} className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep focus:border-mauve focus:outline-none transition-colors" />
+                        <div
+                          className="relative cursor-pointer"
+                          onClick={() => dateInputRef.current?.showPicker()}
+                        >
+                          <CalendarDays className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30 pointer-events-none" strokeWidth={1.5} />
+                          <input
+                            ref={dateInputRef}
+                            type="date"
+                            value={formData.appointment_date}
+                            min={today}
+                            onChange={(e) => { setFormData({ ...formData, appointment_date: e.target.value }); setFieldErrors((p) => ({ ...p, appointment_date: undefined })); }}
+                            className={`w-full h-11 pl-11 pr-4 rounded-xl border bg-white text-sm text-deep focus:outline-none transition-colors cursor-pointer ${fieldErrors.appointment_date ? "border-red-400 focus:border-red-400" : "border-deep/20 focus:border-mauve"}`}
+                          />
                         </div>
+                        {fieldErrors.appointment_date && <p className="mt-1 text-[11px] text-red-500">{fieldErrors.appointment_date}</p>}
                       </div>
                     </div>
 
+                    {/* ── Time slot picker ── */}
                     <div>
-                      <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Preferred time</label>
-                      <div className="relative">
-                        <Clock3 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                        <input required type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} className="w-full h-11 pl-11 pr-4 rounded-xl border border-deep/20 bg-white text-sm text-deep focus:border-sage focus:outline-none transition-colors" />
-                      </div>
+                      <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-2">
+                        Select time slot
+                      </label>
+
+                      {slotStatus === "idle" && (
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-deep-tint/50 border border-deep/10">
+                          <Clock3 className="h-4 w-4 text-deep/30" strokeWidth={1.5} />
+                          <p className="text-sm text-deep/40 font-light">Choose a date first to see available slots</p>
+                        </div>
+                      )}
+
+                      {slotStatus === "loading" && (
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-deep-tint/50 border border-deep/10">
+                          <Loader2 className="h-4 w-4 text-mauve animate-spin" />
+                          <p className="text-sm text-deep/50 font-light">Checking availability…</p>
+                        </div>
+                      )}
+
+                      {slotStatus === "error" && (
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-200">
+                          <AlertCircle className="h-4 w-4 text-red-400 shrink-0" strokeWidth={1.5} />
+                          <p className="text-sm text-red-500 font-light">Could not load slots. Please try again.</p>
+                        </div>
+                      )}
+
+                      {slotStatus === "closed" && (
+                        <div className="flex items-start gap-2 px-4 py-3 rounded-xl bg-mauve-tint border border-mauve/20">
+                          <AlertCircle className="h-4 w-4 text-mauve mt-0.5 shrink-0" strokeWidth={1.5} />
+                          <p className="text-sm text-deep/70 font-light">{closedReason}</p>
+                        </div>
+                      )}
+
+                      {slotStatus === "loaded" && (
+                        <div className="space-y-2">
+                          {slots.map((slot) => {
+                            const isSelected = selectedSlot?.start === slot.start;
+                            const isAvailable = !slot.full && !slot.locked;
+                            return (
+                              <button
+                                key={slot.start}
+                                type="button"
+                                disabled={!isAvailable}
+                                onClick={() => handleSlotSelect(slot)}
+                                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 text-sm transition-all ${
+                                  isSelected
+                                    ? "border-mauve bg-mauve text-ivory"
+                                    : slot.locked
+                                    ? "border-deep/10 bg-deep-tint/40 text-deep/30 cursor-not-allowed"
+                                    : slot.full
+                                    ? "border-deep/10 bg-deep-tint/40 text-deep/30 cursor-not-allowed"
+                                    : "border-deep/15 bg-white hover:border-mauve hover:bg-mauve-tint text-deep"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  {slot.locked ? (
+                                    <Lock className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                                  ) : (
+                                    <Clock3 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                                  )}
+                                  <span className="font-light">{slot.label}</span>
+                                </div>
+                                <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                                  isSelected
+                                    ? "bg-ivory/20 text-ivory"
+                                    : slot.full
+                                    ? "bg-deep/10 text-deep/40"
+                                    : slot.locked
+                                    ? "bg-deep/10 text-deep/30"
+                                    : "bg-sage-tint text-sage"
+                                }`}>
+                                  {slot.full ? "Full" : slot.locked ? "Opens later" : `${slot.max - slot.count} spot${slot.max - slot.count === 1 ? "" : "s"} left`}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {fieldErrors.start_time && (
+                        <p className="mt-1.5 text-[11px] text-red-500">{fieldErrors.start_time}</p>
+                      )}
                     </div>
 
                     <div>
                       <label className="text-[10px] uppercase tracking-wider text-deep/40 font-light block mb-1.5">Additional notes (optional)</label>
                       <div className="relative">
                         <MessageSquare className="absolute left-4 top-3.5 h-4 w-4 text-deep/30" strokeWidth={1.5} />
-                        <textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Any special requests or preferences..." rows={3} className="w-full pl-11 pr-4 py-3 rounded-xl border border-deep/20 bg-white text-sm text-deep placeholder:text-deep/30 focus:border-deep focus:outline-none transition-colors resize-none" />
+                        <textarea
+                          value={formData.notes}
+                          onChange={(e) => { setFormData({ ...formData, notes: e.target.value }); setFieldErrors((p) => ({ ...p, notes: undefined })); }}
+                          placeholder="Any special requests or preferences..."
+                          rows={3}
+                          className={`w-full pl-11 pr-4 py-3 rounded-xl border bg-white text-sm text-deep placeholder:text-deep/30 focus:outline-none transition-colors resize-none ${fieldErrors.notes ? "border-red-400 focus:border-red-400" : "border-deep/20 focus:border-deep"}`}
+                        />
                       </div>
+                      {fieldErrors.notes && <p className="mt-1 text-[11px] text-red-500">{fieldErrors.notes}</p>}
                     </div>
 
                     <button type="submit" className="w-full py-3.5 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">

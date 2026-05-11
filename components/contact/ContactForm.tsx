@@ -122,7 +122,7 @@ export function ContactForm(): React.ReactElement {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    placeholder="Ada Okafor"
+                    placeholder="Ifeoluwa Peters"
                     disabled={isSubmitting}
                     className="w-full h-12 px-4 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   />

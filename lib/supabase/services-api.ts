@@ -8,6 +8,7 @@ export interface Service {
   category: string;
   description: string;
   price: number;
+  original_price?: number;
   duration: number;
   image_url: string | null;
   is_active: boolean;

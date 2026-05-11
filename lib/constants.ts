@@ -27,7 +27,7 @@ export const SITE = {
     "Premium skincare, spa therapy, and beauty rituals crafted for the modern connoisseur.",
   email: "hello@skinessentialplus.com",
   phone: "+234 814 830 3684",
-  address: "Plot 234, Admiralty Way, Lekki Phase 1, Lagos, Nigeria",
+  address: "No 2, Alaafia Avenue, Opposite IDC Primary School, Akobo, Ibadan",
   hours: "Mon–Sat · 9:00 AM – 8:00 PM",
 } as const;
 
@@ -48,7 +48,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Precision skin therapies tailored to your unique biology — where advanced science meets timeless beauty rituals.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778028811/skin-essential-plus/homepage/hero/home-page-hero2.jpg",
     ctaPrimary: "Book an Appointment",
     ctaSecondary: "Explore Services",
   },
@@ -95,7 +95,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Advanced facials, microneedling, and bespoke therapies calibrated to your skin's unique signature.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-Skin-Treatments",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg",
     icon: Sparkles,
   },
   {
@@ -104,7 +104,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Immersive body rituals, aromatherapy, and hydrotherapy designed to restore balance and radiance.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-Spa-Therapy",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg",
     icon: Flower2,
   },
   {
@@ -113,7 +113,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Hand-crafted lash extensions and architectural sketching by certified master artisans.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-eye-lash",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
     icon: Eye,
   },
   {
@@ -122,7 +122,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Comprehensive regimens combining treatments, clinical-grade products, and lifestyle guidance.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/skin-essential-plus/homepage/hero/home-Full-Skincare",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
     icon: Droplets,
   },
 ] as const;
@@ -240,17 +240,7 @@ export const SOCIAL_IMAGES: readonly SocialImage[] = [
   },
   {
     id: 6,
-    src: "/images/homepage-hero/home-Skin-Treatments.png",
-    alt: "Aromatherapy",
-  },
-  {
-    id: 7,
-    src: "/images/homepage-hero/home-Spa-Therapy.png",
-    alt: "Product ritual",
-  },
-  {
-    id: 8,
-    src: "/images/homepage-hero/home-eye-lash.png",
-    alt: "Beauty details",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778181113/skin-ig6_l62kds.jpg",
+    alt: "Skincare ritual",
   },
 ] as const;
