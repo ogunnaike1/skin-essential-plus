@@ -76,6 +76,7 @@ export function ServiceModal({ isOpen, onClose, onSuccess, editService }: Servic
         is_active: editService.is_active,
       });
       setImagePreview(editService.image_url || "");
+      setImageFile(null);
     } else {
       setFormData({
         name: "",

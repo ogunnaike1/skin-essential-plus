@@ -80,6 +80,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
         review_count: editProduct.review_count,
       });
       setImagePreview(editProduct.image_url);
+      setImageFile(null);
     } else {
       setFormData({
         name: "",

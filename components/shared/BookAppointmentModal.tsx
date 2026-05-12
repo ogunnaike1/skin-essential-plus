@@ -265,9 +265,10 @@ export default function BookAppointmentModal({
     setStep(3);
   };
 
-  // ── Gateway: Paystack → Step 4 ────────────────────────────────
+  // ── Gateway: Paystack → Step 4 (card directly) ───────────────
   const handleSelectPaystack = () => {
     setGateway("paystack");
+    setPaymentMethod("card");
     setStep(4);
   };
 
@@ -396,8 +397,7 @@ export default function BookAppointmentModal({
     }
   };
 
-  const handleCardPayment = () => launchPaystack();          // no restriction — Paystack shows all active channels
-  const handleOpayPayment = () => launchPaystack(["opay"]);
+  const handleCardPayment = () => launchPaystack();
 
   // ── Bank transfer ─────────────────────────────────────────────
   const handleBankTransfer = async () => {
@@ -803,53 +803,26 @@ export default function BookAppointmentModal({
                       <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00C46E] transition-colors shrink-0" strokeWidth={1.5} />
                     </button>
 
-                    {/* Opay */}
-                    <button
-                      onClick={handleOpayPayment}
-                      disabled={loading}
-                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#00B65F] hover:shadow-[0_0_0_4px_rgba(0,182,95,0.08)] transition-all text-left disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      <div className="h-12 w-12 rounded-xl bg-[#00B65F]/10 flex items-center justify-center shrink-0">
-                        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
-                          <rect width="32" height="32" rx="6" fill="#00B65F" />
-                          <circle cx="16" cy="16" r="6" fill="white" />
-                          <path d="M16 13v6M13 16h6" stroke="#00B65F" strokeWidth="2" strokeLinecap="round" />
-                        </svg>
+                    {/* Moniwave — coming soon */}
+                    <div className="relative select-none cursor-not-allowed">
+                      <div className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white text-left blur-[2px] pointer-events-none">
+                        <div className="h-12 w-12 rounded-xl bg-[#FF6B00]/10 flex items-center justify-center shrink-0">
+                          <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
+                            <rect width="32" height="32" rx="6" fill="#FF6B00" />
+                            <circle cx="16" cy="16" r="6" stroke="white" strokeWidth="2.5" />
+                            <path d="M16 10v12M10 16h12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-deep text-sm">Moniwave</p>
+                          <p className="text-[11px] text-deep/50 font-light mt-0.5">Fast, secure Nigerian payments</p>
+                        </div>
+                        <ArrowRight className="h-4 w-4 text-deep/30 shrink-0" strokeWidth={1.5} />
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-deep text-sm">Opay Wallet</p>
-                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Pay instantly with your Opay account</p>
+                      <div className="absolute inset-0 flex items-center justify-center rounded-2xl">
+                        <span className="text-[11px] font-medium px-3 py-1 rounded-full bg-deep/80 text-ivory tracking-wide">Coming Soon</span>
                       </div>
-                      {loading && gateway === null ? (
-                        <span className="h-4 w-4 border-2 border-[#00B65F]/30 border-t-[#00B65F] rounded-full animate-spin shrink-0" />
-                      ) : (
-                        <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00B65F] transition-colors shrink-0" strokeWidth={1.5} />
-                      )}
-                    </button>
-
-                    {/* Moniwave */}
-                    <button
-                      onClick={handleSelectMoniwave}
-                      disabled={loading}
-                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#FF6B00] hover:shadow-[0_0_0_4px_rgba(255,107,0,0.08)] transition-all text-left disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      <div className="h-12 w-12 rounded-xl bg-[#FF6B00]/10 flex items-center justify-center shrink-0">
-                        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
-                          <rect width="32" height="32" rx="6" fill="#FF6B00" />
-                          <circle cx="16" cy="16" r="6" stroke="white" strokeWidth="2.5" />
-                          <path d="M16 10v12M10 16h12" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-deep text-sm">Moniwave</p>
-                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Fast, secure Nigerian payments</p>
-                      </div>
-                      {loading && gateway === "moniwave" ? (
-                        <span className="h-4 w-4 border-2 border-[#FF6B00]/30 border-t-[#FF6B00] rounded-full animate-spin shrink-0" />
-                      ) : (
-                        <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#FF6B00] transition-colors shrink-0" strokeWidth={1.5} />
-                      )}
-                    </button>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -900,8 +873,8 @@ export default function BookAppointmentModal({
               {/* ══ STEP 4 / Card payment ════════════════════════════════ */}
               {step === 4 && selectedService && paymentMethod === "card" && (
                 <motion.div key="step-4-card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  <button onClick={() => setPaymentMethod(null)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
-                    <ArrowLeft className="h-4 w-4" /> Back to payment options
+                  <button onClick={() => { setStep(3); setGateway(null); setPaymentMethod(null); }} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
+                    <ArrowLeft className="h-4 w-4" /> Back to gateway
                   </button>
 
                   {/* Summary card */}

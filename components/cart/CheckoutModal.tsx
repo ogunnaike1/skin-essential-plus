@@ -6,7 +6,6 @@ import {
   X,
   ArrowRight,
   ArrowLeft,
-  CreditCard,
   Building2,
   Copy,
   Check,
@@ -44,7 +43,7 @@ interface CheckoutModalProps {
   clearCart: () => void;
 }
 
-type Step = "details" | "gateway" | "paystack-method" | "transfer";
+type Step = "details" | "gateway" | "transfer";
 
 export function CheckoutModal({
   isOpen,
@@ -210,14 +209,12 @@ export function CheckoutModal({
   const stepLabel: Record<Step, string> = {
     details: "Your Details",
     gateway: "Payment Method",
-    "paystack-method": "Pay with Paystack",
     transfer: "Bank Transfer",
   };
 
   const stepNumber: Record<Step, number> = {
     details: 1,
     gateway: 2,
-    "paystack-method": 3,
     transfer: 3,
   };
 
@@ -388,11 +385,11 @@ export function CheckoutModal({
 
                   {/* Paystack */}
                   <button
-                    onClick={() => setStep("paystack-method")}
-                    className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#00C46E] hover:shadow-[0_0_0_4px_rgba(0,196,110,0.08)] transition-all text-left"
+                    onClick={handlePaystackCard}
+                    disabled={loading}
+                    className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#00C46E] hover:shadow-[0_0_0_4px_rgba(0,196,110,0.08)] transition-all text-left disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <div className="h-12 w-12 rounded-xl bg-[#00C46E]/10 flex items-center justify-center shrink-0">
-                      {/* Paystack wordmark */}
                       <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
                         <rect width="32" height="32" rx="6" fill="#00C46E" />
                         <path d="M8 11h16M8 16h12M8 21h8" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
@@ -402,32 +399,33 @@ export function CheckoutModal({
                       <p className="font-medium text-deep text-sm">Paystack</p>
                       <p className="text-[11px] text-deep/50 font-light mt-0.5">Card, bank transfer, USSD & more</p>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00C46E] transition-colors shrink-0" strokeWidth={1.5} />
-                  </button>
-
-                  {/* Moniwave */}
-                  <button
-                    onClick={handleMoniwave}
-                    disabled={loading}
-                    className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#FF6B00] hover:shadow-[0_0_0_4px_rgba(255,107,0,0.08)] transition-all text-left disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <div className="h-12 w-12 rounded-xl bg-[#FF6B00]/10 flex items-center justify-center shrink-0">
-                      <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
-                        <rect width="32" height="32" rx="6" fill="#FF6B00" />
-                        <circle cx="16" cy="16" r="6" stroke="white" strokeWidth="2.5" />
-                        <path d="M16 10v12M10 16h12" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-deep text-sm">Moniwave</p>
-                      <p className="text-[11px] text-deep/50 font-light mt-0.5">Fast, secure Nigerian payments</p>
-                    </div>
                     {loading ? (
-                      <span className="h-4 w-4 border-2 border-deep/20 border-t-[#FF6B00] rounded-full animate-spin shrink-0" />
+                      <span className="h-4 w-4 border-2 border-[#00C46E]/30 border-t-[#00C46E] rounded-full animate-spin shrink-0" />
                     ) : (
-                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#FF6B00] transition-colors shrink-0" strokeWidth={1.5} />
+                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00C46E] transition-colors shrink-0" strokeWidth={1.5} />
                     )}
                   </button>
+
+                  {/* Moniwave — coming soon */}
+                  <div className="relative select-none cursor-not-allowed">
+                    <div className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white text-left blur-[2px] pointer-events-none">
+                      <div className="h-12 w-12 rounded-xl bg-[#FF6B00]/10 flex items-center justify-center shrink-0">
+                        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="none">
+                          <rect width="32" height="32" rx="6" fill="#FF6B00" />
+                          <circle cx="16" cy="16" r="6" stroke="white" strokeWidth="2.5" />
+                          <path d="M16 10v12M10 16h12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-deep text-sm">Moniwave</p>
+                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Fast, secure Nigerian payments</p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-deep/30 shrink-0" strokeWidth={1.5} />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center rounded-2xl">
+                      <span className="text-[11px] font-medium px-3 py-1 rounded-full bg-deep/80 text-ivory tracking-wide">Coming Soon</span>
+                    </div>
+                  </div>
 
                   <button
                     onClick={() => setStep("details")}
@@ -439,66 +437,7 @@ export function CheckoutModal({
                 </motion.div>
               )}
 
-              {/* ── STEP 3a: PAYSTACK METHOD ── */}
-              {step === "paystack-method" && (
-                <motion.div
-                  key="paystack-method"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-4"
-                >
-                  <p className="text-sm text-deep/60 font-light mb-5">
-                    How would you like to pay via Paystack?
-                  </p>
-
-                  {/* Card */}
-                  <button
-                    onClick={handlePaystackCard}
-                    disabled={loading}
-                    className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-mauve hover:shadow-[0_0_0_4px_rgba(138,111,136,0.08)] transition-all text-left disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <div className="h-12 w-12 rounded-xl bg-mauve-tint flex items-center justify-center shrink-0">
-                      <CreditCard className="h-5 w-5 text-mauve" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-deep text-sm">Debit / Credit Card</p>
-                      <p className="text-[11px] text-deep/50 font-light mt-0.5">Visa, Mastercard, Verve — secure checkout</p>
-                    </div>
-                    {loading ? (
-                      <span className="h-4 w-4 border-2 border-mauve/30 border-t-mauve rounded-full animate-spin shrink-0" />
-                    ) : (
-                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-mauve transition-colors shrink-0" strokeWidth={1.5} />
-                    )}
-                  </button>
-
-                  {/* Transfer */}
-                  <button
-                    onClick={() => setStep("transfer")}
-                    className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-sage hover:shadow-[0_0_0_4px_rgba(79,114,136,0.08)] transition-all text-left"
-                  >
-                    <div className="h-12 w-12 rounded-xl bg-sage-tint flex items-center justify-center shrink-0">
-                      <Building2 className="h-5 w-5 text-sage" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-deep text-sm">Bank Transfer</p>
-                      <p className="text-[11px] text-deep/50 font-light mt-0.5">Transfer directly from your bank account</p>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-sage transition-colors shrink-0" strokeWidth={1.5} />
-                  </button>
-
-                  <button
-                    onClick={() => setStep("gateway")}
-                    className="flex items-center gap-1.5 text-xs text-deep/40 hover:text-deep transition-colors mt-1"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    Back to payment options
-                  </button>
-                </motion.div>
-              )}
-
-              {/* ── STEP 3b: TRANSFER DETAILS ── */}
+              {/* ── STEP 3: TRANSFER DETAILS ── */}
               {step === "transfer" && (
                 <motion.div
                   key="transfer"
@@ -567,7 +506,7 @@ export function CheckoutModal({
                   </button>
 
                   <button
-                    onClick={() => setStep("paystack-method")}
+                    onClick={() => setStep("gateway")}
                     className="flex items-center gap-1.5 text-xs text-deep/40 hover:text-deep transition-colors"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />

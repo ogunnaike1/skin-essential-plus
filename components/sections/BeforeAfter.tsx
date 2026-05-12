@@ -54,7 +54,7 @@ export function BeforeAfter(): React.ReactElement {
               <div className="relative w-full h-full">
                 <div className="absolute inset-0">
                   <Image
-                    src="/images/lash-before.jpg"
+                    src="https://res.cloudinary.com/dhmqhless/image/upload/v1778613290/before-eye_xnmfcb.jpg"
                     alt="Natural lashes - Before"
                     fill
                     className="object-cover"
@@ -71,7 +71,7 @@ export function BeforeAfter(): React.ReactElement {
                   style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
                 >
                   <Image
-                    src="/images/lash-after.jpg"
+                    src="https://res.cloudinary.com/dhmqhless/image/upload/v1778613290/after-eye_f8azs4.jpg"
                     alt="Volume lash extensions - After"
                     fill
                     className="object-cover"
