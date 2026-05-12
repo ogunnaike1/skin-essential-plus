@@ -1,39 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { Sparkles, Star } from 'lucide-react';
-
-const RESULTS = [
-  {
-    src: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1200&q=90&auto=format&fit=crop",
-    alt: "Glowing skin result",
-    treatment: "Brightening Protocol",
-    duration: "8 weeks",
-    result: "Radiant Glow",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1602192509154-0b900ee1f851?w=1200&q=90&auto=format&fit=crop",
-    alt: "Clear skin transformation",
-    treatment: "Acne Treatment Program",
-    duration: "6 weeks",
-    result: "Clear & Balanced",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1200&q=90&auto=format&fit=crop",
-    alt: "Hydrated skin result",
-    treatment: "Intensive Moisture Therapy",
-    duration: "4 weeks",
-    result: "Deep Hydration",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=90&auto=format&fit=crop",
-    alt: "Smooth skin texture result",
-    treatment: "Retinaldehyde Treatment",
-    duration: "10 weeks",
-    result: "Refined Texture",
-  },
-] as const;
+import { Sparkles } from 'lucide-react';
 
 const STATS = [
   { value: "500+", label: "Clients Transformed" },
@@ -104,46 +72,6 @@ export function GalleryResults() {
           ))}
         </motion.div>
 
-        {/* Results grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {RESULTS.map((result, i) => (
-            <motion.div
-              key={result.src}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative overflow-hidden rounded-2xl aspect-[3/4]"
-            >
-              <Image
-                src={result.src}
-                alt={result.alt}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-deep/90 via-deep/15 to-transparent" />
-
-              {/* Stars */}
-              <div className="absolute top-4 right-4 flex gap-0.5">
-                {[0, 1, 2, 3, 4].map((j) => (
-                  <Star key={j} className="h-3 w-3 fill-ivory text-ivory" />
-                ))}
-              </div>
-
-              {/* Content */}
-              <div className="absolute bottom-0 left-0 right-0 p-5">
-                <p className="text-ivory/55 text-[10px] uppercase tracking-[0.14em] font-medium mb-1">
-                  {result.treatment}
-                </p>
-                <h3 className="font-display text-xl font-light text-ivory leading-tight mb-1">
-                  {result.result}
-                </h3>
-                <p className="text-ivory/45 text-xs font-light">{result.duration} program</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
