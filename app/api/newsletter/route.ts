@@ -1,22 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-// Check if API key exists (prevents build errors)
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-
-// Only initialize Resend if API key exists
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
 export async function POST(request: NextRequest) {
-  // Runtime check for API key
-  if (!resend || !RESEND_API_KEY) {
-    console.error("RESEND_API_KEY not configured");
-    return NextResponse.json(
-      { error: "Email service not configured. Please contact support." },
-      { status: 500 }
-    );
-  }
-
   try {
     const { email } = await request.json();
 
@@ -38,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Send welcome email
     const { data, error } = await resend.emails.send({
-      from: "Skin Essential Plus <newsletter@skinessentialplus.com>",
+      from: `Skin Essential Plus <${FROM_EMAIL}>`,
       to: [email],
       subject: "Welcome to Skin Essential Plus Newsletter",
       html: `
