@@ -34,7 +34,7 @@ const MILESTONES: readonly Milestone[] = [
   },
   {
     id: 2,
-    value: 12000,
+    value: 2500,
     suffix: "+",
     label: "Transformations",
     sublabel: "and counting",
