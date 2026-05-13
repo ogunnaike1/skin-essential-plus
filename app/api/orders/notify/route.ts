@@ -5,6 +5,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const BRAND_EMAIL = "ogunnaikeusman17@gmail.com";
 const BRAND_NAME  = "Skin Essential Plus";
+const BANK_NAME   = process.env.NEXT_PUBLIC_BANK_NAME    ?? "";
+const ACCT_NAME   = process.env.NEXT_PUBLIC_ACCOUNT_NAME ?? "";
+const ACCT_NO     = process.env.NEXT_PUBLIC_ACCOUNT_NUMBER ?? "";
 
 interface OrderItem {
   name: string;
@@ -24,6 +27,7 @@ export async function POST(request: NextRequest) {
       total,
       couponCode,
       reference,
+      isBankTransfer = false,
     }: {
       customerName: string;
       customerEmail: string;
@@ -34,6 +38,7 @@ export async function POST(request: NextRequest) {
       total: number;
       couponCode: string | null;
       reference: string;
+      isBankTransfer?: boolean;
     } = await request.json();
 
     if (!customerEmail || !items?.length || !reference) {
@@ -60,11 +65,53 @@ export async function POST(request: NextRequest) {
         </tr>`
       : "";
 
+    const bankTransferSection = isBankTransfer ? `
+    <!-- Bank transfer instructions -->
+    <tr>
+      <td style="padding:0 36px 20px;">
+        <div style="background:#EEF4F0;border:2px solid #B2D8BC;border-radius:14px;padding:22px;">
+          <p style="margin:0 0 14px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2D6A4F;">— Complete Your Payment</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding:6px 0;font-size:13px;color:#6B6B6B;width:40%;">Bank</td>
+              <td style="padding:6px 0;font-size:13px;font-weight:600;color:#2D2D2D;text-align:right;">${BANK_NAME}</td>
+            </tr>
+            <tr>
+              <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Account Name</td>
+              <td style="padding:6px 0;font-size:13px;font-weight:600;color:#2D2D2D;text-align:right;">${ACCT_NAME}</td>
+            </tr>
+            <tr>
+              <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Account Number</td>
+              <td style="padding:6px 0;font-size:16px;font-weight:700;color:#2D6A4F;text-align:right;letter-spacing:0.05em;">${ACCT_NO}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0 0;font-size:13px;color:#6B6B6B;border-top:1px solid #C8E6CE;">Amount to Transfer</td>
+              <td style="padding:8px 0 0;font-size:20px;font-weight:700;color:#2D6A4F;text-align:right;border-top:1px solid #C8E6CE;">${fmt(total)}</td>
+            </tr>
+          </table>
+          <div style="margin-top:14px;padding:12px;background:#ffffff;border-radius:10px;">
+            <p style="margin:0;font-size:12px;color:#6B6B6B;line-height:1.6;">
+              After transferring, send your payment proof to us on WhatsApp at
+              <strong style="color:#2D2D2D;">+234 814 830 3684</strong>.
+              Use <strong style="color:#2D2D2D;">SHOP-${customerName.split(" ")[0]?.toUpperCase()}</strong> as your narration.
+              We'll confirm your order within a few hours.
+            </p>
+          </div>
+        </div>
+      </td>
+    </tr>` : "";
+
+    const paymentStatusSection = isBankTransfer
+      ? `<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#FFF3CD;color:#856404;font-size:11px;font-weight:700;letter-spacing:0.05em;">AWAITING PAYMENT</span>`
+      : `<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#D4EDDA;color:#155724;font-size:11px;font-weight:700;letter-spacing:0.05em;">PAID</span>`;
+
     // ── 1. Customer confirmation email ─────────────────────────────
     const { error: customerEmailError } = await resend.emails.send({
       from: `${BRAND_NAME} <onboarding@resend.dev>`,
       to: [customerEmail],
-      subject: `Your Order is Confirmed — ${BRAND_NAME}`,
+      subject: isBankTransfer
+        ? `Order Received — Complete Payment to Confirm | ${BRAND_NAME}`
+        : `Your Order is Confirmed — ${BRAND_NAME}`,
       html: `
 <!DOCTYPE html>
 <html>
@@ -78,8 +125,8 @@ export async function POST(request: NextRequest) {
     <tr>
       <td style="padding: 36px 36px 20px;">
         <p style="margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #8A6F88;">${BRAND_NAME}</p>
-        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D; line-height: 1.2;">Order Confirmed ✓</h1>
-        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">Hi ${customerName.split(" ")[0]}, thank you for your order! We're getting it ready.</p>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D; line-height: 1.2;">${isBankTransfer ? "Order Received — Action Required" : "Order Confirmed ✓"}</h1>
+        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">Hi ${customerName.split(" ")[0]}, ${isBankTransfer ? "your order is received. Complete your payment below to confirm it." : "thank you for your order! We're getting it ready."}</p>
       </td>
     </tr>
 
@@ -109,18 +156,24 @@ export async function POST(request: NextRequest) {
       </td>
     </tr>
 
-    <!-- Payment reference -->
+    <!-- Payment reference / status -->
     <tr>
       <td style="padding: 0 36px 20px;">
-        <div style="border: 2px solid #E8EAE8; border-radius: 14px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <p style="margin: 0 0 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #47676A;">Payment Reference</p>
-            <p style="margin: 0; font-size: 13px; font-family: monospace; color: #2D2D2D;">${reference}</p>
-          </div>
-          <span style="display: inline-block; padding: 3px 10px; border-radius: 20px; background: #D4EDDA; color: #155724; font-size: 11px; font-weight: 700; letter-spacing: 0.05em;">PAID</span>
+        <div style="border: 2px solid #E8EAE8; border-radius: 14px; padding: 18px 22px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#47676A;padding-bottom:10px;">Payment</td>
+              <td style="text-align:right;padding-bottom:10px;">${paymentStatusSection}</td>
+            </tr>
+            ${reference ? `<tr>
+              <td style="padding:4px 0;font-size:13px;color:#6B6B6B;">Reference</td>
+              <td style="padding:4px 0;font-size:12px;font-family:monospace;color:#2D2D2D;text-align:right;">${reference}</td>
+            </tr>` : ""}
+          </table>
         </div>
       </td>
     </tr>
+    ${bankTransferSection}
 
     <!-- Contact -->
     <tr>
@@ -154,7 +207,9 @@ export async function POST(request: NextRequest) {
       from: `${BRAND_NAME} Shop <onboarding@resend.dev>`,
       to: [BRAND_EMAIL],
       replyTo: customerEmail,
-      subject: `New Shop Order — ${items.map((i) => i.name).join(", ")}`,
+      subject: isBankTransfer
+        ? `New Bank Transfer Order — ${items.map((i) => i.name).join(", ")} (Awaiting Payment)`
+        : `New Shop Order — ${items.map((i) => i.name).join(", ")}`,
       html: `
 <!DOCTYPE html>
 <html>
@@ -167,8 +222,8 @@ export async function POST(request: NextRequest) {
     <tr>
       <td style="padding: 36px 36px 20px;">
         <p style="margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #8A6F88;">${BRAND_NAME} Shop</p>
-        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D;">New Paid Order ✓</h1>
-        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">A customer just completed a purchase.</p>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D;">${isBankTransfer ? "New Bank Transfer Order" : "New Paid Order ✓"}</h1>
+        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">${isBankTransfer ? "A customer placed an order — awaiting bank transfer payment." : "A customer just completed a purchase."}</p>
       </td>
     </tr>
 
@@ -224,7 +279,7 @@ export async function POST(request: NextRequest) {
             </tr>
             <tr>
               <td style="padding: 4px 0; font-size: 13px; color: #6B6B6B;">Status</td>
-              <td style="padding: 4px 0; text-align: right;"><span style="display: inline-block; padding: 3px 10px; border-radius: 20px; background: #D4EDDA; color: #155724; font-size: 11px; font-weight: 700;">PAID</span></td>
+              <td style="padding: 4px 0; text-align: right;">${paymentStatusSection}</td>
             </tr>
           </table>
         </div>

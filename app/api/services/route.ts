@@ -14,13 +14,15 @@ export async function GET() {
       .from('services')
       .select('*')
       .order('category', { ascending: true })
-      .order('display_order', { ascending: true });
+      .order('display_order', { ascending: true })
+      .limit(500);
 
     if (error) {
       console.error('Supabase error:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    console.log(`[services] returned ${data?.length ?? 0} rows`);
     return NextResponse.json(data || [], {
       headers: { 'Cache-Control': 'no-store' },
     });

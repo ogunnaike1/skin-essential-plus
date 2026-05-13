@@ -413,10 +413,18 @@ export default function BookAppointmentModal({
         end_time: selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins),
         duration_minutes: durationMins,
       } as CreateAppointmentData);
+
+      // Send booking received + payment instructions email
+      fetch("/api/appointments/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ appointmentId: appointment.id, isBankTransfer: true }),
+      }).catch((err) => console.error("Bank transfer notify failed:", err));
+
       showSuccess("appointment-booked", {
-        title: "Booking Created!",
-        message: "Complete the bank transfer to confirm your appointment.",
-        details: `Reference: APPT-${appointment.id}`,
+        title: "Booking Received!",
+        message: "Check your email for payment instructions to confirm your appointment.",
+        details: `Reference: APPT-${appointment.id.slice(0, 8).toUpperCase()}`,
       });
       setTimeout(() => handleClose(), 2500);
     } catch (err: any) {

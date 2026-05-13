@@ -59,7 +59,7 @@ export function CheckoutModal({
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const notifyOrder = (reference: string) => {
+  const notifyOrder = (reference: string, isBankTransfer = false) => {
     fetch("/api/orders/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -73,6 +73,7 @@ export function CheckoutModal({
         total,
         couponCode,
         reference,
+        isBankTransfer,
       }),
     }).catch((err) => console.error("Order notify failed:", err));
   };
@@ -492,9 +493,10 @@ export function CheckoutModal({
                   {/* Confirm button */}
                   <button
                     onClick={() => {
+                      notifyOrder(`SHOP-TRANSFER-${Date.now()}`, true);
                       showSuccess("generic-success", {
-                        title: "Order Noted!",
-                        message: "We'll confirm your order once your transfer is received.",
+                        title: "Order Received!",
+                        message: "Check your email for payment instructions to complete your order.",
                       });
                       clearCart();
                       setTimeout(() => handleClose(), 2000);
