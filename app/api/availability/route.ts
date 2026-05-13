@@ -65,7 +65,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (!isOpen) {
-      return NextResponse.json({ isOpen: false, reason: "We are closed on this day.", slots: [] });
+      return NextResponse.json(
+        { isOpen: false, reason: "We are closed on this day.", slots: [] },
+        { headers: { "Cache-Control": "public, max-age=3600" } }
+      );
     }
 
     // ── Blocked dates ─────────────────────────────────────────────
@@ -76,11 +79,10 @@ export async function GET(req: NextRequest) {
       .maybeSingle();
 
     if (!blockedRes.error && blockedRes.data) {
-      return NextResponse.json({
-        isOpen: false,
-        reason: blockedRes.data.reason || "This date is unavailable.",
-        slots: [],
-      });
+      return NextResponse.json(
+        { isOpen: false, reason: blockedRes.data.reason || "This date is unavailable.", slots: [] },
+        { headers: { "Cache-Control": "public, max-age=3600" } }
+      );
     }
 
     // ── Booking settings ──────────────────────────────────────────
@@ -120,7 +122,10 @@ export async function GET(req: NextRequest) {
       return { ...s, count, max: maxPerSlot, full, locked: false };
     });
 
-    return NextResponse.json({ isOpen: true, slots });
+    return NextResponse.json(
+      { isOpen: true, slots },
+      { headers: { "Cache-Control": "public, max-age=60, stale-while-revalidate=300" } }
+    );
   } catch (err) {
     console.error("Availability API error:", err);
     return NextResponse.json({ error: "Failed to load availability" }, { status: 500 });

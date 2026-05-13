@@ -40,6 +40,7 @@ const SERVICE_CATEGORIES = [
   "Bikini & Brazilian Waxing",
   "Body Waxing",
   "Teeth Whitening",
+  "Laser Hair Removal",
 ];
 
 export function ServiceModal({ isOpen, onClose, onSuccess, editService }: ServiceModalProps) {

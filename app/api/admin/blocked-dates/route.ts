@@ -8,7 +8,7 @@ export async function GET() {
     .order("date");
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ dates: data });
+  return NextResponse.json({ dates: data }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function POST(req: NextRequest) {

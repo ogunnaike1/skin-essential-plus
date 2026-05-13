@@ -37,7 +37,7 @@ export interface Testimonial {
   role: string;
   quote: string;
   rating: number;
-  image: string;
+  image?: string;
 }
 
 export interface BeforeAfterItem {

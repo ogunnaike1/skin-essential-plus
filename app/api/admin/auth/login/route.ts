@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SignJWT } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "your-secret-key-change-in-production"
-);
+if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET env var is required");
+if (!process.env.ADMIN_EMAIL) throw new Error("ADMIN_EMAIL env var is required");
+if (!process.env.ADMIN_PASSWORD) throw new Error("ADMIN_PASSWORD env var is required");
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@skinessentialplus.com";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
-
-    console.log("📧 Login attempt:", { email });
 
     if (!email || !password) {
       return NextResponse.json(
@@ -22,53 +21,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Simple credential check
     if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-      console.log("❌ Invalid credentials");
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Create JWT token with jose (Edge Runtime compatible)
-    const token = await new SignJWT({ 
-      email,
-      role: "admin"
-    })
+    const token = await new SignJWT({ email, role: "admin" })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("7d") // 7 days
+      .setExpirationTime("7d")
       .sign(JWT_SECRET);
 
-    console.log("✅ Token created");
-    console.log("🔑 Token preview:", token.substring(0, 30) + "...");
+    const response = NextResponse.json({ success: true, message: "Login successful" });
 
-    // Create response
-    const response = NextResponse.json({
-      success: true,
-      message: "Login successful",
-    });
-
-    // Set HTTP-only cookie with 7-day expiration
     response.cookies.set({
       name: "admin_token",
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 
-    console.log("🍪 Cookie set with 7-day expiration");
-
     return response;
   } catch (error) {
-    console.error("💥 Login error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error("Login error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

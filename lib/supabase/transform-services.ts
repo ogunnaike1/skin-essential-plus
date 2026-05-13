@@ -23,6 +23,7 @@ export function transformServiceToItem(service: Service): ServiceItem {
     'Bikini & Brazilian Waxing': 'bikini-waxing',
     'Body Waxing': 'body-waxing',
     'Teeth Whitening': 'teeth-whitening',
+    'Laser Hair Removal': 'laser-hair-removal',
   };
 
   const categoryId = categoryMap[service.category] || service.category.toLowerCase().replace(/\s+/g, '-');
@@ -75,6 +76,7 @@ export function getCategoryNameFromId(categoryId: string): string {
     'bikini-waxing': 'Bikini & Brazilian Waxing',
     'body-waxing': 'Body Waxing',
     'teeth-whitening': 'Teeth Whitening',
+    'laser-hair-removal': 'Laser Hair Removal',
   };
 
   return nameMap[categoryId] || categoryId;

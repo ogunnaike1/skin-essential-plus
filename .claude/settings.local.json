@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"c:\\\\Workspace\\\\skin-essential-plus\\\\app\\\\api\\\\test-resend\\\\route.ts\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Workspace\\\\skin-essential-plus\\\\lib\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(mkdir -p \"c:\\\\Workspace\\\\skin-essential-plus\\\\app\\\\api\\\\admin\\\\appointments\\\\[id]\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Workspace\\skin-essential-plus\\app\\api\\admin\\appointments"
+    ]
+  }
+}

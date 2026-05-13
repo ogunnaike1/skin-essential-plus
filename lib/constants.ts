@@ -161,43 +161,43 @@ export const TRUST_POINTS: readonly TrustPoint[] = [
 export const TESTIMONIALS: readonly Testimonial[] = [
   {
     id: 1,
-    name: "Adaeze Okonkwo",
-    role: "Creative Director",
+    name: "Adaeze O.",
+    role: "Lagos Island",
     quote:
-      "Skin Essential Plus redefined what a spa visit could be. I walked in exhausted and left glowing — inside and out. The attention to every detail is extraordinary.",
+      "I came in for a facial and honestly didn't expect much — I'd been disappointed before. But the therapist took time to actually assess my skin before touching anything. Three sessions in and my hyperpigmentation has visibly faded. I'm a regular now.",
     rating: 5,
-    image:
-      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80&auto=format&fit=crop",
   },
   {
     id: 2,
-    name: "Tomiwa Adegoke",
-    role: "Entrepreneur",
+    name: "Tomiwa A.",
+    role: "Lekki",
     quote:
-      "Six months of their skincare program transformed my complexion entirely. What I love most is how they listen — every session feels uniquely mine.",
+      "Booked the Brazilian lash set for my sister's wedding and everyone kept asking who did my lashes. They lasted almost five weeks with barely any fallout. Already booked my next appointment.",
     rating: 5,
-    image:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80&auto=format&fit=crop",
   },
   {
     id: 3,
-    name: "Chiamaka Eze",
-    role: "Event Planner",
+    name: "Chisom E.",
+    role: "Victoria Island",
     quote:
-      "The eyelash sketching is an art form here. I've tried dozens of studios — none come close to this precision, comfort, and finesse.",
+      "The massage alone is worth the trip. I have a desk job and carry tension in my shoulders — after 60 minutes I felt like a different person. The therapists here actually know what they're doing.",
     rating: 5,
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80&auto=format&fit=crop",
   },
   {
     id: 4,
-    name: "Fatima Ibrahim",
-    role: "Fashion Editor",
+    name: "Zainab M.",
+    role: "Ikoyi",
     quote:
-      "A genuine sanctuary in the heart of the city. The ambience, the therapists, the results — every element is intentional and exquisite.",
+      "I've been doing laser hair removal for four months now and the difference is dramatic. They explain every step, it's not painful, and the results speak for themselves. Wish I'd started sooner.",
     rating: 5,
-    image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80&auto=format&fit=crop",
+  },
+  {
+    id: 5,
+    name: "Nneka F.",
+    role: "Ajah",
+    quote:
+      "Tried the microblading after seeing their work on Instagram — it's even better in person. My brows are finally symmetrical and I wake up looking put-together. The aftercare advice was thorough too.",
+    rating: 5,
   },
 ] as const;
 

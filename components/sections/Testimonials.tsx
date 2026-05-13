@@ -4,7 +4,6 @@ import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Quote, Star } from "lucide-react";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -91,14 +90,10 @@ export function Testimonials(): React.ReactElement {
                       </p>
 
                       <div className="mt-10 flex items-center gap-4 pt-8 border-t border-deep/10">
-                        <div className="relative h-14 w-14 rounded-full overflow-hidden ring-2 ring-white shadow-glass">
-                          <Image
-                            src={t.image}
-                            alt={t.name}
-                            fill
-                            sizes="56px"
-                            className="object-cover"
-                          />
+                        <div className="h-14 w-14 rounded-full bg-mauve/15 ring-2 ring-white shadow-glass flex items-center justify-center shrink-0">
+                          <span className="font-display text-lg font-light text-mauve">
+                            {t.name.charAt(0)}
+                          </span>
                         </div>
                         <div>
                           <p className="font-sans text-sm font-medium text-deep tracking-wide">

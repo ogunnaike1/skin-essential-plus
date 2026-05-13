@@ -22,19 +22,12 @@ export interface Service {
 
 // Get all active services for public display
 export async function getPublicServices(): Promise<Service[]> {
-  const { data, error } = await supabase
-    .from('services')
-    .select('*')
-    .eq('is_active', true)
-    .order('category', { ascending: true })
-    .order('display_order', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching public services:', error);
-    throw error;
+  const res = await fetch('/api/services', { cache: 'no-store' });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to fetch services');
   }
-  
-  return data || [];
+  return res.json();
 }
 
 // Get services by category (public)

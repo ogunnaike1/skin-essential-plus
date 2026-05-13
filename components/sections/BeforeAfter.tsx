@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -30,12 +29,6 @@ function Stat({ value, label, delay }: StatProps): React.ReactElement {
 }
 
 export function BeforeAfter(): React.ReactElement {
-  const [sliderPosition, setSliderPosition] = useState(50);
-
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSliderPosition(Number(e.target.value));
-  };
-
   return (
     <section
       id="lash-transformation"
@@ -50,87 +43,47 @@ export function BeforeAfter(): React.ReactElement {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-6 relative"
           >
-            <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-glass-lg bg-deep/5">
-              <div className="relative w-full h-full">
-                <div className="absolute inset-0">
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-3 rounded-[2rem] overflow-hidden shadow-glass-lg">
+                {/* Before */}
+                <div className="relative aspect-[3/4] overflow-hidden">
                   <Image
                     src="https://res.cloudinary.com/dhmqhless/image/upload/v1778613290/before-eye_xnmfcb.jpg"
-                    alt="Natural lashes - Before"
+                    alt="Natural lashes — Before"
                     fill
-                    className="object-cover"
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    className="object-cover object-center"
                   />
-                  <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-deep/80 backdrop-blur-sm">
-                    <span className="text-xs uppercase tracking-wider text-ivory font-medium">
-                      Before
-                    </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-deep/40 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 px-3 py-1.5 rounded-full bg-deep/80 backdrop-blur-sm">
+                    <span className="text-xs uppercase tracking-wider text-ivory font-medium">Before</span>
                   </div>
                 </div>
 
-                <div 
-                  className="absolute inset-0 overflow-hidden"
-                  style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
-                >
+                {/* After */}
+                <div className="relative aspect-[3/4] overflow-hidden">
                   <Image
                     src="https://res.cloudinary.com/dhmqhless/image/upload/v1778613290/after-eye_f8azs4.jpg"
-                    alt="Volume lash extensions - After"
+                    alt="Volume lash extensions — After"
                     fill
-                    className="object-cover"
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    className="object-cover object-center"
                   />
-                  <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-mauve/80 backdrop-blur-sm">
-                    <span className="text-xs uppercase tracking-wider text-ivory font-medium">
-                      After
-                    </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-mauve/40 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-mauve/80 backdrop-blur-sm">
+                    <span className="text-xs uppercase tracking-wider text-ivory font-medium">After</span>
                   </div>
                 </div>
-
-                <div 
-                  className="absolute top-0 bottom-0 w-1 bg-ivory shadow-lg z-10"
-                  style={{ left: `${sliderPosition}%` }}
-                >
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-ivory shadow-xl flex items-center justify-center">
-                    <div className="flex gap-1">
-                      <div className="w-0.5 h-4 bg-deep/40 rounded-full" />
-                      <div className="w-0.5 h-4 bg-deep/40 rounded-full" />
-                    </div>
-                  </div>
-                </div>
-
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={sliderPosition}
-                  onChange={handleSliderChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
-                  aria-label="Before/After slider"
-                />
               </div>
 
               <motion.div
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 0.8, 0.5],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -top-4 -right-4"
               >
                 <Sparkles className="h-8 w-8 text-mauve" />
               </motion.div>
             </div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className="mt-4 text-center text-sm text-deep/60 font-light"
-            >
-              Drag the slider to reveal the transformation
-            </motion.p>
           </motion.div>
 
           <div className="lg:col-span-6">

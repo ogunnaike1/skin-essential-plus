@@ -8,7 +8,7 @@ export async function GET() {
     .order("day_of_week");
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ hours: data });
+  return NextResponse.json({ hours: data }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function PUT(req: NextRequest) {
