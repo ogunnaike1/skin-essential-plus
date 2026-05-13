@@ -3,6 +3,17 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
+const BRAND_EMAIL = process.env.BRAND_NOTIFICATION_EMAIL ?? "ogunnaikeusman17@gmail.com";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function esc(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,12 +28,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!EMAIL_RE.test(email)) {
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    }
+
+    const safeName = esc(String(name).slice(0, 200));
+    const safeEmail = esc(String(email).slice(0, 200));
+    const safePhone = phone ? esc(String(phone).slice(0, 50)) : null;
+    const safeService = serviceInterest ? esc(String(serviceInterest).slice(0, 200)) : null;
+    const safeMessage = esc(String(message).slice(0, 5000));
+
     // Send email using Resend
     const { data, error } = await resend.emails.send({
       from: `Contact Form <${FROM_EMAIL}>`,
-      to: ["ogunnaikeusman17@gmail.com"], // Your company email
-      replyTo: email, // User's email for easy reply
-      subject: `New Contact Form Submission from ${name}`,
+      to: [BRAND_EMAIL],
+      replyTo: email,
+      subject: `New Contact Form Submission from ${String(name).slice(0, 100)}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -60,7 +81,7 @@ export async function POST(request: NextRequest) {
                           <strong>Name:</strong>
                         </td>
                         <td style="padding: 8px 0; font-size: 13px; color: #354F52; text-align: right;">
-                          ${name}
+                          ${safeName}
                         </td>
                       </tr>
                       <tr>
@@ -68,41 +89,41 @@ export async function POST(request: NextRequest) {
                           <strong>Email:</strong>
                         </td>
                         <td style="padding: 8px 0; font-size: 13px; text-align: right;">
-                          <a href="mailto:${email}" style="color: #4F7288; text-decoration: none;">${email}</a>
+                          <a href="mailto:${safeEmail}" style="color: #4F7288; text-decoration: none;">${safeEmail}</a>
                         </td>
                       </tr>
-                      ${phone ? `
+                      ${safePhone ? `
                       <tr>
                         <td style="padding: 8px 0; font-size: 13px; color: #354F52;">
                           <strong>Phone:</strong>
                         </td>
                         <td style="padding: 8px 0; font-size: 13px; text-align: right;">
-                          <a href="tel:${phone}" style="color: #4F7288; text-decoration: none;">${phone}</a>
+                          <a href="tel:${safePhone}" style="color: #4F7288; text-decoration: none;">${safePhone}</a>
                         </td>
                       </tr>
                       ` : ''}
-                      ${serviceInterest ? `
+                      ${safeService ? `
                       <tr>
                         <td style="padding: 8px 0; font-size: 13px; color: #354F52;">
                           <strong>Interested In:</strong>
                         </td>
                         <td style="padding: 8px 0; font-size: 13px; color: #354F52; text-align: right;">
-                          ${serviceInterest}
+                          ${safeService}
                         </td>
                       </tr>
                       ` : ''}
                     </table>
                   </div>
-                  
+
                   <!-- Message -->
                   <div style="background-color: #F5F3F1; border-radius: 12px; padding: 24px;">
                     <h2 style="margin: 0 0 16px 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #8A6F88;">— Message</h2>
-                    <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #354F52; white-space: pre-wrap;">${message}</p>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #354F52; white-space: pre-wrap;">${safeMessage}</p>
                   </div>
-                  
+
                   <!-- Reply Button -->
                   <div style="text-align: center; margin-top: 32px;">
-                    <a href="mailto:${email}?subject=Re: Your inquiry to Skin Essential Plus" style="display: inline-block; padding: 14px 32px; background-color: #47676A; color: #FAF9F7; text-decoration: none; border-radius: 24px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em;">Reply to ${name}</a>
+                    <a href="mailto:${safeEmail}?subject=Re: Your inquiry to Skin Essential Plus" style="display: inline-block; padding: 14px 32px; background-color: #47676A; color: #FAF9F7; text-decoration: none; border-radius: 24px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em;">Reply to ${safeName}</a>
                   </div>
                 </td>
               </tr>

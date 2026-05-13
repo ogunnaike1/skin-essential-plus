@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/admin-client";
+import { createClient } from "@supabase/supabase-js";
+
+function getClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export async function GET() {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getClient()
     .from("blocked_dates")
     .select("*")
     .order("date");
@@ -14,10 +24,15 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const { date, reason } = await req.json();
   if (!date) return NextResponse.json({ error: "date required" }, { status: 400 });
+  if (!DATE_RE.test(date) || isNaN(Date.parse(date))) {
+    return NextResponse.json({ error: "date must be YYYY-MM-DD" }, { status: 400 });
+  }
 
-  const { data, error } = await supabaseAdmin
+  const sanitizedReason = typeof reason === "string" ? reason.slice(0, 500) : null;
+
+  const { data, error } = await getClient()
     .from("blocked_dates")
-    .insert([{ date, reason: reason || null }])
+    .insert([{ date, reason: sanitizedReason }])
     .select()
     .single();
 

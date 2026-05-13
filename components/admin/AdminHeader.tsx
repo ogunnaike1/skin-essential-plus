@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import { Bell } from "lucide-react";
 
 interface AdminHeaderProps {
   title: string;
@@ -19,16 +19,6 @@ export function AdminHeader({ title, subtitle }: AdminHeaderProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
-            <input
-              type="search"
-              placeholder="Search..."
-              className="h-10 w-64 pl-10 pr-4 rounded-full border border-deep/20 bg-ivory text-sm text-deep placeholder:text-deep/40 focus:border-mauve focus:outline-none transition-colors"
-            />
-          </div>
-
           {/* Notifications */}
           <button
             type="button"

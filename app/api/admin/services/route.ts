@@ -59,22 +59,36 @@ export async function POST(request: Request) {
   }
 }
 
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const SAFE_FOLDER_RE = /^[a-zA-Z0-9_-]+$/;
+
 // New endpoint for image upload
 export async function PUT(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const folder = formData.get('folder') as string || 'services';
+    const rawFolder = (formData.get('folder') as string) || 'services';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    if (!ALLOWED_TYPES.has(file.type)) {
+      return NextResponse.json({ error: 'Only JPEG, PNG, WebP, and GIF images are allowed' }, { status: 400 });
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: 'File size must be under 5 MB' }, { status: 400 });
+    }
+
+    const folder = SAFE_FOLDER_RE.test(rawFolder) ? rawFolder : 'services';
+
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(7);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${timestamp}-${randomString}.${fileExt}`;
+    const ext = file.type.split('/')[1].replace('jpeg', 'jpg');
+    const fileName = `${timestamp}-${randomString}.${ext}`;
     const filePath = `${folder}/${fileName}`;
 
     // Convert File to ArrayBuffer then to Buffer

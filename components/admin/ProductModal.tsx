@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { createProduct, updateProduct, uploadProductImage } from "@/lib/supabase/products-api";
@@ -106,7 +106,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
     }
   }, [editProduct, isOpen]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
@@ -116,9 +116,9 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
       };
       reader.readAsDataURL(file);
     }
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -163,15 +163,15 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
     } finally {
       setLoading(false);
     }
-  };
+  }, [formData, imageFile, editProduct, onSuccess, onClose, showSuccess]);
 
-  if (!isOpen) return null;
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
-  };
+  }, [onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <>
@@ -432,20 +432,22 @@ export function ProductModal({ isOpen, onClose, onSuccess, editProduct }: Produc
                   Accent Color
                 </label>
                 <div className="flex gap-3">
-                  {["mauve", "sage", "deep"].map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, accent: color as "mauve" | "sage" | "deep" })}
-                      className={`px-4 py-2 rounded-full text-xs font-medium capitalize transition-colors ${
-                        formData.accent === color
-                          ? `bg-${color} text-ivory`
-                          : `bg-${color}-tint text-deep hover:bg-${color}/20`
-                      }`}
-                    >
-                      {color}
-                    </button>
-                  ))}
+                  {(["mauve", "sage", "deep"] as const).map((color) => {
+                    const activeClasses = { mauve: "bg-mauve text-ivory", sage: "bg-sage text-ivory", deep: "bg-deep text-ivory" };
+                    const inactiveClasses = { mauve: "bg-mauve-tint text-deep hover:bg-mauve/20", sage: "bg-sage-tint text-deep hover:bg-sage/20", deep: "bg-deep-tint text-deep hover:bg-deep/20" };
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, accent: color })}
+                        className={`px-4 py-2 rounded-full text-xs font-medium capitalize transition-colors ${
+                          formData.accent === color ? activeClasses[color] : inactiveClasses[color]
+                        }`}
+                      >
+                        {color}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
