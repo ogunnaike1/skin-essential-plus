@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const BRAND_EMAIL = "ogunnaikeusman17@gmail.com";
+const BRAND_EMAIL = "skinessentialsp@gmail.com";
 const BRAND_NAME  = "Skin Essential Plus";
 const FROM_EMAIL  = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 

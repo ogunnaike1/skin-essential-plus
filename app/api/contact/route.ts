@@ -3,7 +3,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-const BRAND_EMAIL = process.env.BRAND_NOTIFICATION_EMAIL ?? "ogunnaikeusman17@gmail.com";
+const BRAND_EMAIL = process.env.BRAND_NOTIFICATION_EMAIL ?? "skinessentialsp@gmail.com";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function esc(str: string): string {
