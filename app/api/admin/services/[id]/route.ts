@@ -1,5 +1,13 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/admin-client';
+import { createClient } from '@supabase/supabase-js';
+
+function getClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
 
 const ALLOWED_SERVICE_FIELDS = new Set([
   "name", "category", "description", "price", "original_price",
@@ -25,7 +33,8 @@ export async function PUT(
       return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
     }
 
-    const { data, error } = await supabaseAdmin
+    const client = getClient();
+    const { data, error } = await client
       .from('services')
       .update(safeBody)
       .eq('id', id)
@@ -49,7 +58,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { error } = await supabaseAdmin
+    const client = getClient();
+    const { error } = await client
       .from('services')
       .delete()
       .eq('id', params.id);

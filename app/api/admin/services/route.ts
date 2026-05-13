@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/admin-client';
+import { createClient } from '@supabase/supabase-js';
+
+function getClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
 
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
+    const client = getClient();
+    const { data, error } = await client
       .from('services')
       .select('*')
       .order('category', { ascending: true })
-      .order('display_order', { ascending: true });
+      .order('display_order', { ascending: true })
+      .limit(500);
 
     if (error) {
       console.error('Supabase error:', error);
@@ -27,8 +37,8 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
-    const { data, error } = await supabaseAdmin
+    const client = getClient();
+    const { data, error } = await client
       .from('services')
       .insert([body])
       .select()
@@ -72,7 +82,8 @@ export async function PUT(request: Request) {
     const buffer = Buffer.from(arrayBuffer);
 
     // Upload to Supabase Storage
-    const { data, error } = await supabaseAdmin.storage
+    const client = getClient();
+    const { data, error } = await client.storage
       .from('images')
       .upload(filePath, buffer, {
         contentType: file.type,
@@ -86,7 +97,7 @@ export async function PUT(request: Request) {
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabaseAdmin.storage
+    const { data: { publicUrl } } = client.storage
       .from('images')
       .getPublicUrl(filePath);
 
