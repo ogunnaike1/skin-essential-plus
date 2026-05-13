@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -22,7 +22,7 @@ const checkoutSchema = z.object({
   phone: z
     .string()
     .min(7, "Please enter a valid phone number")
-    .refine((v) => /^[+\d][\d\s\-().]{6,}$/.test(v), "Please enter a valid phone number"),
+    .regex(/^[+\d][\d\s\-().]{6,}$/),
 });
 
 type CheckoutErrors = Partial<Record<keyof z.infer<typeof checkoutSchema>, string>>;
@@ -78,6 +78,15 @@ export function CheckoutModal({
   const [errors, setErrors] = useState<CheckoutErrors>({});
 
   const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
 
   const handleClose = () => {
     setStep("details");

@@ -109,7 +109,7 @@ export default function AdminLogin() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="admin@skinessentialplus.com"
+                  placeholder="Email address"
                   className="w-full h-12 pl-11 pr-4 rounded-xl border-2 border-deep/10 bg-ivory text-deep placeholder:text-deep/40 focus:border-mauve focus:outline-none transition-colors"
                 />
               </div>

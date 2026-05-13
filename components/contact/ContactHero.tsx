@@ -38,7 +38,7 @@ export function ContactHero(): React.ReactElement {
     {
       icon: Clock,
       label: "Hours",
-      value: "Mon–Sat · 9am – 8pm",
+      value: "Mon–Sat · 10am – 8pm",
       color: "mauve" as const,
     },
   ];

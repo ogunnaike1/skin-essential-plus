@@ -4,7 +4,7 @@ import { X, Minus, Plus, Trash2, Tag, ShoppingBag, ArrowRight, Sparkles, Chevron
 import { useCart } from "@/app/contexts/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatShopPrice } from "@/lib/shop-data";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 import { CheckoutModal } from "@/components/cart/CheckoutModal";
@@ -35,6 +35,15 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const { notification, showSuccess, hideSuccess } = useSuccessNotification();
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
 
   const handleApplyCoupon = async () => {
     if (!couponInput.trim()) {
@@ -162,7 +171,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               {items.length > 0 && (
                 <>
                   {/* Scrollable items — flex-col + gap avoids space-y margin conflicts with layout animation */}
-                  <div className="flex-1 overflow-y-auto px-5 py-4">
+                  <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4">
                     <div className="flex flex-col gap-3">
                       <AnimatePresence initial={false}>
                         {items.map((item) => (

@@ -80,39 +80,12 @@ export function FounderLetter(): React.ReactElement {
                    Ifeoluwa Peters Kanyinsola
                   </p>
                   <p className="mt-1 text-sm font-light text-ivory">
-                    MBBS, MSc Dermatology
+                    Aesthetician
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Credentials strip */}
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              {[
-                { label: "Years", value: "6+", color: "#8A6F88" },
-                { label: "Trained", value: "Lagos", color: "#4F7288" },
-                { label: "Certified", value: "AAD", color: "#FCFBFC" },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-2xl p-4 border border-ivory/15"
-                  style={{ background: "rgba(252, 251, 252, 0.05)" }}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="eyebrow text-ivory/85 text-[9px]">
-                      {item.label}
-                    </span>
-                  </div>
-                  <p className="font-display text-xl font-light text-ivory">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
           </motion.div>
 
           {/* Letter card — warm ivory/mauve gradient */}
@@ -153,7 +126,7 @@ export function FounderLetter(): React.ReactElement {
                     Friend,
                   </p>
                   <p>
-                    My foundation in dermatology taught me early on that true beauty isn't superficial; it's a profound reflection of your internal health and self-respect.
+                    My foundation in aesthetics taught me early on that true beauty isn't superficial; it's a profound reflection of your internal health and self-respect.
                   </p>
                   <p>
                     When I created Skin Essential Plus, it was to move away from overly sterile medical protocols towards a more personalized, holistic approach. My time in clinical practice showed me that every person's skin is entirely unique, requiring far more than just generic rules and one-size-fits-all treatments.

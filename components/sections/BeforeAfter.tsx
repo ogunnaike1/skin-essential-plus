@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
 
 interface StatProps {
   value: string;
@@ -29,7 +30,10 @@ function Stat({ value, label, delay }: StatProps): React.ReactElement {
 }
 
 export function BeforeAfter(): React.ReactElement {
+  const [bookingOpen, setBookingOpen] = useState(false);
+
   return (
+    <>
     <section
       id="lash-transformation"
       className="relative py-24 sm:py-32 section-padding overflow-hidden bg-gradient-to-b from-ivory to-mauve-wash"
@@ -154,10 +158,10 @@ export function BeforeAfter(): React.ReactElement {
               transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="mt-10"
             >
-              <Link href="/services/lash-extensions" className="btn-primary">
+              <button onClick={() => setBookingOpen(true)} className="btn-primary">
                 Book Your Transformation
                 <ArrowRight className="h-4 w-4" />
-              </Link>
+              </button>
             </motion.div>
 
             <div className="mt-14 grid grid-cols-3 gap-6 border-t border-deep/15 pt-10">
@@ -175,5 +179,8 @@ export function BeforeAfter(): React.ReactElement {
         aria-hidden
       />
     </section>
+
+    <BookAppointmentModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} />
+    </>
   );
 }

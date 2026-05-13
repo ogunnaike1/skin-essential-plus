@@ -176,10 +176,9 @@ export function ContactForm(): React.ReactElement {
                     <option value="">Select a service</option>
                     <option value="Facial Treatments">Facial Treatments</option>
                     <option value="Body Treatments">Body Treatments</option>
-                    <option value="Nail Care">Nail Care</option>
                     <option value="Waxing & Hair Removal">Waxing & Hair Removal</option>
                     <option value="Product Inquiry">Product Inquiry</option>
-                    <option value="Free Consultation">Free Consultation</option>
+                    <option value="Consultation">Consultation</option>
                     <option value="Other">Other</option>
                   </select>
                 </div>

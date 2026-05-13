@@ -153,7 +153,7 @@ export function ServicesCTA(): React.ReactElement {
                   </a>
                   <span className="h-3 w-px bg-ivory/20" aria-hidden />
                   <span className="text-xs font-light text-ivory/90 uppercase tracking-[0.2em]">
-                    Mon–Sat · 9AM – 8PM
+                    Mon–Sat · 10AM – 8PM
                   </span>
                 </motion.div>
               </div>

@@ -28,7 +28,7 @@ export const SITE = {
   email: "hello@skinessentialplus.com",
   phone: "+234 814 830 3684",
   address: "No 2, Alaafia Avenue, Opposite IDC Primary School, Akobo, Ibadan",
-  hours: "Mon–Sat · 9:00 AM – 8:00 PM",
+  hours: "Mon–Sat · 10:00 AM – 8:00 PM",
 } as const;
 
 export const NAV_LINKS: readonly NavLink[] = [
