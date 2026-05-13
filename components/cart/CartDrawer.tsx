@@ -58,6 +58,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   };
 
   const handleCheckout = () => {
+    onClose();
     setCheckoutOpen(true);
   };
 

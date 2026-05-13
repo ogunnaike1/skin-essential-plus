@@ -131,6 +131,7 @@ export function CheckoutModal({
           ],
         },
         callback: (response: { reference: string }) => {
+          setLoading(false);
           notifyOrder(response.reference);
           showSuccess("generic-success", {
             title: "Payment Successful!",
