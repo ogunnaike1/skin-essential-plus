@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import {
   X, CalendarDays, Clock3, User, Mail, MessageSquare,
   ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard,
@@ -201,18 +201,7 @@ export default function BookAppointmentModal({
 
   const totalResults = filteredServices.length;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setStep(1);
     setSelectedService(null);
     setGateway(null);
@@ -228,7 +217,18 @@ export default function BookAppointmentModal({
     setClosedReason("");
     hideSuccess();
     onClose();
-  };
+  }, [categories, hideSuccess, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, handleClose]);
 
   const handleSlotSelect = (slot: TimeSlot) => {
     setSelectedSlot(slot);

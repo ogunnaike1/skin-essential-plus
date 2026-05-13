@@ -46,7 +46,7 @@ export interface Testimonial {
   readonly role: string;
   readonly quote: string;
   readonly rating: number;
-  readonly image: string;
+  readonly image?: string;
 }
 
 // Before/After
