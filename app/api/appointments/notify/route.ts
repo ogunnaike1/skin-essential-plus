@@ -6,9 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const BRAND_EMAIL = "ogunnaikeusman17@gmail.com";
 const BRAND_NAME  = "Skin Essential Plus";
-const BANK_NAME   = process.env.NEXT_PUBLIC_BANK_NAME    ?? "";
-const ACCT_NAME   = process.env.NEXT_PUBLIC_ACCOUNT_NAME ?? "";
-const ACCT_NO     = process.env.NEXT_PUBLIC_ACCOUNT_NUMBER ?? "";
+const FROM_EMAIL  = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
 function getClient() {
   return createClient(
@@ -20,7 +18,7 @@ function getClient() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { appointmentId, reference, isBankTransfer = false } = await request.json();
+    const { appointmentId, reference } = await request.json();
 
     if (!appointmentId) {
       return NextResponse.json({ error: "appointmentId is required" }, { status: 400 });
@@ -40,110 +38,78 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
     }
 
-    // ── 2. Update status depending on payment method ──────────────
-    if (!isBankTransfer && reference) {
+    // ── 2. Mark confirmed + paid ──────────────────────────────────
+    if (reference) {
       const { error: updateError } = await client
         .from("appointments")
-        .update({
-          status: "confirmed",
-          payment_status: "paid",
-          payment_reference: reference,
-        })
+        .update({ status: "confirmed", payment_status: "paid", payment_reference: reference })
         .eq("id", appointmentId);
 
-      if (updateError) {
-        console.error("Failed to update appointment:", updateError);
-      }
+      if (updateError) console.error("Failed to update appointment:", updateError);
 
-      // Upsert customer record on paid bookings
-      const { data: existingCustomer } = await client
+      // Upsert customer record
+      const { data: existing } = await client
         .from("customers")
         .select("id, phone, total_orders, total_spent")
         .eq("email", appointment.customer_email)
         .single();
 
-      if (existingCustomer) {
-        await client
-          .from("customers")
-          .update({
-            full_name: appointment.customer_name,
-            phone: appointment.customer_phone ?? existingCustomer.phone,
-            total_orders: (existingCustomer.total_orders ?? 0) + 1,
-            total_spent: (existingCustomer.total_spent ?? 0) + appointment.service_price,
-            last_order_date: new Date().toISOString(),
-          })
-          .eq("id", existingCustomer.id);
+      if (existing) {
+        await client.from("customers").update({
+          full_name: appointment.customer_name,
+          phone: appointment.customer_phone ?? existing.phone,
+          total_orders: (existing.total_orders ?? 0) + 1,
+          total_spent: (existing.total_spent ?? 0) + appointment.service_price,
+          last_order_date: new Date().toISOString(),
+        }).eq("id", existing.id);
       } else {
-        await client
-          .from("customers")
-          .insert([{
-            email: appointment.customer_email,
-            full_name: appointment.customer_name,
-            phone: appointment.customer_phone ?? null,
-            total_orders: 1,
-            total_spent: appointment.service_price,
-            last_order_date: new Date().toISOString(),
-          }]);
+        await client.from("customers").insert([{
+          email: appointment.customer_email,
+          full_name: appointment.customer_name,
+          phone: appointment.customer_phone ?? null,
+          total_orders: 1,
+          total_spent: appointment.service_price,
+          last_order_date: new Date().toISOString(),
+        }]);
       }
     }
 
-    // ── 3. Format date/time ───────────────────────────────────────
+    // ── 3. Format date / time ─────────────────────────────────────
     const formattedDate = appointment.appointment_date
       ? new Date(appointment.appointment_date + "T12:00:00").toLocaleDateString("en-NG", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
+          weekday: "long", day: "numeric", month: "long", year: "numeric",
         })
       : "—";
 
     const formattedTime = appointment.start_time
       ? new Date(`2000-01-01T${appointment.start_time}`).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
+          hour: "numeric", minute: "2-digit", hour12: true,
         })
       : "—";
 
     const formattedAmount = `₦${Number(appointment.service_price).toLocaleString("en-NG")}`;
     const firstName = appointment.customer_name.split(" ")[0] ?? appointment.customer_name;
 
-    // ── 4. Customer email ─────────────────────────────────────────
-    const customerSubject = isBankTransfer
-      ? `Booking Received — Complete Payment to Confirm | ${appointment.service_name}`
-      : `Your Appointment is Confirmed — ${appointment.service_name}`;
-
-    const customerHtml = isBankTransfer
-      ? bankTransferCustomerHtml({ appointment, firstName, formattedDate, formattedTime, formattedAmount })
-      : paidCustomerHtml({ appointment, firstName, formattedDate, formattedTime, formattedAmount, reference });
-
+    // ── 4. Customer confirmation email ────────────────────────────
     const { error: customerEmailError } = await resend.emails.send({
-      from: `${BRAND_NAME} <onboarding@resend.dev>`,
+      from: `${BRAND_NAME} <${FROM_EMAIL}>`,
       to: [appointment.customer_email],
-      subject: customerSubject,
-      html: customerHtml,
+      subject: `Your Appointment is Confirmed — ${appointment.service_name}`,
+      html: paidCustomerHtml({ appointment, firstName, formattedDate, formattedTime, formattedAmount, reference }),
     });
 
-    if (customerEmailError) {
-      console.error("Customer email send failed:", customerEmailError);
-    }
+    if (customerEmailError) console.error("Customer email send failed:", customerEmailError);
 
     // ── 5. Brand notification email ───────────────────────────────
-    const brandSubject = isBankTransfer
-      ? `New Bank Transfer Booking — ${appointment.service_name} (Awaiting Payment)`
-      : `New Paid Appointment — ${appointment.service_name}`;
-
     const { error: brandEmailError } = await resend.emails.send({
-      from: `${BRAND_NAME} Bookings <onboarding@resend.dev>`,
+      from: `${BRAND_NAME} Bookings <${FROM_EMAIL}>`,
       to: [BRAND_EMAIL],
       replyTo: appointment.customer_email,
-      subject: brandSubject,
-      html: brandNotificationHtml({ appointment, formattedDate, formattedTime, formattedAmount, reference, isBankTransfer }),
+      subject: `New Paid Appointment — ${appointment.service_name}`,
+      html: brandNotificationHtml({ appointment, formattedDate, formattedTime, formattedAmount, reference }),
     });
 
-    if (brandEmailError) {
-      console.error("Brand email send failed:", brandEmailError);
-    }
+    if (brandEmailError) console.error("Brand email send failed:", brandEmailError);
 
     return NextResponse.json({ success: true });
   } catch (err) {
@@ -152,7 +118,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ── Email templates ───────────────────────────────────────────
+// ── Email helpers ─────────────────────────────────────────────
 
 function accentBar() {
   return `<tr><td style="padding:0;height:5px;background:linear-gradient(to right,#8A6F88,#4F7288,#47676A);"></td></tr>`;
@@ -257,68 +223,21 @@ ${bookingDetailsCard(data)}
 ${locationCard()}`);
 }
 
-function bankTransferCustomerHtml(data: TemplateData) {
-  const { firstName, formattedAmount } = data;
-  return emailWrapper(`
-<tr><td style="padding:36px 36px 24px;">
-  <p style="margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#8A6F88;">${BRAND_NAME}</p>
-  <h1 style="margin:0;font-size:26px;font-weight:300;color:#2D2D2D;line-height:1.2;">Booking Received — Action Required</h1>
-  <p style="margin:8px 0 0;font-size:14px;color:#6B6B6B;">Hi ${firstName}, your booking request is received. Complete your payment below to confirm your slot.</p>
-</td></tr>
-${bookingDetailsCard(data)}
-<tr><td style="padding:0 36px 20px;">
-  <div style="background:#EEF4F0;border:2px solid #B2D8BC;border-radius:14px;padding:22px;">
-    <p style="margin:0 0 14px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2D6A4F;">— Payment Instructions</p>
-    <table width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td style="padding:6px 0;font-size:13px;color:#6B6B6B;width:40%;">Bank</td>
-        <td style="padding:6px 0;font-size:13px;font-weight:600;color:#2D2D2D;text-align:right;">${BANK_NAME}</td>
-      </tr>
-      <tr>
-        <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Account Name</td>
-        <td style="padding:6px 0;font-size:13px;font-weight:600;color:#2D2D2D;text-align:right;">${ACCT_NAME}</td>
-      </tr>
-      <tr>
-        <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Account Number</td>
-        <td style="padding:6px 0;font-size:16px;font-weight:700;color:#2D6A4F;text-align:right;letter-spacing:0.05em;">${ACCT_NO}</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 0 0;font-size:13px;color:#6B6B6B;border-top:1px solid #C8E6CE;">Exact Amount</td>
-        <td style="padding:8px 0 0;font-size:20px;font-weight:700;color:#2D6A4F;text-align:right;border-top:1px solid #C8E6CE;">${formattedAmount}</td>
-      </tr>
-    </table>
-    <div style="margin-top:16px;padding:12px;background:#ffffff;border-radius:10px;">
-      <p style="margin:0;font-size:12px;color:#6B6B6B;line-height:1.6;">
-        After transferring, send your payment proof (screenshot) to us on WhatsApp at
-        <strong style="color:#2D2D2D;">+234 814 830 3684</strong>.
-        We will confirm your booking within a few hours.
-      </p>
-    </div>
-  </div>
-</td></tr>
-${locationCard()}`);
-}
-
 interface BrandTemplateData {
   appointment: Record<string, any>;
   formattedDate: string;
   formattedTime: string;
   formattedAmount: string;
   reference?: string;
-  isBankTransfer: boolean;
 }
 
 function brandNotificationHtml(data: BrandTemplateData) {
-  const { appointment, formattedDate, formattedTime, formattedAmount, reference, isBankTransfer } = data;
-  const statusBadge = isBankTransfer
-    ? `<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#FFF3CD;color:#856404;font-size:11px;font-weight:700;">AWAITING PAYMENT</span>`
-    : `<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#D4EDDA;color:#155724;font-size:11px;font-weight:700;">PAID</span>`;
-
+  const { appointment, formattedDate, formattedTime, formattedAmount, reference } = data;
   return emailWrapper(`
 <tr><td style="padding:36px 36px 24px;">
   <p style="margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#8A6F88;">${BRAND_NAME}</p>
-  <h1 style="margin:0;font-size:26px;font-weight:300;color:#2D2D2D;line-height:1.2;">${isBankTransfer ? "New Bank Transfer Booking" : "New Paid Appointment ✓"}</h1>
-  <p style="margin:8px 0 0;font-size:14px;color:#6B6B6B;">${isBankTransfer ? "A booking was received — awaiting bank transfer payment." : "A booking was confirmed via online payment."}</p>
+  <h1 style="margin:0;font-size:26px;font-weight:300;color:#2D2D2D;line-height:1.2;">New Paid Appointment ✓</h1>
+  <p style="margin:8px 0 0;font-size:14px;color:#6B6B6B;">A booking was confirmed via online payment.</p>
 </td></tr>
 <tr><td style="padding:0 36px 20px;">
   <div style="background:#F5F3F1;border-radius:14px;padding:22px;">
@@ -361,7 +280,9 @@ function brandNotificationHtml(data: BrandTemplateData) {
       </tr>
       <tr>
         <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Status</td>
-        <td style="padding:6px 0;text-align:right;">${statusBadge}</td>
+        <td style="padding:6px 0;text-align:right;">
+          <span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#D4EDDA;color:#155724;font-size:11px;font-weight:700;">PAID</span>
+        </td>
       </tr>
       ${reference ? `<tr>
         <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Reference</td>

@@ -5,9 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const BRAND_EMAIL = "ogunnaikeusman17@gmail.com";
 const BRAND_NAME  = "Skin Essential Plus";
-const BANK_NAME   = process.env.NEXT_PUBLIC_BANK_NAME    ?? "";
-const ACCT_NAME   = process.env.NEXT_PUBLIC_ACCOUNT_NAME ?? "";
-const ACCT_NO     = process.env.NEXT_PUBLIC_ACCOUNT_NUMBER ?? "";
+const FROM_EMAIL  = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
 interface OrderItem {
   name: string;
@@ -27,7 +25,6 @@ export async function POST(request: NextRequest) {
       total,
       couponCode,
       reference,
-      isBankTransfer = false,
     }: {
       customerName: string;
       customerEmail: string;
@@ -38,7 +35,6 @@ export async function POST(request: NextRequest) {
       total: number;
       couponCode: string | null;
       reference: string;
-      isBankTransfer?: boolean;
     } = await request.json();
 
     if (!customerEmail || !items?.length || !reference) {
@@ -65,72 +61,25 @@ export async function POST(request: NextRequest) {
         </tr>`
       : "";
 
-    const bankTransferSection = isBankTransfer ? `
-    <!-- Bank transfer instructions -->
-    <tr>
-      <td style="padding:0 36px 20px;">
-        <div style="background:#EEF4F0;border:2px solid #B2D8BC;border-radius:14px;padding:22px;">
-          <p style="margin:0 0 14px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#2D6A4F;">— Complete Your Payment</p>
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="padding:6px 0;font-size:13px;color:#6B6B6B;width:40%;">Bank</td>
-              <td style="padding:6px 0;font-size:13px;font-weight:600;color:#2D2D2D;text-align:right;">${BANK_NAME}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Account Name</td>
-              <td style="padding:6px 0;font-size:13px;font-weight:600;color:#2D2D2D;text-align:right;">${ACCT_NAME}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;font-size:13px;color:#6B6B6B;">Account Number</td>
-              <td style="padding:6px 0;font-size:16px;font-weight:700;color:#2D6A4F;text-align:right;letter-spacing:0.05em;">${ACCT_NO}</td>
-            </tr>
-            <tr>
-              <td style="padding:8px 0 0;font-size:13px;color:#6B6B6B;border-top:1px solid #C8E6CE;">Amount to Transfer</td>
-              <td style="padding:8px 0 0;font-size:20px;font-weight:700;color:#2D6A4F;text-align:right;border-top:1px solid #C8E6CE;">${fmt(total)}</td>
-            </tr>
-          </table>
-          <div style="margin-top:14px;padding:12px;background:#ffffff;border-radius:10px;">
-            <p style="margin:0;font-size:12px;color:#6B6B6B;line-height:1.6;">
-              After transferring, send your payment proof to us on WhatsApp at
-              <strong style="color:#2D2D2D;">+234 814 830 3684</strong>.
-              Use <strong style="color:#2D2D2D;">SHOP-${customerName.split(" ")[0]?.toUpperCase()}</strong> as your narration.
-              We'll confirm your order within a few hours.
-            </p>
-          </div>
-        </div>
-      </td>
-    </tr>` : "";
-
-    const paymentStatusSection = isBankTransfer
-      ? `<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#FFF3CD;color:#856404;font-size:11px;font-weight:700;letter-spacing:0.05em;">AWAITING PAYMENT</span>`
-      : `<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#D4EDDA;color:#155724;font-size:11px;font-weight:700;letter-spacing:0.05em;">PAID</span>`;
-
     // ── 1. Customer confirmation email ─────────────────────────────
     const { error: customerEmailError } = await resend.emails.send({
-      from: `${BRAND_NAME} <onboarding@resend.dev>`,
+      from: `${BRAND_NAME} <${FROM_EMAIL}>`,
       to: [customerEmail],
-      subject: isBankTransfer
-        ? `Order Received — Complete Payment to Confirm | ${BRAND_NAME}`
-        : `Your Order is Confirmed — ${BRAND_NAME}`,
+      subject: `Your Order is Confirmed — ${BRAND_NAME}`,
       html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #2D2D2D; background-color: #FAF9F7; margin: 0; padding: 0;">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 24px rgba(71,103,106,0.10);">
-
     <tr><td style="height: 5px; background: linear-gradient(to right, #8A6F88, #4F7288, #47676A);"></td></tr>
-
-    <!-- Header -->
     <tr>
       <td style="padding: 36px 36px 20px;">
         <p style="margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #8A6F88;">${BRAND_NAME}</p>
-        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D; line-height: 1.2;">${isBankTransfer ? "Order Received — Action Required" : "Order Confirmed ✓"}</h1>
-        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">Hi ${customerName.split(" ")[0]}, ${isBankTransfer ? "your order is received. Complete your payment below to confirm it." : "thank you for your order! We're getting it ready."}</p>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D; line-height: 1.2;">Order Confirmed ✓</h1>
+        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">Hi ${customerName.split(" ")[0]}, thank you for your order! We're getting it ready.</p>
       </td>
     </tr>
-
-    <!-- Order items -->
     <tr>
       <td style="padding: 0 36px 20px;">
         <div style="background: #F5F3F1; border-radius: 14px; padding: 22px;">
@@ -155,27 +104,24 @@ export async function POST(request: NextRequest) {
         </div>
       </td>
     </tr>
-
-    <!-- Payment reference / status -->
     <tr>
       <td style="padding: 0 36px 20px;">
         <div style="border: 2px solid #E8EAE8; border-radius: 14px; padding: 18px 22px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#47676A;padding-bottom:10px;">Payment</td>
-              <td style="text-align:right;padding-bottom:10px;">${paymentStatusSection}</td>
+              <td style="text-align:right;padding-bottom:10px;">
+                <span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#D4EDDA;color:#155724;font-size:11px;font-weight:700;letter-spacing:0.05em;">PAID</span>
+              </td>
             </tr>
-            ${reference ? `<tr>
+            <tr>
               <td style="padding:4px 0;font-size:13px;color:#6B6B6B;">Reference</td>
               <td style="padding:4px 0;font-size:12px;font-family:monospace;color:#2D2D2D;text-align:right;">${reference}</td>
-            </tr>` : ""}
+            </tr>
           </table>
         </div>
       </td>
     </tr>
-    ${bankTransferSection}
-
-    <!-- Contact -->
     <tr>
       <td style="padding: 0 36px 32px;">
         <div style="background: #F0F4F5; border-radius: 14px; padding: 18px 22px;">
@@ -184,50 +130,39 @@ export async function POST(request: NextRequest) {
         </div>
       </td>
     </tr>
-
-    <!-- Footer -->
     <tr>
       <td style="padding: 18px 36px; background: #F5F3F1; text-align: center; border-top: 1px solid #E8E4E0;">
         <p style="margin: 0 0 2px; font-size: 11px; color: #8A6F88;"><strong>${BRAND_NAME}</strong> — No 2, Alaafia Avenue, Akobo, Ibadan</p>
         <p style="margin: 0; font-size: 11px; color: #aaa;">© ${new Date().getFullYear()} ${BRAND_NAME}. All rights reserved.</p>
       </td>
     </tr>
-
   </table>
 </body>
 </html>`,
     });
 
-    if (customerEmailError) {
-      console.error("Customer order email failed:", customerEmailError);
-    }
+    if (customerEmailError) console.error("Customer order email failed:", customerEmailError);
 
     // ── 2. Brand notification email ────────────────────────────────
     const { error: brandEmailError } = await resend.emails.send({
-      from: `${BRAND_NAME} Shop <onboarding@resend.dev>`,
+      from: `${BRAND_NAME} Shop <${FROM_EMAIL}>`,
       to: [BRAND_EMAIL],
       replyTo: customerEmail,
-      subject: isBankTransfer
-        ? `New Bank Transfer Order — ${items.map((i) => i.name).join(", ")} (Awaiting Payment)`
-        : `New Shop Order — ${items.map((i) => i.name).join(", ")}`,
+      subject: `New Shop Order — ${items.map((i) => i.name).join(", ")}`,
       html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #2D2D2D; background-color: #FAF9F7; margin: 0; padding: 0;">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 24px rgba(71,103,106,0.10);">
-
     <tr><td style="height: 5px; background: linear-gradient(to right, #8A6F88, #4F7288, #47676A);"></td></tr>
-
     <tr>
       <td style="padding: 36px 36px 20px;">
         <p style="margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #8A6F88;">${BRAND_NAME} Shop</p>
-        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D;">${isBankTransfer ? "New Bank Transfer Order" : "New Paid Order ✓"}</h1>
-        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">${isBankTransfer ? "A customer placed an order — awaiting bank transfer payment." : "A customer just completed a purchase."}</p>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 300; color: #2D2D2D;">New Paid Order ✓</h1>
+        <p style="margin: 8px 0 0; font-size: 14px; color: #6B6B6B;">A customer just completed a purchase.</p>
       </td>
     </tr>
-
-    <!-- Customer -->
     <tr>
       <td style="padding: 0 36px 20px;">
         <div style="background: #F5F3F1; border-radius: 14px; padding: 22px;">
@@ -249,8 +184,6 @@ export async function POST(request: NextRequest) {
         </div>
       </td>
     </tr>
-
-    <!-- Items -->
     <tr>
       <td style="padding: 0 36px 20px;">
         <div style="background: #F0F4F5; border-radius: 14px; padding: 22px;">
@@ -266,8 +199,6 @@ export async function POST(request: NextRequest) {
         </div>
       </td>
     </tr>
-
-    <!-- Payment -->
     <tr>
       <td style="padding: 0 36px 32px;">
         <div style="border: 2px solid #E8EAE8; border-radius: 14px; padding: 18px 22px;">
@@ -279,27 +210,25 @@ export async function POST(request: NextRequest) {
             </tr>
             <tr>
               <td style="padding: 4px 0; font-size: 13px; color: #6B6B6B;">Status</td>
-              <td style="padding: 4px 0; text-align: right;">${paymentStatusSection}</td>
+              <td style="padding: 4px 0; text-align: right;">
+                <span style="display:inline-block;padding:3px 10px;border-radius:20px;background:#D4EDDA;color:#155724;font-size:11px;font-weight:700;letter-spacing:0.05em;">PAID</span>
+              </td>
             </tr>
           </table>
         </div>
       </td>
     </tr>
-
     <tr>
       <td style="padding: 18px 36px; background: #F5F3F1; text-align: center; border-top: 1px solid #E8E4E0;">
         <p style="margin: 0; font-size: 11px; color: #8A6F88;">Automated notification from <strong>${BRAND_NAME}</strong> shop system.</p>
       </td>
     </tr>
-
   </table>
 </body>
 </html>`,
     });
 
-    if (brandEmailError) {
-      console.error("Brand order email failed:", brandEmailError);
-    }
+    if (brandEmailError) console.error("Brand order email failed:", brandEmailError);
 
     return NextResponse.json({ success: true });
   } catch (err) {

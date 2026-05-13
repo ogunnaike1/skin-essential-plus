@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import {
   X, CalendarDays, Clock3, User, Mail, MessageSquare,
   ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard,
-  Building2, Copy, Check, Sparkles, Search, ChevronDown,
+  Sparkles, Search, ChevronDown,
   Loader2, AlertCircle, Lock,
 } from "lucide-react";
 
@@ -79,7 +79,7 @@ type BookAppointmentModalProps = {
 
 type Step = 1 | 2 | 3 | 4;
 type Gateway = "paystack" | "moniwave" | null;
-type PaymentMethod = "card" | "transfer" | null;
+type PaymentMethod = "card" | null;
 
 const STEP_META: Record<Step, { label: string; color: string }> = {
   1: { label: "Choose a Service",   color: "text-mauve" },
@@ -100,7 +100,6 @@ export default function BookAppointmentModal({
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [gateway, setGateway]             = useState<Gateway>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
-  const [copied, setCopied]               = useState(false);
   const [search, setSearch]               = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [fieldErrors, setFieldErrors]     = useState<DetailsFormErrors>({});
@@ -242,11 +241,6 @@ export default function BookAppointmentModal({
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
-
-  const copyToClipboard = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }
-    catch (err) { console.error(err); }
-  };
 
   // ── Step 2 submit → Step 3 (gateway) ──────────────────────────
   const handleDetailsSubmit = (e: React.FormEvent) => {
@@ -398,41 +392,6 @@ export default function BookAppointmentModal({
   };
 
   const handleCardPayment = () => launchPaystack();
-
-  // ── Bank transfer ─────────────────────────────────────────────
-  const handleBankTransfer = async () => {
-    if (!selectedService) return;
-    setLoading(true);
-    try {
-      const durationMins = Number(getServiceDuration(selectedService)) || 60;
-      const appointment = await createAppointment({
-        ...formData,
-        service_id: selectedService.id,
-        service_name: selectedService.name,
-        service_price: selectedService.price,
-        end_time: selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins),
-        duration_minutes: durationMins,
-      } as CreateAppointmentData);
-
-      // Send booking received + payment instructions email
-      fetch("/api/appointments/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ appointmentId: appointment.id, isBankTransfer: true }),
-      }).catch((err) => console.error("Bank transfer notify failed:", err));
-
-      showSuccess("appointment-booked", {
-        title: "Booking Received!",
-        message: "Check your email for payment instructions to confirm your appointment.",
-        details: `Reference: APPT-${appointment.id.slice(0, 8).toUpperCase()}`,
-      });
-      setTimeout(() => handleClose(), 2500);
-    } catch (err: any) {
-      console.error(err);
-      showError({ title: "Booking failed", message: err?.message ?? "Unable to create your appointment. Please try again." });
-      setLoading(false);
-    }
-  };
 
   if (!isOpen) return null;
 
@@ -835,49 +794,6 @@ export default function BookAppointmentModal({
                 </motion.div>
               )}
 
-              {/* ══ STEP 4 — Paystack sub-methods ═══════════════════════ */}
-              {step === 4 && selectedService && gateway === "paystack" && !paymentMethod && (
-                <motion.div key="step-4-choose" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  <button onClick={() => { setStep(3); setGateway(null); }} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
-                    <ArrowLeft className="h-4 w-4" /> Back to gateway
-                  </button>
-
-                  <p className="text-sm text-deep/50 font-light mb-5">How would you like to pay via Paystack?</p>
-
-                  <div className="space-y-3">
-                    {/* Card */}
-                    <button
-                      onClick={() => setPaymentMethod("card")}
-                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-mauve hover:shadow-[0_0_0_4px_rgba(138,111,136,0.08)] transition-all text-left"
-                    >
-                      <div className="h-12 w-12 rounded-xl bg-mauve-tint flex items-center justify-center shrink-0">
-                        <CreditCard className="h-5 w-5 text-mauve" strokeWidth={1.5} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-deep text-sm">Debit / Credit Card</p>
-                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Visa, Mastercard, Verve — secure checkout</p>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-mauve transition-colors shrink-0" strokeWidth={1.5} />
-                    </button>
-
-                    {/* Bank Transfer */}
-                    <button
-                      onClick={() => setPaymentMethod("transfer")}
-                      className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-sage hover:shadow-[0_0_0_4px_rgba(79,114,136,0.08)] transition-all text-left"
-                    >
-                      <div className="h-12 w-12 rounded-xl bg-sage-tint flex items-center justify-center shrink-0">
-                        <Building2 className="h-5 w-5 text-sage" strokeWidth={1.5} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-deep text-sm">Bank Transfer</p>
-                        <p className="text-[11px] text-deep/50 font-light mt-0.5">Transfer directly from your bank account</p>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-sage transition-colors shrink-0" strokeWidth={1.5} />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
               {/* ══ STEP 4 / Card payment ════════════════════════════════ */}
               {step === 4 && selectedService && paymentMethod === "card" && (
                 <motion.div key="step-4-card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
@@ -917,75 +833,6 @@ export default function BookAppointmentModal({
                     )}
                   </button>
                   <p className="mt-3 text-[11px] text-center text-deep/40 font-light">Secured by Paystack — 256-bit SSL encryption</p>
-                </motion.div>
-              )}
-
-              {/* ══ STEP 4 / Bank transfer ═══════════════════════════════ */}
-              {step === 4 && selectedService && paymentMethod === "transfer" && (
-                <motion.div key="step-4-transfer" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  <button onClick={() => setPaymentMethod(null)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
-                    <ArrowLeft className="h-4 w-4" /> Back to payment options
-                  </button>
-
-                  <div className="p-5 rounded-2xl bg-sage-tint border border-sage/20 space-y-4 mb-5">
-                    <h3 className="text-[10px] uppercase tracking-wider text-deep/40 font-light flex items-center gap-2">
-                      <Building2 className="h-3.5 w-3.5 text-sage" strokeWidth={1.5} /> Bank account details
-                    </h3>
-
-                    {[
-                      { label: "Bank name",      value: process.env.NEXT_PUBLIC_BANK_NAME    ?? "" },
-                      { label: "Account name",   value: process.env.NEXT_PUBLIC_ACCOUNT_NAME ?? "" },
-                      { label: "Account number", value: process.env.NEXT_PUBLIC_ACCOUNT_NUMBER ?? "" },
-                    ].map(({ label, value }) => (
-                      <div key={label} className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">{label}</p>
-                          <p className="text-sm font-medium text-deep mt-0.5">{value}</p>
-                        </div>
-                        <button
-                          onClick={() => copyToClipboard(value)}
-                          className="h-8 w-8 rounded-full bg-white border border-sage/30 flex items-center justify-center hover:bg-sage hover:border-sage hover:text-ivory text-sage transition-all"
-                        >
-                          {copied ? <Check className="h-3.5 w-3.5" strokeWidth={2} /> : <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />}
-                        </button>
-                      </div>
-                    ))}
-
-                    <div className="pt-3 border-t border-sage/20">
-                      <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Exact amount</p>
-                      <p className="font-display text-2xl text-sage mt-0.5">₦{selectedService.price.toLocaleString()}</p>
-                    </div>
-                  </div>
-
-                  {/* Instructions */}
-                  <div className="p-4 rounded-2xl bg-mauve-tint border border-mauve/20 mb-5">
-                    <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light mb-3">Next steps</p>
-                    <ol className="space-y-2">
-                      {[
-                        "Transfer the exact amount to the account above.",
-                        "Screenshot your payment confirmation.",
-                        `Send proof to +234 814 830 3684 on WhatsApp with reference: APPT-${formData.customer_name.split(" ")[0]?.toUpperCase() ?? "REF"}.`,
-                        "We'll confirm your booking within a few hours.",
-                      ].map((step, i) => (
-                        <li key={i} className="flex gap-2.5 text-xs text-deep/70 font-light">
-                          <span className="font-medium text-mauve shrink-0">{i + 1}.</span>
-                          <span>{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-
-                  <button
-                    onClick={handleBankTransfer}
-                    disabled={loading}
-                    className="w-full py-4 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60"
-                  >
-                    {loading ? (
-                      <><span className="h-4 w-4 border-2 border-ivory/30 border-t-ivory rounded-full animate-spin" /> Creating booking…</>
-                    ) : (
-                      <><CheckCircle2 className="h-4 w-4" strokeWidth={1.5} /> I&rsquo;ve completed the transfer</>
-                    )}
-                  </button>
                 </motion.div>
               )}
 

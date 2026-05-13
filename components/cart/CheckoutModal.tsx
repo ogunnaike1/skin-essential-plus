@@ -6,15 +6,10 @@ import {
   X,
   ArrowRight,
   ArrowLeft,
-  Building2,
-  Copy,
-  Check,
   ShoppingBag,
   User,
   Mail,
   Phone,
-  CheckCircle2,
-  Sparkles,
 } from "lucide-react";
 import { z } from "zod";
 import { formatShopPrice } from "@/lib/shop-data";
@@ -43,7 +38,7 @@ interface CheckoutModalProps {
   clearCart: () => void;
 }
 
-type Step = "details" | "gateway" | "transfer";
+type Step = "details" | "gateway";
 
 export function CheckoutModal({
   isOpen,
@@ -57,9 +52,8 @@ export function CheckoutModal({
 }: CheckoutModalProps) {
   const [step, setStep] = useState<Step>("details");
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
 
-  const notifyOrder = (reference: string, isBankTransfer = false) => {
+  const notifyOrder = (reference: string) => {
     fetch("/api/orders/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -73,7 +67,6 @@ export function CheckoutModal({
         total,
         couponCode,
         reference,
-        isBankTransfer,
       }),
     }).catch((err) => console.error("Order notify failed:", err));
   };
@@ -199,24 +192,16 @@ export function CheckoutModal({
     }
   };
 
-  const copyToClipboard = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   if (!isOpen) return null;
 
   const stepLabel: Record<Step, string> = {
     details: "Your Details",
     gateway: "Payment Method",
-    transfer: "Bank Transfer",
   };
 
   const stepNumber: Record<Step, number> = {
     details: 1,
     gateway: 2,
-    transfer: 3,
   };
 
   return (
@@ -251,7 +236,7 @@ export function CheckoutModal({
           <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-deep/10">
             <div>
               <p className="text-[10px] uppercase tracking-widest text-deep/40 font-light mb-0.5">
-                Step {stepNumber[step]} of 3
+                Step {stepNumber[step]} of 2
               </p>
               <h2 className="font-display text-2xl font-light text-deep">
                 {stepLabel[step]}
@@ -434,85 +419,6 @@ export function CheckoutModal({
                   >
                     <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
                     Back to details
-                  </button>
-                </motion.div>
-              )}
-
-              {/* ── STEP 3: TRANSFER DETAILS ── */}
-              {step === "transfer" && (
-                <motion.div
-                  key="transfer"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-5"
-                >
-                  <div className="p-4 rounded-2xl bg-sage-tint border border-sage/20 space-y-4">
-                    <p className="text-xs text-deep/60 font-light">
-                      Transfer exactly <span className="font-medium text-sage">{formatShopPrice(total)}</span> to the account below and send proof to us on WhatsApp.
-                    </p>
-
-                    {/* Bank details */}
-                    {[
-                      { label: "Bank",           value: process.env.NEXT_PUBLIC_BANK_NAME    ?? "" },
-                      { label: "Account name",   value: process.env.NEXT_PUBLIC_ACCOUNT_NAME ?? "" },
-                      { label: "Account number", value: process.env.NEXT_PUBLIC_ACCOUNT_NUMBER ?? "" },
-                    ].map(({ label, value }) => (
-                      <div key={label} className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">{label}</p>
-                          <p className="text-sm font-medium text-deep mt-0.5">{value}</p>
-                        </div>
-                        {label === "Account number" && (
-                          <button
-                            onClick={() => copyToClipboard(value)}
-                            className="h-8 w-8 rounded-full bg-white border border-sage/30 flex items-center justify-center hover:bg-sage hover:border-sage hover:text-ivory text-sage transition-all"
-                          >
-                            {copied ? <Check className="h-3.5 w-3.5" strokeWidth={2} /> : <Copy className="h-3.5 w-3.5" strokeWidth={1.5} />}
-                          </button>
-                        )}
-                      </div>
-                    ))}
-
-                    {/* Amount to transfer */}
-                    <div className="pt-3 border-t border-sage/20">
-                      <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Amount to transfer</p>
-                      <p className="font-display text-2xl text-sage mt-0.5">{formatShopPrice(total)}</p>
-                    </div>
-                  </div>
-
-                  {/* Reference note */}
-                  <div className="flex gap-3 p-3.5 rounded-xl bg-mauve-tint border border-mauve/20">
-                    <Sparkles className="h-4 w-4 text-mauve shrink-0 mt-0.5" strokeWidth={1.5} />
-                    <p className="text-[11px] text-deep/70 font-light leading-relaxed">
-                      Use <strong className="text-deep font-medium">SHOP-{formData.name.split(" ")[0]?.toUpperCase()}</strong> as your transfer narration so we can match your payment quickly.
-                    </p>
-                  </div>
-
-                  {/* Confirm button */}
-                  <button
-                    onClick={() => {
-                      notifyOrder(`SHOP-TRANSFER-${Date.now()}`, true);
-                      showSuccess("generic-success", {
-                        title: "Order Received!",
-                        message: "Check your email for payment instructions to complete your order.",
-                      });
-                      clearCart();
-                      setTimeout(() => handleClose(), 2000);
-                    }}
-                    className="w-full py-3.5 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
-                  >
-                    <CheckCircle2 className="h-4 w-4" strokeWidth={1.5} />
-                    I&rsquo;ve completed the transfer
-                  </button>
-
-                  <button
-                    onClick={() => setStep("gateway")}
-                    className="flex items-center gap-1.5 text-xs text-deep/40 hover:text-deep transition-colors"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    Back to payment options
                   </button>
                 </motion.div>
               )}
