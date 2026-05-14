@@ -15,7 +15,7 @@ export function ContactHero(): React.ReactElement {
     {
       icon: Mail,
       label: "Email",
-      value: "hello@skinessentialplus.com",
+      value: "skinessentialsp@gmail.com",
       onClick: () => {
         const formElement = document.getElementById("contact-form");
         if (formElement) {

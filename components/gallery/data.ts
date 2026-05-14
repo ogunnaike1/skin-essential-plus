@@ -125,6 +125,24 @@ export const GALLERY_IMAGES: GalleryImage[] = [
 
   // Results
   {
+    id: 'g-r1',
+    src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795958/beforeandafter1_qyjabc.jpg',
+    alt: 'Skin transformation result',
+    category: 'results',
+    title: 'Before & After',
+    description: 'Real client result from our signature skin treatment',
+    span: 'normal',
+  },
+  {
+    id: 'g-r2',
+    src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795957/beforeandafter_xbmack.jpg',
+    alt: 'Skin transformation result',
+    category: 'results',
+    title: 'Visible Transformation',
+    description: 'Real client result from our advanced skincare protocol',
+    span: 'normal',
+  },
+  {
     id: 'g-13',
     src: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1200&q=90&auto=format&fit=crop',
     alt: 'Glowing skin close-up',

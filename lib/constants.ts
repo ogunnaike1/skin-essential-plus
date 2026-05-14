@@ -1,7 +1,7 @@
 import {
   Sparkles,
   Flower2,
-  Eye,
+  HandMetal,
   Droplets,
   ShieldCheck,
   Leaf,
@@ -25,7 +25,7 @@ export const SITE = {
   tagline: "Where Science Meets Serenity",
   description:
     "Premium skincare, spa therapy, and beauty rituals crafted for the modern connoisseur.",
-  email: "hello@skinessentialplus.com",
+  email: "skinessentialsp@gmail.com",
   phone: "+234 814 830 3684",
   address: "No 2, Alaafia Avenue, Opposite IDC Primary School, Akobo, Ibadan",
   hours: "Mon–Sat · 10:00 AM – 8:00 PM",
@@ -109,12 +109,12 @@ export const SERVICES: readonly HomeService[] = [
   },
   {
     id: 3,
-    title: "Eyelash Sketching",
+    title: "Body Massage",
     description:
-      "Hand-crafted lash extensions and architectural sketching by certified master artisans.",
+      "Therapeutic deep-tissue and relaxation massages that melt tension, restore circulation, and leave you completely renewed.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
-    icon: Eye,
+      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=85&auto=format&fit=crop",
+    icon: HandMetal,
   },
   {
     id: 4,

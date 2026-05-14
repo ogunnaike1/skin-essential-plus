@@ -45,8 +45,8 @@ export default function PrivacyPage(): React.ReactElement {
             <p>
               You have the right to access, correct, or delete your personal data at any time. To
               exercise these rights, please contact us at{" "}
-              <a href="mailto:hello@skinessentialplus.com" className="text-mauve hover:underline">
-                hello@skinessentialplus.com
+              <a href="mailto:skinessentialsp@gmail.com" className="text-mauve hover:underline">
+                skinessentialsp@gmail.com
               </a>
               .
             </p>
@@ -56,8 +56,8 @@ export default function PrivacyPage(): React.ReactElement {
             <h2 className="font-display text-2xl font-light text-deep mb-3">Contact</h2>
             <p>
               If you have questions about this policy, reach us at{" "}
-              <a href="mailto:hello@skinessentialplus.com" className="text-mauve hover:underline">
-                hello@skinessentialplus.com
+              <a href="mailto:skinessentialsp@gmail.com" className="text-mauve hover:underline">
+                skinessentialsp@gmail.com
               </a>{" "}
               or call <a href="tel:+2348148303684" className="text-mauve hover:underline">+234 814 830 3684</a>.
             </p>

@@ -78,6 +78,7 @@ export function BeforeAfter(): React.ReactElement {
                     <span className="text-xs uppercase tracking-wider text-ivory font-medium">After</span>
                   </div>
                 </div>
+
               </div>
 
               <motion.div

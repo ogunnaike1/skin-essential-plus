@@ -61,8 +61,8 @@ export default function TermsPage(): React.ReactElement {
             <h2 className="font-display text-2xl font-light text-deep mb-3">Contact</h2>
             <p>
               Questions about these terms? Reach us at{" "}
-              <a href="mailto:hello@skinessentialplus.com" className="text-mauve hover:underline">
-                hello@skinessentialplus.com
+              <a href="mailto:skinessentialsp@gmail.com" className="text-mauve hover:underline">
+                skinessentialsp@gmail.com
               </a>
               .
             </p>

@@ -20,7 +20,7 @@ export function LocationMap(): React.ReactElement {
     {
       icon: Phone,
       label: "Reception",
-      value: "+234 814 830 3684\nhello@skinessentialplus.com",
+      value: "+234 814 830 3684\nskinessentialsp@gmail.com",
       color: "deep" as const,
     },
   ];
