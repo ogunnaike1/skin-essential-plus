@@ -52,6 +52,11 @@ export function CheckoutModal({
 }: CheckoutModalProps) {
   const [step, setStep] = useState<Step>("details");
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
 
   const notifyOrder = (reference: string) => {
     fetch("/api/orders/notify", {
@@ -70,11 +75,6 @@ export function CheckoutModal({
       }),
     }).catch((err) => console.error("Order notify failed:", err));
   };
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
   const [errors, setErrors] = useState<CheckoutErrors>({});
 
   const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();

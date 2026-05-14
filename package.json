@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "upload:cloudinary": "tsx --env-file=.env.local scripts/upload-to-cloudinary.ts"
+    "upload:cloudinary": "tsx --env-file=.env.local scripts/upload-to-cloudinary.ts",
+    "seed:hours": "tsx --env-file=.env.local scripts/seed-business-hours.ts",
+    "seed:settings": "tsx --env-file=.env.local scripts/seed-site-settings.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",

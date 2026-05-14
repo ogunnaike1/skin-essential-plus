@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { createClient } from "@supabase/supabase-js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+function getClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
 
 const BRAND_EMAIL = "skinessentialsp@gmail.com";
 const BRAND_NAME  = "Skin Essential Plus";
@@ -39,6 +48,37 @@ export async function POST(request: NextRequest) {
 
     if (!customerEmail || !items?.length || !reference) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // ── Upsert customer record in Supabase ─────────────────────────
+    try {
+      const client = getClient();
+      const { data: existing } = await client
+        .from("customers")
+        .select("id, phone, total_orders, total_spent")
+        .eq("email", customerEmail)
+        .single();
+
+      if (existing) {
+        await client.from("customers").update({
+          full_name: customerName,
+          phone: customerPhone ?? existing.phone,
+          total_orders: (existing.total_orders ?? 0) + 1,
+          total_spent: (existing.total_spent ?? 0) + total,
+          last_order_date: new Date().toISOString(),
+        }).eq("id", existing.id);
+      } else {
+        await client.from("customers").insert([{
+          email: customerEmail,
+          full_name: customerName,
+          phone: customerPhone ?? null,
+          total_orders: 1,
+          total_spent: total,
+          last_order_date: new Date().toISOString(),
+        }]);
+      }
+    } catch (dbErr) {
+      console.error("Customer upsert failed:", dbErr);
     }
 
     const fmt = (n: number) => `₦${Number(n).toLocaleString("en-NG")}`;

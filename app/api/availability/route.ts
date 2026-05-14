@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin-client";
 // ── Defaults used when DB tables don't exist yet ─────────────────
 const DEFAULT_OPEN_DAYS = new Set([1, 2, 3, 4, 5, 6]); // Mon–Sat
 const DEFAULT_OPEN_TIME = "10:00";
-const DEFAULT_CLOSE_TIME = "16:00";
+const DEFAULT_CLOSE_TIME = "18:00";
 const DEFAULT_SLOT_MINS = 120;
 const DEFAULT_MAX_PER_SLOT = 4;
 
