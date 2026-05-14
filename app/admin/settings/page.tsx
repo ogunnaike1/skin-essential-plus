@@ -72,7 +72,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     storeName: "Skin Essential Plus",
     tagline: "Where Science Meets Serenity",
     email: "skinessentialsp@gmail.com",
-    phone: "+234 814 830 3684",
+    phone: "+234 812 973 9806",
     address: "No 2, Alaafia Avenue, Opposite IDC Primary School",
     city: "Ibadan",
     state: "Oyo",

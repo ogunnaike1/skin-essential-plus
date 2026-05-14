@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
       <td style="padding: 0 36px 32px;">
         <div style="background: #F0F4F5; border-radius: 14px; padding: 18px 22px;">
           <p style="margin: 0 0 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #8A6F88;">— Need Help?</p>
-          <p style="margin: 0; font-size: 13px; color: #6B6B6B;">Reply to this email or WhatsApp us at <strong style="color: #2D2D2D;">+234 814 830 3684</strong>. We'll get back to you within a few hours.</p>
+          <p style="margin: 0; font-size: 13px; color: #6B6B6B;">Reply to this email or WhatsApp us at <strong style="color: #2D2D2D;">+234 812 973 9806</strong>. We'll get back to you within a few hours.</p>
         </div>
       </td>
     </tr>

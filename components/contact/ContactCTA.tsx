@@ -35,15 +35,15 @@ export function ContactCTA(): React.ReactElement {
     {
       icon: Phone,
       title: "Call us",
-      description: "+234 814 830 3684",
-      href: "tel:+2348148303684",
+      description: "+234 812 973 9806",
+      href: "tel:+2348129739806",
       color: "sage" as const,
     },
     {
       icon: WhatsApp,
       title: "WhatsApp",
       description: "Get instant answers",
-      href: "https://wa.me/2348148303684?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20services",
+      href: "https://wa.me/2348129739806?text=Hi!%20I%27d%20like%20to%20know%20more%20about%20your%20services",
       color: "deep" as const,
     },
   ];

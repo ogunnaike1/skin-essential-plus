@@ -26,9 +26,9 @@ export const SITE = {
   description:
     "Premium skincare, spa therapy, and beauty rituals crafted for the modern connoisseur.",
   email: "skinessentialsp@gmail.com",
-  phone: "+234 814 830 3684",
+  phone: "+234 812 973 9806",
   address: "No 2, Alaafia Avenue, Opposite IDC Primary School, Akobo, Ibadan",
-  hours: "Mon–Sat · 10:00 AM – 8:00 PM",
+  hours: "Mon–Sat · 10:00 AM – 6:00 PM",
 } as const;
 
 export const NAV_LINKS: readonly NavLink[] = [
@@ -162,7 +162,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
   {
     id: 1,
     name: "Adaeze O.",
-    role: "Lagos Island",
+    role: "Ibadan",
     quote:
       "I came in for a facial and honestly didn't expect much — I'd been disappointed before. But the therapist took time to actually assess my skin before touching anything. Three sessions in and my hyperpigmentation has visibly faded. I'm a regular now.",
     rating: 5,
@@ -178,7 +178,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
   {
     id: 3,
     name: "Chisom E.",
-    role: "Victoria Island",
+    role: "Akobo, Ibadan",
     quote:
       "The massage alone is worth the trip. I have a desk job and carry tension in my shoulders — after 60 minutes I felt like a different person. The therapists here actually know what they're doing.",
     rating: 5,
@@ -194,7 +194,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
   {
     id: 5,
     name: "Nneka F.",
-    role: "Ajah",
+    role: "Bodija, Ibadan",
     quote:
       "Tried the microblading after seeing their work on Instagram — it's even better in person. My brows are finally symmetrical and I wake up looking put-together. The aftercare advice was thorough too.",
     rating: 5,

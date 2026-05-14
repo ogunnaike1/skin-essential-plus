@@ -14,13 +14,13 @@ export function LocationMap(): React.ReactElement {
     {
       icon: Clock,
       label: "Hours",
-      value: "Monday – Saturday\n10:00 AM – 8:00 PM\nSunday: Closed",
+      value: "Monday – Saturday\n10:00 AM – 6:00 PM\nSunday: Closed",
       color: "sage" as const,
     },
     {
       icon: Phone,
       label: "Reception",
-      value: "+234 814 830 3684\nskinessentialsp@gmail.com",
+      value: "+234 812 973 9806\nskinessentialsp@gmail.com",
       color: "deep" as const,
     },
   ];

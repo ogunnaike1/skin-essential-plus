@@ -145,15 +145,15 @@ export function ServicesCTA(): React.ReactElement {
                   className="mt-10 pt-8 border-t border-ivory/15 flex flex-wrap items-center gap-x-8 gap-y-3"
                 >
                   <a
-                    href="tel:+2348148303684"
+                    href="tel:+2348129739806"
                     className="group inline-flex items-center gap-2 text-sm font-light text-ivory hover:text-ivory transition-colors"
                   >
                     <Phone className="h-3.5 w-3.5 text-mauve" strokeWidth={1.5} />
-                    <span>+234 814 830 3684</span>
+                    <span>+234 812 973 9806</span>
                   </a>
                   <span className="h-3 w-px bg-ivory/20" aria-hidden />
                   <span className="text-xs font-light text-ivory/90 uppercase tracking-[0.2em]">
-                    Mon–Sat · 10AM – 8PM
+                    Mon–Sat · 10AM – 6PM
                   </span>
                 </motion.div>
               </div>

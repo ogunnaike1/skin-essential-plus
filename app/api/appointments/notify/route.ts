@@ -131,7 +131,7 @@ function emailWrapper(content: string) {
 ${accentBar()}
 ${content}
 <tr><td style="padding:20px 36px;background:#F5F3F1;text-align:center;border-top:1px solid #E8E4E0;">
-  <p style="margin:0 0 4px;font-size:11px;color:#8A6F88;">Questions? Reply to this email or WhatsApp us at <strong>+234 814 830 3684</strong>.</p>
+  <p style="margin:0 0 4px;font-size:11px;color:#8A6F88;">Questions? Reply to this email or WhatsApp us at <strong>+234 812 973 9806</strong>.</p>
   <p style="margin:0;font-size:11px;color:#aaa;">© ${new Date().getFullYear()} ${BRAND_NAME}. All rights reserved.</p>
 </td></tr>
 </table></body></html>`;
@@ -185,7 +185,7 @@ function locationCard() {
     <p style="margin:0 0 10px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A6F88;">— Find Us</p>
     <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#2D2D2D;">No 2, Alaafia Avenue</p>
     <p style="margin:0 0 10px;font-size:13px;color:#6B6B6B;">Opposite IDC Primary School, Akobo, Ibadan</p>
-    <p style="margin:0;font-size:13px;color:#6B6B6B;">📞 +234 814 830 3684 &nbsp;·&nbsp; Mon–Sat · 9:00 AM – 8:00 PM</p>
+    <p style="margin:0;font-size:13px;color:#6B6B6B;">📞 +234 812 973 9806 &nbsp;·&nbsp; Mon–Sat · 10:00 AM – 6:00 PM</p>
   </div>
 </td></tr>`;
 }

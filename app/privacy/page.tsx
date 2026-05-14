@@ -59,7 +59,7 @@ export default function PrivacyPage(): React.ReactElement {
               <a href="mailto:skinessentialsp@gmail.com" className="text-mauve hover:underline">
                 skinessentialsp@gmail.com
               </a>{" "}
-              or call <a href="tel:+2348148303684" className="text-mauve hover:underline">+234 814 830 3684</a>.
+              or call <a href="tel:+2348129739806" className="text-mauve hover:underline">+234 812 973 9806</a>.
             </p>
           </section>
         </div>

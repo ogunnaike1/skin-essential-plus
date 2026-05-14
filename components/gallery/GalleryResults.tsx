@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 const STATS = [
   { value: "500+", label: "Clients Transformed" },
@@ -69,6 +70,51 @@ export function GalleryResults() {
                 {stat.label}
               </span>
             </div>
+          ))}
+        </motion.div>
+
+        {/* Before & After image grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        >
+          {[
+            {
+              src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795958/beforeandafter1_qyjabc.jpg',
+              alt: 'Skin transformation result',
+              label: 'Before & After',
+              accent: 'bg-mauve/80',
+            },
+            {
+              src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795957/beforeandafter_xbmack.jpg',
+              alt: 'Skin transformation result',
+              label: 'Visible Transformation',
+              accent: 'bg-sage/80',
+            },
+          ].map((img, i) => (
+            <motion.div
+              key={img.src}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.3 + i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+            >
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                sizes="(max-width: 640px) 100vw, 50vw"
+                className="object-cover transition-transform duration-700 hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <div className={`absolute bottom-4 left-4 px-3 py-1.5 rounded-full ${img.accent} backdrop-blur-sm`}>
+                <span className="text-xs uppercase tracking-wider text-ivory font-medium">{img.label}</span>
+              </div>
+            </motion.div>
           ))}
         </motion.div>
 

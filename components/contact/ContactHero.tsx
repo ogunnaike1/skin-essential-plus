@@ -8,8 +8,8 @@ export function ContactHero(): React.ReactElement {
     {
       icon: Phone,
       label: "Phone",
-      value: "+234 814 830 3684",
-      href: "tel:+2348148303684",
+      value: "+234 812 973 9806",
+      href: "tel:+2348129739806",
       color: "mauve" as const,
     },
     {
@@ -38,7 +38,7 @@ export function ContactHero(): React.ReactElement {
     {
       icon: Clock,
       label: "Hours",
-      value: "Mon–Sat · 10am – 8pm",
+      value: "Mon–Sat · 10am – 6pm",
       color: "mauve" as const,
     },
   ];
