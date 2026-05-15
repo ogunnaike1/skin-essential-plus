@@ -12,13 +12,15 @@ import { ShopCTA } from "@/components/sections/ShopCTA";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { FounderLetter } from "@/components/about/FounderLetter";
+import { EidBanner } from "@/components/shared/EidBanner";
 
 export default function HomePage(): React.ReactElement {
   return (
     <>
-      
+
       <main>
         <HeroCarousel />
+        <EidBanner variant="homepage" />
         <Services />
         <ShopCTA />
         <WhyChooseUs />
