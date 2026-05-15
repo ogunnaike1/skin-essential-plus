@@ -110,10 +110,12 @@ export function EidHeroCard() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 40, scale: 0.95 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="hidden lg:block absolute right-10 xl:right-16 top-28 z-20 w-64 xl:w-72"
+      className="absolute z-20
+        left-4 right-4 bottom-[5.5rem]
+        lg:left-auto lg:right-10 xl:right-16 lg:bottom-auto lg:top-28 lg:w-64 xl:w-72"
     >
       <div
         className="relative rounded-3xl overflow-hidden border p-6"
@@ -148,74 +150,68 @@ export function EidHeroCard() {
           </motion.div>
         ))}
 
-        {/* Badge */}
-        <div className="relative flex items-center gap-2 mb-4">
-          <motion.div
-            animate={{ rotate: [0, 10, 0, -10, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Moon className="h-5 w-5 text-amber-300 fill-amber-300/40" />
-          </motion.div>
-          <span
-            className="text-[9px] uppercase tracking-[0.2em] font-bold px-2.5 py-1 rounded-full"
-            style={{
-              background: "rgba(212,175,55,0.15)",
-              border: "1px solid rgba(212,175,55,0.35)",
-              color: "#D4AF37",
-            }}
-          >
-            Ileya Sale
-          </span>
-        </div>
+        {/* Mobile: horizontal layout | Desktop: vertical layout */}
+        <div className="relative flex flex-row lg:flex-col items-center lg:items-stretch gap-4 lg:gap-0">
 
-        {/* Heading */}
-        <div className="relative mb-4">
-          <p className="font-display text-2xl xl:text-3xl font-light text-ivory leading-tight">
-            Eid-ul-Adha
-          </p>
-          <p className="font-display text-2xl xl:text-3xl font-light italic text-amber-300 leading-tight">
-            Mubarak 🌙
-          </p>
-          <p className="mt-2 text-xs text-ivory/60 font-light leading-relaxed">
-            Exclusive discounts across all our treatments — celebrate in style.
-          </p>
-        </div>
-
-        {/* Countdown */}
-        <div
-          className="relative rounded-2xl p-3 mb-4"
-          style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)" }}
-        >
-          <p className="text-[9px] uppercase tracking-[0.18em] text-ivory/40 mb-2 text-center">
-            Offer ends in
-          </p>
-          <div className="flex items-center justify-center gap-2">
-            {[
-              { value: time.days, label: "Days" },
-              { value: time.hours, label: "Hrs" },
-              { value: time.mins, label: "Min" },
-            ].map(({ value, label }, i) => (
-              <div key={label} className="flex items-center gap-2">
-                <div className="flex flex-col items-center">
-                  <span className="font-display text-2xl font-light text-amber-300 tabular-nums leading-none">
-                    {String(value).padStart(2, "0")}
-                  </span>
-                  <span className="text-[8px] uppercase tracking-[0.15em] text-ivory/35 mt-0.5">
-                    {label}
-                  </span>
-                </div>
-                {i < 2 && (
-                  <span className="text-amber-300/40 text-lg font-light mb-3">:</span>
-                )}
-              </div>
-            ))}
+          {/* Left on mobile / Top on desktop — moon + heading */}
+          <div className="flex items-center gap-2 lg:block lg:mb-4">
+            <motion.div
+              animate={{ rotate: [0, 10, 0, -10, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="shrink-0"
+            >
+              <Moon className="h-5 w-5 text-amber-300 fill-amber-300/40" />
+            </motion.div>
+            <div>
+              <p className="font-display text-base lg:text-2xl xl:text-3xl font-light text-ivory leading-tight">
+                Eid-ul-Adha
+              </p>
+              <p className="font-display text-base lg:text-2xl xl:text-3xl font-light italic text-amber-300 leading-tight">
+                Mubarak 🌙
+              </p>
+              <p className="hidden lg:block mt-2 text-xs text-ivory/60 font-light leading-relaxed">
+                Exclusive discounts across all our treatments — celebrate in style.
+              </p>
+            </div>
           </div>
+
+          {/* Right on mobile / Middle on desktop — countdown */}
+          <div
+            className="relative rounded-2xl p-2.5 lg:p-3 lg:mb-4 shrink-0"
+            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)" }}
+          >
+            <p className="text-[8px] uppercase tracking-[0.18em] text-ivory/40 mb-1.5 text-center">
+              Ends in
+            </p>
+            <div className="flex items-center justify-center gap-1.5">
+              {[
+                { value: time.days, label: "d" },
+                { value: time.hours, label: "h" },
+                { value: time.mins, label: "m" },
+              ].map(({ value, label }, i) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <div className="flex flex-col items-center">
+                    <span className="font-display text-xl lg:text-2xl font-light text-amber-300 tabular-nums leading-none">
+                      {String(value).padStart(2, "0")}
+                    </span>
+                    <span className="text-[7px] uppercase tracking-[0.15em] text-ivory/35 mt-0.5">
+                      {label}
+                    </span>
+                  </div>
+                  {i < 2 && (
+                    <span className="text-amber-300/40 text-base font-light mb-2">:</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
 
-        {/* CTA */}
+        {/* CTA — full width, desktop only stacked, mobile inline below */}
         <Link
           href="/services"
-          className="relative block w-full text-center py-2.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:opacity-90 hover:scale-[1.02]"
+          className="relative mt-3 block w-full text-center py-2 lg:py-2.5 rounded-full text-[10px] lg:text-xs font-semibold tracking-widest uppercase transition-all duration-300 hover:opacity-90 hover:scale-[1.02]"
           style={{
             background: "linear-gradient(135deg, #D4AF37, #B8860B)",
             color: "#1B3A2F",
@@ -225,7 +221,7 @@ export function EidHeroCard() {
         </Link>
 
         {/* Valid until */}
-        <p className="relative mt-3 text-center text-[9px] uppercase tracking-[0.15em] text-ivory/30">
+        <p className="relative mt-2 text-center text-[8px] uppercase tracking-[0.15em] text-ivory/30">
           Valid until 26 May 2026
         </p>
       </div>
