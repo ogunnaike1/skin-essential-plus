@@ -13,9 +13,9 @@ export async function GET() {
     const { data, error } = await client
       .from('services')
       .select('*')
-      .order('category', { ascending: true })
+      .eq('is_active', true)
       .order('display_order', { ascending: true })
-      .limit(500);
+      .limit(100);
 
     if (error) {
       console.error('Supabase error:', error);

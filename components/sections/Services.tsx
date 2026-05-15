@@ -1,14 +1,44 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  Droplets,
+  Eye,
+  Flower2,
+  HandMetal,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SERVICES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { HomeService } from "@/lib/supabase/types";
+
+interface DbService {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  image_url: string | null;
+  is_active: boolean;
+  display_order: number;
+}
+
+function resolveIcon(name: string, category: string): LucideIcon {
+  const text = `${name} ${category}`.toLowerCase();
+  if (/massage|body/.test(text)) return HandMetal;
+  if (/spa|therapy|aroma/.test(text)) return Flower2;
+  if (/laser|hair removal|wax/.test(text)) return Zap;
+  if (/lash|brow|microblad|eyelash/.test(text)) return Eye;
+  if (/skincare|full care|regimen/.test(text)) return Droplets;
+  return Sparkles;
+}
 
 interface CardPalette {
   cardBg: string;
@@ -286,6 +316,28 @@ function ServiceCard({ service, index }: ServiceCardProps): React.ReactElement {
 }
 
 export function Services(): React.ReactElement {
+  const [displayServices, setDisplayServices] = useState<HomeService[]>([...SERVICES]);
+
+  useEffect(() => {
+    fetch("/api/services")
+      .then((r) => r.json())
+      .then((rows: DbService[]) => {
+        if (!Array.isArray(rows) || rows.length === 0) return;
+        const active = rows.filter((r) => r.is_active);
+        if (active.length === 0) return;
+        setDisplayServices(
+          active.map((svc, i) => ({
+            id: i + 1,
+            title: svc.name,
+            description: svc.description,
+            image: svc.image_url ?? SERVICES[i % SERVICES.length]?.image ?? "",
+            icon: resolveIcon(svc.name, svc.category),
+          }))
+        );
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section
       id="services"
@@ -350,7 +402,7 @@ export function Services(): React.ReactElement {
         </div>
 
         <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 lg:gap-7">
-          {SERVICES.map((service, i) => (
+          {displayServices.map((service, i) => (
             <ServiceCard key={service.id} service={service} index={i} />
           ))}
         </div>
