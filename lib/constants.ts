@@ -143,7 +143,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Microblading and powder brow techniques that frame your face with perfectly defined, natural-looking brows that last.",
     image:
-      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=85&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778854844/semi_eyebrows_frgwhg.avif",
     icon: Brush,
   },
   {
@@ -152,7 +152,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Indulgent foot and nail rituals that restore softness, shape, and polish — from a classic refresh to a full spa pedicure experience.",
     image:
-      "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=85&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778854844/pedicure_treatment_a7eyt1.avif",
     icon: Footprints,
   },
   {
@@ -161,7 +161,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Safe, effective laser tattoo removal that fades unwanted ink with precision, leaving your skin clear and refreshed.",
     image:
-      "https://images.unsplash.com/photo-1559599189-fe84dea4eb79?w=800&q=85&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/v1778854844/tatoo_removal_ljuzge.avif",
     icon: Zap,
   },
 ] as const;
