@@ -1,4 +1,5 @@
 import {
+  Activity,
   Brush,
   Droplets,
   Eye,
@@ -148,6 +149,13 @@ export const SERVICE_CATEGORIES: readonly ServiceCategory[] = [
     tagline: "Architectural artistry",
     icon: Eye,
     color: "mauve",
+  },
+  {
+    id: "lipolysis",
+    name: "Lipolysis",
+    tagline: "Dissolve and define",
+    icon: Activity,
+    color: "deep",
   },
   {
     id: "massage",

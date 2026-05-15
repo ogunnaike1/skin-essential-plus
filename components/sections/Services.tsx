@@ -32,6 +32,7 @@ interface DbService {
 
 function resolveIcon(name: string, category: string): LucideIcon {
   const text = `${name} ${category}`.toLowerCase();
+  if (/lipolysis/.test(text)) return Zap;
   if (/massage|body/.test(text)) return HandMetal;
   if (/spa|therapy|aroma/.test(text)) return Flower2;
   if (/laser|hair removal|wax/.test(text)) return Zap;

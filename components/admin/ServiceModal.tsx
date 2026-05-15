@@ -30,6 +30,7 @@ const SERVICE_CATEGORIES = [
   "Skin Treatment",
   "Massage",
   "Lash Extension",
+  "Lipolysis",
   "Semi Permanent Brows",
   "Facial Treatment",
   "Skin IV Drips",
