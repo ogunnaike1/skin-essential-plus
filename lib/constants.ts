@@ -7,6 +7,9 @@ import {
   Leaf,
   Award,
   HeartHandshake,
+  Brush,
+  Footprints,
+  Zap,
 } from "lucide-react";
 
 // Try explicit import path instead of alias
@@ -124,6 +127,42 @@ export const SERVICES: readonly HomeService[] = [
     image:
       "https://res.cloudinary.com/dhmqhless/image/upload/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
     icon: Droplets,
+  },
+  {
+    id: 5,
+    title: "Advanced Facial",
+    description:
+      "Clinically-led facial protocols — from mesotherapy to PRP — engineered to transform dull, tired skin into a luminous, youthful complexion.",
+    image:
+      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=85&auto=format&fit=crop",
+    icon: Sparkles,
+  },
+  {
+    id: 6,
+    title: "Semi Permanent Brows",
+    description:
+      "Microblading and powder brow techniques that frame your face with perfectly defined, natural-looking brows that last.",
+    image:
+      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=85&auto=format&fit=crop",
+    icon: Brush,
+  },
+  {
+    id: 7,
+    title: "Pedicure Treatment",
+    description:
+      "Indulgent foot and nail rituals that restore softness, shape, and polish — from a classic refresh to a full spa pedicure experience.",
+    image:
+      "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=85&auto=format&fit=crop",
+    icon: Footprints,
+  },
+  {
+    id: 8,
+    title: "Tattoo Removal",
+    description:
+      "Safe, effective laser tattoo removal that fades unwanted ink with precision, leaving your skin clear and refreshed.",
+    image:
+      "https://images.unsplash.com/photo-1559599189-fe84dea4eb79?w=800&q=85&auto=format&fit=crop",
+    icon: Zap,
   },
 ] as const;
 
