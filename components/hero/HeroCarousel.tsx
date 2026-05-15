@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
+import { EidHeroCard } from "@/components/shared/EidBanner";
 import { HERO_SLIDES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -355,6 +356,9 @@ export function HeroCarousel(): React.ReactElement {
             </AnimatePresence>
           </div>
         </div>
+
+        {/* EID PROMO CARD — right side overlay */}
+        <EidHeroCard />
 
         {/* BOTTOM BAR — progress indicators + nav controls */}
         <div className="absolute bottom-0 inset-x-0 z-20 px-6 sm:px-12 md:pl-28 lg:pl-36 xl:pl-44 lg:pr-16 pb-8">

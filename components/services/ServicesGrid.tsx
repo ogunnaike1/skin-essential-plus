@@ -14,6 +14,7 @@ import { CategoryNav } from "@/components/services/CategoryNav";
 import { EmployeeModal } from "@/components/services/EmployeeModal";
 import { ServiceCard } from "./ServicesCard";
 import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
+import { EidPromoStrip } from "@/components/shared/EidBanner";
 import { SERVICE_CATEGORIES } from "@/lib/services-data";
 import { cn } from "@/lib/utils";
 import type { ServiceItem } from "@/types";
@@ -289,6 +290,9 @@ export function ServicesGrid(): React.ReactElement {
                 </motion.p>
               )}
             </motion.div>
+
+            {/* Eid promo strip */}
+            <EidPromoStrip />
           </motion.div>
         </div>
 

@@ -20,7 +20,6 @@ export default function HomePage(): React.ReactElement {
 
       <main>
         <HeroCarousel />
-        <EidBanner variant="homepage" />
         <Services />
         <ShopCTA />
         <WhyChooseUs />
