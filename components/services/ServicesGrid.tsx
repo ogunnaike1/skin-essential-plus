@@ -438,7 +438,7 @@ export function ServicesGrid(): React.ReactElement {
                   const items = servicesByCategory.get(cat.id) ?? [];
                   if (!items.length) return null;
 
-                  const isExpanded = expandedCategories.has(cat.id);
+                  const isExpanded = !!search || expandedCategories.has(cat.id);
                   const Icon = cat.icon;
 
                   const accentBg: Record<typeof cat.color, string> = {

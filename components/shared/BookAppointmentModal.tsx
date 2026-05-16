@@ -488,7 +488,7 @@ export default function BookAppointmentModal({
                     {categories.map((cat) => {
                       const catServices = servicesByCategory.get(cat.id) || [];
                       if (search && catServices.length === 0) return null;
-                      const isExpanded = expandedCategories.has(cat.id);
+                      const isExpanded = !!search || expandedCategories.has(cat.id);
                       return (
                         <div key={cat.id} className="border-2 border-deep/10 rounded-2xl overflow-hidden">
                           <button onClick={() => toggleCategory(cat.id)} className="w-full flex items-center justify-between p-4 hover:bg-mauve-tint transition-colors">
