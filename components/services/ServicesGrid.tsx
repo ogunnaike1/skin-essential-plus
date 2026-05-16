@@ -118,7 +118,8 @@ export function ServicesGrid(): React.ReactElement {
 
     return services.filter((s) => {
       if (q) {
-        const hay = `${s.name} ${s.description} ${s.tag} ${s.location}`.toLowerCase();
+        const cat = SERVICE_CATEGORIES.find((c) => c.id === s.categoryId);
+        const hay = `${s.name} ${s.description} ${s.tag} ${s.location} ${cat?.name ?? ""} ${cat?.tagline ?? ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       if (s.price < priceR.min || s.price > priceR.max) return false;
