@@ -149,8 +149,15 @@ export function ServiceModal({ isOpen, onClose, onSuccess, editService }: Servic
         }
       }
 
+      const slug = formData.name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-');
+
       const serviceData = {
         ...formData,
+        slug,
         image_url: imageUrl || null,
         original_price: formData.original_price === "" ? null : Number(formData.original_price),
       };

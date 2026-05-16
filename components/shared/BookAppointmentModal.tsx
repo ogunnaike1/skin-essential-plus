@@ -515,7 +515,10 @@ export default function BookAppointmentModal({
                                     <h4 className="font-medium text-deep group-hover:text-sage transition-colors">{service.name}</h4>
                                     <p className="text-xs text-deep/60 line-clamp-1">{service.description}</p>
                                     <div className="flex items-center gap-3 mt-1">
-                                      <span className="text-sm font-medium text-mauve">₦{service.price.toLocaleString()}</span>
+                                      <span className="text-sm font-semibold text-mauve">₦{service.price.toLocaleString()}</span>
+                                      {service.original_price && service.original_price > service.price && (
+                                        <span className="text-xs text-deep/40 line-through">₦{service.original_price.toLocaleString()}</span>
+                                      )}
                                       <span className="text-xs text-deep/40">{getServiceDuration(service)} min</span>
                                     </div>
                                   </div>
@@ -555,6 +558,9 @@ export default function BookAppointmentModal({
                     </div>
                     <div className="text-right shrink-0">
                       <p className="font-display text-lg text-sage">₦{selectedService.price.toLocaleString()}</p>
+                      {selectedService.original_price && selectedService.original_price > selectedService.price && (
+                        <p className="text-xs text-deep/40 line-through">₦{selectedService.original_price.toLocaleString()}</p>
+                      )}
                       <p className="text-[10px] text-deep/40">{getServiceDuration(selectedService)} min</p>
                     </div>
                   </div>
@@ -746,7 +752,12 @@ export default function BookAppointmentModal({
                       <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Booking total</p>
                       <p className="font-display text-lg text-deep">{selectedService.name}</p>
                     </div>
-                    <p className="font-display text-2xl text-deep">₦{selectedService.price.toLocaleString()}</p>
+                    <div className="text-right">
+                      <p className="font-display text-2xl text-deep">₦{selectedService.price.toLocaleString()}</p>
+                      {selectedService.original_price && selectedService.original_price > selectedService.price && (
+                        <p className="text-xs text-deep/40 line-through">₦{selectedService.original_price.toLocaleString()}</p>
+                      )}
+                    </div>
                   </div>
 
                   <p className="text-sm text-deep/50 font-light mb-5">Choose your preferred payment provider.</p>
@@ -817,7 +828,12 @@ export default function BookAppointmentModal({
                     ))}
                     <div className="flex items-center justify-between pt-3 border-t border-mauve/20">
                       <span className="text-sm text-deep font-light">Total</span>
-                      <span className="font-display text-2xl text-mauve">₦{selectedService.price.toLocaleString()}</span>
+                      <div className="text-right">
+                        <span className="font-display text-2xl text-mauve">₦{selectedService.price.toLocaleString()}</span>
+                        {selectedService.original_price && selectedService.original_price > selectedService.price && (
+                          <p className="text-xs text-deep/40 line-through">₦{selectedService.original_price.toLocaleString()}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
 

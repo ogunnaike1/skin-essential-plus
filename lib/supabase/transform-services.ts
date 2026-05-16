@@ -24,6 +24,7 @@ export function transformServiceToItem(service: Service): ServiceItem {
     'Body Waxing': 'body-waxing',
     'Teeth Whitening': 'teeth-whitening',
     'Laser Hair Removal': 'laser-hair-removal',
+    'Lipolysis': 'lipolysis',
   };
 
   const categoryId = categoryMap[service.category] || service.category.toLowerCase().replace(/\s+/g, '-');

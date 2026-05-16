@@ -10,7 +10,7 @@ function getClient() {
 }
 
 const ALLOWED_SERVICE_FIELDS = new Set([
-  "name", "category", "description", "price", "original_price",
+  "name", "slug", "category", "description", "price", "original_price",
   "duration", "image_url", "is_active", "display_order",
 ]);
 
