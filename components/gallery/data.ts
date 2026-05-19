@@ -12,7 +12,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   // Treatments
   {
     id: 'g-01',
-    src: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1200&q=75&auto=format&fit=crop',
     alt: 'Facial treatment session',
     category: 'treatments',
     title: 'Signature Facial',
@@ -21,7 +21,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-02',
-    src: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&q=75&auto=format&fit=crop',
     alt: 'Microneedling treatment',
     category: 'treatments',
     title: 'Microneedling Session',
@@ -30,7 +30,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-03',
-    src: 'https://images.unsplash.com/photo-1559599238-2c0925a575dd?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1559599238-2c0925a575dd?w=1200&q=75&auto=format&fit=crop',
     alt: 'LED light therapy',
     category: 'treatments',
     title: 'LED Light Therapy',
@@ -39,7 +39,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-04',
-    src: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1200&q=75&auto=format&fit=crop',
     alt: 'Gua sha massage',
     category: 'treatments',
     title: 'Gua Sha Sculpting',
@@ -50,7 +50,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   // Products
   {
     id: 'g-05',
-    src: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=75&auto=format&fit=crop',
     alt: 'Serum collection',
     category: 'products',
     title: 'The Serum Collection',
@@ -59,7 +59,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-06',
-    src: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=1200&q=75&auto=format&fit=crop',
     alt: 'Vitamin C serum',
     category: 'products',
     title: 'Radiance Vitamin C',
@@ -68,7 +68,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-07',
-    src: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=1200&q=75&auto=format&fit=crop',
     alt: 'Skincare flatlay',
     category: 'products',
     title: 'Daily Ritual',
@@ -77,7 +77,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-08',
-    src: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=1200&q=75&auto=format&fit=crop',
     alt: 'Moisturizer texture',
     category: 'products',
     title: 'Velvet Day Cream',
@@ -88,7 +88,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   // Ambiance
   {
     id: 'g-09',
-    src: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1200&q=75&auto=format&fit=crop',
     alt: 'Treatment room',
     category: 'ambiance',
     title: 'Serenity Suite',
@@ -97,7 +97,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-10',
-    src: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=1200&q=75&auto=format&fit=crop',
     alt: 'Reception area',
     category: 'ambiance',
     title: 'Reception Lounge',
@@ -106,7 +106,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-11',
-    src: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=1200&q=75&auto=format&fit=crop',
     alt: 'Spa products display',
     category: 'ambiance',
     title: 'Product Sanctuary',
@@ -115,7 +115,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-12',
-    src: 'https://images.unsplash.com/photo-1610558751610-0db914e3e2e5?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1610558751610-0db914e3e2e5?w=1200&q=75&auto=format&fit=crop',
     alt: 'Relaxation area',
     category: 'ambiance',
     title: 'Quiet Lounge',
@@ -126,7 +126,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   // Results
   {
     id: 'g-r1',
-    src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795958/beforeandafter1_qyjabc.jpg',
+    src: 'https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778795958/beforeandafter1_qyjabc.jpg',
     alt: 'Skin transformation result',
     category: 'results',
     title: 'Before & After',
@@ -135,7 +135,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-r2',
-    src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795957/beforeandafter_xbmack.jpg',
+    src: 'https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778795957/beforeandafter_xbmack.jpg',
     alt: 'Skin transformation result',
     category: 'results',
     title: 'Visible Transformation',
@@ -144,7 +144,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-13',
-    src: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1200&q=75&auto=format&fit=crop',
     alt: 'Glowing skin close-up',
     category: 'results',
     title: 'Radiant Glow',
@@ -153,7 +153,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-14',
-    src: 'https://images.unsplash.com/photo-1602192509154-0b900ee1f851?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1602192509154-0b900ee1f851?w=1200&q=75&auto=format&fit=crop',
     alt: 'Clear skin transformation',
     category: 'results',
     title: 'Clear & Balanced',
@@ -162,7 +162,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-15',
-    src: 'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1200&q=75&auto=format&fit=crop',
     alt: 'Hydrated skin',
     category: 'results',
     title: 'Deep Hydration',
@@ -171,7 +171,7 @@ export const GALLERY_IMAGES: GalleryImage[] = [
   },
   {
     id: 'g-16',
-    src: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=90&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=75&auto=format&fit=crop',
     alt: 'Smooth skin texture',
     category: 'results',
     title: 'Refined Texture',

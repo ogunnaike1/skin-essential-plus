@@ -566,6 +566,9 @@ function AppointmentRow({
             <Clock className="h-3 w-3" strokeWidth={1.5} />
             {formatTime(apt.start_time)}
           </span>
+          <span className="flex items-center gap-1 text-deep/30">
+            Booked {new Date(apt.created_at).toLocaleString('en-NG', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true })}
+          </span>
         </div>
       </button>
 
@@ -670,6 +673,15 @@ function DetailModal({
                 <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Amount</p>
                 <p className="font-display text-2xl font-light text-mauve">{formatShopPrice(apt.service_price || 0)}</p>
               </div>
+              <div className="col-span-2 pt-3 border-t border-deep/6">
+                <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Booked On</p>
+                <p className="text-sm font-medium text-deep">
+                  {new Date(apt.created_at).toLocaleString('en-NG', {
+                    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+                    hour: 'numeric', minute: '2-digit', hour12: true,
+                  })}
+                </p>
+              </div>
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-2">Current Status</p>
                 <div className="flex flex-wrap gap-1.5">
@@ -755,13 +767,12 @@ function DetailModal({
             </div>
           </div>
 
-          {/* Timestamps */}
-          <div className="text-[11px] text-deep/25 space-y-0.5 pb-1">
-            <p>Created: {new Date(apt.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
-            {apt.updated_at !== apt.created_at && (
-              <p>Updated: {new Date(apt.updated_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
-            )}
-          </div>
+          {/* Last updated */}
+          {apt.updated_at !== apt.created_at && (
+            <p className="text-[11px] text-deep/25 pb-1">
+              Last updated: {new Date(apt.updated_at).toLocaleString('en-NG', { dateStyle: 'medium', timeStyle: 'short' })}
+            </p>
+          )}
         </div>
 
         {updating && (

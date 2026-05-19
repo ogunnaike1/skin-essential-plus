@@ -7,6 +7,12 @@ import {
   Sparkles, Search, ChevronDown,
   Loader2, AlertCircle, Lock,
 } from "lucide-react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { z } from "zod";
+import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
+import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
+import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
 interface TimeSlot {
   start: string;
@@ -19,12 +25,6 @@ interface TimeSlot {
 }
 
 type SlotStatus = "idle" | "loading" | "loaded" | "closed" | "error";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { z } from "zod";
-import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
-import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
-import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
 const today = new Date().toISOString().split("T")[0]!;
 

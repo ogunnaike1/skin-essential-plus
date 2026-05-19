@@ -9,10 +9,10 @@ import {
   MapPin,
   Sparkles,
   Star,
-  Users,
 } from "lucide-react";
 import Image from "next/image";
 
+import { useServiceCart } from "@/app/contexts/ServiceCartContext";
 import { formatDuration, formatPrice } from "@/lib/services-data";
 import { cn } from "@/lib/utils";
 import type { ServiceItem } from "@/types";
@@ -23,8 +23,6 @@ interface ServiceCardProps {
   accentColor: "mauve" | "sage" | "deep" | "mixed";
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
-  onViewEmployees: (service: ServiceItem) => void;
-  onBook: (service: ServiceItem) => void;
 }
 
 export function ServiceCard({
@@ -33,9 +31,9 @@ export function ServiceCard({
   accentColor,
   isFavorite,
   onToggleFavorite,
-  onViewEmployees,
-  onBook,
 }: ServiceCardProps): React.ReactElement {
+  const { addService, hasService } = useServiceCart();
+  const isInCart = hasService(service.id);
   const isFullyBooked = service.slotsAvailable === 0;
   const isLowAvailability =
     service.slotsAvailable > 0 && service.slotsAvailable <= 1;
@@ -205,7 +203,7 @@ export function ServiceCard({
           </span>
           <span className="text-deep/20">·</span>
           <span className="inline-flex items-center gap-1">
-            <Users className="h-3 w-3 text-deep" strokeWidth={1.5} />
+            <CalendarCheck className="h-3 w-3 text-deep" strokeWidth={1.5} />
             <span className="font-light tabular-nums">
               {service.slotsAvailable}/{service.slotsTotal}
             </span>
@@ -240,28 +238,22 @@ export function ServiceCard({
         )}
 
         {/* CTAs */}
-        <div className="mt-auto flex items-stretch gap-1.5 mb-3">
+        <div className="mt-auto mb-3">
           <button
             type="button"
-            onClick={() => onViewEmployees(service)}
-            className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-2 rounded-full bg-ivory border border-deep/20 text-deep font-sans text-[9px] uppercase tracking-[0.15em] hover:bg-deep hover:text-ivory hover:border-deep transition-colors duration-200 cursor-pointer"
-          >
-            <Users className="h-2.5 w-2.5" strokeWidth={1.5} />
-            <span>Staff</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onBook(service)}
-            disabled={isFullyBooked}
+            onClick={() => !isFullyBooked && !isInCart && addService(service)}
+            disabled={isFullyBooked || isInCart}
             className={cn(
-              "flex-1 inline-flex items-center justify-center gap-1 px-2 py-2 rounded-full font-sans text-[9px] uppercase tracking-[0.15em] transition-colors duration-200 cursor-pointer border",
+              "w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full font-sans text-[9px] uppercase tracking-[0.15em] transition-colors duration-200 border",
               isFullyBooked
                 ? "bg-deep/10 text-deep cursor-not-allowed border-deep/10"
-                : cn(accentBg[accentColor], "text-ivory border-transparent hover:opacity-90")
+                : isInCart
+                  ? "bg-sage text-ivory border-transparent cursor-default"
+                  : cn(accentBg[accentColor], "text-ivory border-transparent hover:opacity-90 cursor-pointer")
             )}
           >
             <CalendarCheck className="h-2.5 w-2.5" strokeWidth={1.75} />
-            <span>{isFullyBooked ? "Waitlist" : "Book"}</span>
+            <span>{isFullyBooked ? "Waitlist" : isInCart ? "Added" : "Add to Bookings"}</span>
           </button>
         </div>
       </div>

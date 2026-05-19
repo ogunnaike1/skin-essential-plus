@@ -51,7 +51,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Precision skin therapies tailored to your unique biology — where advanced science meets timeless beauty rituals.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778028811/skin-essential-plus/homepage/hero/home-page-hero2.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778028811/skin-essential-plus/homepage/hero/home-page-hero2.jpg",
     ctaPrimary: "Book an Appointment",
     ctaSecondary: "Explore Services",
   },
@@ -62,7 +62,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Sanctuary rituals designed to restore equilibrium — a curated escape for the senses and the skin.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig1_ksvzcl.jpg",
     ctaPrimary: "Reserve a Session",
     ctaSecondary: "View Menu",
   },
@@ -73,7 +73,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "Bespoke lash sketching by master artisans — every curve drawn to accentuate your natural geometry.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093837/skin-ig5_qfrkfe.jpg",
     ctaPrimary: "Book Lash Artist",
     ctaSecondary: "See Gallery",
   },
@@ -84,7 +84,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     subtitle:
       "A holistic ecosystem of treatments, products, and guidance — your skin's journey, curated with intention.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
     ctaPrimary: "Start Your Journey",
     ctaSecondary: "Meet Our Experts",
   },
@@ -98,7 +98,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Advanced facials, microneedling, and bespoke therapies calibrated to your skin's unique signature.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092806/skin-ig3_og3xnh.jpg",
     icon: Sparkles,
   },
   {
@@ -107,7 +107,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Immersive body rituals, aromatherapy, and hydrotherapy designed to restore balance and radiance.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig1_ksvzcl.jpg",
     icon: Flower2,
   },
   {
@@ -116,7 +116,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Therapeutic deep-tissue and relaxation massages that melt tension, restore circulation, and leave you completely renewed.",
     image:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=70&auto=format&fit=crop",
     icon: HandMetal,
   },
   {
@@ -125,7 +125,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Comprehensive regimens combining treatments, clinical-grade products, and lifestyle guidance.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
     icon: Droplets,
   },
   {
@@ -134,7 +134,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Clinically-led facial protocols — from mesotherapy to PRP — engineered to transform dull, tired skin into a luminous, youthful complexion.",
     image:
-      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=70&auto=format&fit=crop",
     icon: Sparkles,
   },
   {
@@ -143,7 +143,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Microblading and powder brow techniques that frame your face with perfectly defined, natural-looking brows that last.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778854844/semi_eyebrows_frgwhg.avif",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778854844/semi_eyebrows_frgwhg.avif",
     icon: Brush,
   },
   {
@@ -152,7 +152,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Indulgent foot and nail rituals that restore softness, shape, and polish — from a classic refresh to a full spa pedicure experience.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778854844/pedicure_treatment_a7eyt1.avif",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778854844/pedicure_treatment_a7eyt1.avif",
     icon: Footprints,
   },
   {
@@ -161,7 +161,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Safe, effective laser tattoo removal that fades unwanted ink with precision, leaving your skin clear and refreshed.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778854844/tatoo_removal_ljuzge.avif",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778854844/tatoo_removal_ljuzge.avif",
     icon: Zap,
   },
 ] as const;
@@ -245,41 +245,41 @@ export const BEFORE_AFTER: readonly BeforeAfterItem[] = [
     id: 1,
     label: "12-Week Skin Renewal Program",
     before:
-      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=900&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=70&auto=format&fit=crop",
     after:
-      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=70&auto=format&fit=crop",
   },
 ] as const;
 
 export const SOCIAL_IMAGES: readonly SocialImage[] = [
   {
     id: 1,
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092806/skin-ig3_og3xnh.jpg",
     alt: "Facial treatment",
   },
   {
     id: 2,
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig1_ksvzcl.jpg",
     alt: "Spa therapy",
   },
   {
     id: 3,
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778093141/skin-ig4_ihjvl0.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093141/skin-ig4_ihjvl0.jpg",
     alt: "Lash artistry",
   },
   {
     id: 4,
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig2_w7tvnk.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig2_w7tvnk.jpg",
     alt: "Skincare routine",
   },
   {
     id: 5,
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093837/skin-ig5_qfrkfe.jpg",
     alt: "Skin treatment",
   },
   {
     id: 6,
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778181113/skin-ig6_l62kds.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778181113/skin-ig6_l62kds.jpg",
     alt: "Skincare ritual",
   },
 ] as const;

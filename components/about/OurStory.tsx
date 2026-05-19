@@ -106,7 +106,7 @@ export function OurStory(): React.ReactElement {
             className="lg:col-span-7 relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(71,103,106,0.15)]"
           >
             <Image
-              src="https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg"
+              src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092806/skin-ig3_og3xnh.jpg"
               alt="A treatment ritual in progress"
               fill
               sizes="(max-width: 1024px) 100vw, 60vw"
@@ -124,7 +124,7 @@ export function OurStory(): React.ReactElement {
           >
             <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(71,103,106,0.15)]">
               <Image
-                src="https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg"
+                src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig1_ksvzcl.jpg"
                 alt="Detail of a skincare treatment"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"

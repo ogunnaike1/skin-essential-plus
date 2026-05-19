@@ -32,7 +32,7 @@ const ABOUT_SLIDES: readonly AboutSlide[] = [
     subtitle:
       "We don't sell treatments. We compose rituals — each one a dialogue between clinical precision and contemplative stillness.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093141/skin-ig4_ihjvl0.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093141/skin-ig4_ihjvl0.jpg",
   },
   {
     id: 2,
@@ -46,7 +46,7 @@ const ABOUT_SLIDES: readonly AboutSlide[] = [
     subtitle:
       "Every protocol is grounded in peer-reviewed dermatology and delivered through the patience of ritual. One without the other is incomplete.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig2_w7tvnk.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig2_w7tvnk.jpg",
   },
   {
     id: 3,
@@ -60,7 +60,7 @@ const ABOUT_SLIDES: readonly AboutSlide[] = [
     subtitle:
       "We're not here to manufacture sameness. We're here to help you recognize what was always yours — to reveal rather than remake.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093837/skin-ig5_qfrkfe.jpg",
   },
 ] as const;
 

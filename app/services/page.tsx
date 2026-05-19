@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { ServiceCartProvider } from "@/app/contexts/ServiceCartContext";
 import { ServicesCTA } from "@/components/services/ServicesCTA";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
 
@@ -11,11 +12,11 @@ export const metadata: Metadata = {
 
 export default function ServicesPage(): React.ReactElement {
   return (
-    <>
+    <ServiceCartProvider>
       <main>
         <ServicesGrid />
         <ServicesCTA />
       </main>
-    </>
+    </ServiceCartProvider>
   );
 }

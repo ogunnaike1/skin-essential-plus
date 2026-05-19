@@ -54,7 +54,7 @@ export function ContactHero(): React.ReactElement {
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage:
-            "url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2070')",
+            "url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1920&q=70&auto=format&fit=crop')",
         }}
       />
       <div className="absolute inset-0 bg-deep/50" />

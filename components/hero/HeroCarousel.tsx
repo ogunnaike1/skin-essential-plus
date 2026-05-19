@@ -21,6 +21,9 @@ import { cn } from "@/lib/utils";
 
 const AUTOPLAY_DELAY = 6500;
 
+// Brand-colored blur placeholder shown while hero images load (deep teal = overlay color)
+const HERO_BLUR = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM0NzY3NkEiLz48L3N2Zz4=";
+
 // Helper function to determine link behavior
 function getLinkProps(ctaText: string) {
   const normalizedText = ctaText.toLowerCase();
@@ -162,7 +165,9 @@ export function HeroCarousel(): React.ReactElement {
                     priority={idx === 0}
                     sizes="100vw"
                     className="object-cover"
-                    quality={92}
+                    quality={85}
+                    placeholder="blur"
+                    blurDataURL={HERO_BLUR}
                   />
                 </motion.div>
                 {/* Soft diagonal wash using palette colors */}
@@ -221,7 +226,7 @@ export function HeroCarousel(): React.ReactElement {
             <span className="eyebrow text-ivory/90 text-[10px]">
               Skin Essential Plus
             </span>
-            <span className="eyebrow text-ivory text-[10px]">— est. 2024</span>
+            <span className="eyebrow text-ivory text-[10px]">— est. 4year+</span>
           </div>
         </div>
 

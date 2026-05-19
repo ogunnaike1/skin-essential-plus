@@ -5,32 +5,32 @@ import Image from 'next/image';
 
 const BRAND_IMAGES = [
   {
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092806/skin-ig3_og3xnh.jpg",
     alt: "Skin Essential Plus signature treatment",
     gridClass: "col-span-2 row-span-2",
   },
   {
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig1_ksvzcl.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig1_ksvzcl.jpg",
     alt: "Skincare ritual in progress",
     gridClass: "",
   },
   {
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778093141/skin-ig4_ihjvl0.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093141/skin-ig4_ihjvl0.jpg",
     alt: "Premium treatment detail",
     gridClass: "",
   },
   {
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778092844/skin-ig2_w7tvnk.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig2_w7tvnk.jpg",
     alt: "Treatment close-up",
     gridClass: "",
   },
   {
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778093837/skin-ig5_qfrkfe.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093837/skin-ig5_qfrkfe.jpg",
     alt: "Studio ambiance and care",
     gridClass: "",
   },
   {
-    src: "https://res.cloudinary.com/dhmqhless/image/upload/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
+    src: "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778028814/skin-essential-plus/homepage/hero/home-page-hero4.jpg",
     alt: "Skin Essential Plus experience",
     gridClass: "",
   },

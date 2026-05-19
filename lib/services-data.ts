@@ -33,7 +33,7 @@ export const EMPLOYEES: readonly Employee[] = [
     name: "Ifeoluwa Peters Kanyinsola",
     role: "Lead Clinician",
     avatar:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=70&auto=format&fit=crop",
     rating: 4.9,
     specialties: ["Advanced Facial", "Skin Treatment", "PRP"],
     nextAvailable: "Today, 3:00 PM",
@@ -43,7 +43,7 @@ export const EMPLOYEES: readonly Employee[] = [
     name: "Chiamaka Eze",
     role: "Head of Spa Therapy",
     avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=70&auto=format&fit=crop",
     rating: 4.9,
     specialties: ["Massage", "Body Enhancement", "Pedicure"],
     nextAvailable: "Tomorrow, 10:00 AM",
@@ -53,7 +53,7 @@ export const EMPLOYEES: readonly Employee[] = [
     name: "Fatima Ibrahim",
     role: "Master Lash Artisan",
     avatar:
-      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&q=70&auto=format&fit=crop",
     rating: 5.0,
     specialties: ["Lash Extension", "Semi Permanent Brows"],
     nextAvailable: "Today, 5:30 PM",
@@ -63,7 +63,7 @@ export const EMPLOYEES: readonly Employee[] = [
     name: "Adaeze Okonkwo",
     role: "Senior Therapist",
     avatar:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=70&auto=format&fit=crop",
     rating: 4.8,
     specialties: ["Waxing", "Skin Treatment", "Teeth Whitening"],
     nextAvailable: "Today, 6:00 PM",
@@ -73,7 +73,7 @@ export const EMPLOYEES: readonly Employee[] = [
     name: "Nneka Adeyemi",
     role: "Aesthetician",
     avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=70&auto=format&fit=crop",
     rating: 4.7,
     specialties: ["Facial Treatment", "Tattoo Removal", "IV Drips"],
     nextAvailable: "Tomorrow, 2:00 PM",
@@ -83,7 +83,7 @@ export const EMPLOYEES: readonly Employee[] = [
     name: "Zainab Musa",
     role: "Beauty Therapist",
     avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=70&auto=format&fit=crop",
     rating: 4.8,
     specialties: ["Pedicure", "Waxing", "Lash Extension"],
     nextAvailable: "Today, 4:00 PM",

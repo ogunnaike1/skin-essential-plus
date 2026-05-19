@@ -35,7 +35,7 @@ export const COLLECTIONS: readonly ProductCollection[] = [
     description:
       "Morning to evening — the full regimen designed by our clinicians for daily glow.",
     image:
-      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=1600&q=90&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=1200&q=70&auto=format&fit=crop",
     color: "mauve",
     productCount: 6,
     href: "#daily-ritual",
@@ -47,7 +47,7 @@ export const COLLECTIONS: readonly ProductCollection[] = [
     description:
       "Gua sha, jade rollers, LED masks — the sculpting tools that elevate every ritual.",
     image:
-      "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=1600&q=90&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=1200&q=70&auto=format&fit=crop",
     color: "sage",
     productCount: 8,
     href: "#tools",
@@ -59,7 +59,7 @@ export const COLLECTIONS: readonly ProductCollection[] = [
     description:
       "Thoughtful sets assembled for specific concerns — brightening, calming, age-defying.",
     image:
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1600&q=90&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=70&auto=format&fit=crop",
     color: "deep",
     productCount: 4,
     href: "#bundles",
@@ -78,7 +78,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "cleansers",
     price: 18500,
     image:
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=70&auto=format&fit=crop",
     rating: 4.8,
     reviewCount: 234,
     volume: "200ml",
@@ -97,7 +97,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "cleansers",
     price: 22000,
     image:
-      "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=800&q=70&auto=format&fit=crop",
     rating: 4.7,
     reviewCount: 156,
     volume: "150ml",
@@ -115,7 +115,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "cleansers",
     price: 26000,
     image:
-      "https://images.unsplash.com/photo-1611930021592-a0e2de58d424?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1611930021592-a0e2de58d424?w=800&q=70&auto=format&fit=crop",
     rating: 4.9,
     reviewCount: 189,
     volume: "200ml",
@@ -136,7 +136,7 @@ export const PRODUCTS: readonly Product[] = [
     price: 42000,
     originalPrice: 48000,
     image:
-      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=70&auto=format&fit=crop",
     rating: 4.9,
     reviewCount: 412,
     volume: "30ml",
@@ -155,7 +155,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "serums",
     price: 68000,
     image:
-      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=70&auto=format&fit=crop",
     rating: 5.0,
     reviewCount: 127,
     volume: "30ml",
@@ -174,7 +174,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "serums",
     price: 32000,
     image:
-      "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=800&q=70&auto=format&fit=crop",
     rating: 4.8,
     reviewCount: 298,
     volume: "30ml",
@@ -193,7 +193,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "serums",
     price: 28000,
     image:
-      "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&q=70&auto=format&fit=crop",
     rating: 4.7,
     reviewCount: 210,
     volume: "30ml",
@@ -214,7 +214,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "moisturizers",
     price: 38000,
     image:
-      "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=800&q=70&auto=format&fit=crop",
     rating: 4.8,
     reviewCount: 345,
     volume: "50ml",
@@ -233,7 +233,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "moisturizers",
     price: 52000,
     image:
-      "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=800&q=70&auto=format&fit=crop",
     rating: 4.9,
     reviewCount: 178,
     volume: "50ml",
@@ -251,7 +251,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "moisturizers",
     price: 29000,
     image:
-      "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=800&q=70&auto=format&fit=crop",
     rating: 4.6,
     reviewCount: 142,
     volume: "50ml",
@@ -272,7 +272,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "masks",
     price: 35000,
     image:
-      "https://images.unsplash.com/photo-1614859275264-4a9dc8a61e58?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1614859275264-4a9dc8a61e58?w=800&q=70&auto=format&fit=crop",
     rating: 4.9,
     reviewCount: 167,
     volume: "100ml",
@@ -291,7 +291,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "masks",
     price: 24000,
     image:
-      "https://images.unsplash.com/photo-1609205343109-c0b2d8b7b6f6?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1609205343109-c0b2d8b7b6f6?w=800&q=70&auto=format&fit=crop",
     rating: 4.7,
     reviewCount: 98,
     volume: "100ml",
@@ -309,7 +309,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "masks",
     price: 26000,
     image:
-      "https://images.unsplash.com/photo-1556228841-a3c527ebefe5?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1556228841-a3c527ebefe5?w=800&q=70&auto=format&fit=crop",
     rating: 4.8,
     reviewCount: 134,
     volume: "100ml",
@@ -329,7 +329,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "tools",
     price: 18000,
     image:
-      "https://images.unsplash.com/photo-1584297091622-af8e5bd80b13?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1584297091622-af8e5bd80b13?w=800&q=70&auto=format&fit=crop",
     rating: 4.8,
     reviewCount: 267,
     volume: "1 tool",
@@ -348,7 +348,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "tools",
     price: 15000,
     image:
-      "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?w=800&q=70&auto=format&fit=crop",
     rating: 4.7,
     reviewCount: 198,
     volume: "1 tool",
@@ -366,7 +366,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "tools",
     price: 165000,
     image:
-      "https://images.unsplash.com/photo-1576426863848-c21f53c60b19?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1576426863848-c21f53c60b19?w=800&q=70&auto=format&fit=crop",
     rating: 4.9,
     reviewCount: 89,
     volume: "1 device",
@@ -388,7 +388,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "bath-body",
     price: 32000,
     image:
-      "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=70&auto=format&fit=crop",
     rating: 4.8,
     reviewCount: 156,
     volume: "150ml",
@@ -406,7 +406,7 @@ export const PRODUCTS: readonly Product[] = [
     category: "bath-body",
     price: 14000,
     image:
-      "https://images.unsplash.com/photo-1584178432428-0f3b9a9e5a2f?w=900&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1584178432428-0f3b9a9e5a2f?w=800&q=70&auto=format&fit=crop",
     rating: 4.6,
     reviewCount: 87,
     volume: "500g",
@@ -430,7 +430,7 @@ export const ROUTINE_BUNDLES: readonly RoutineBundle[] = [
     description:
       "Vitamin C serum + niacinamide + SPF day cream. Visible glow in 4 weeks.",
     image:
-      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=1200&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=1200&q=75&auto=format&fit=crop",
     productIds: ["p-04", "p-07", "p-08"],
     bundlePrice: 89000,
     originalPrice: 108000,
@@ -443,7 +443,7 @@ export const ROUTINE_BUNDLES: readonly RoutineBundle[] = [
     description:
       "Milk cleanser + hydrating drops + honey mask. Soothes, hydrates, and restores.",
     image:
-      "https://images.unsplash.com/photo-1611930021592-a0e2de58d424?w=1200&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1611930021592-a0e2de58d424?w=1200&q=75&auto=format&fit=crop",
     productIds: ["p-03", "p-06", "p-13"],
     bundlePrice: 74000,
     originalPrice: 84000,
@@ -456,7 +456,7 @@ export const ROUTINE_BUNDLES: readonly RoutineBundle[] = [
     description:
       "Retinaldehyde elixir + recovery balm + gold mask. Complete rejuvenation.",
     image:
-      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=1200&q=85&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=1200&q=75&auto=format&fit=crop",
     productIds: ["p-05", "p-09", "p-11"],
     bundlePrice: 140000,
     originalPrice: 155000,

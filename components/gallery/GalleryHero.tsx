@@ -10,7 +10,7 @@ export function GalleryHero() {
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
-          src="https://res.cloudinary.com/dhmqhless/image/upload/v1778092806/skin-ig3_og3xnh.jpg"
+          src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092806/skin-ig3_og3xnh.jpg"
           alt="Skin Essential Plus gallery"
           fill
           className="object-cover"

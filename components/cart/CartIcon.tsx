@@ -5,8 +5,13 @@ import { useCart } from "@/app/contexts/CartContext";
 import { useState } from "react";
 import { CartDrawer } from "./CartDrawer";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-export function CartIcon() {
+interface CartIconProps {
+  variant?: "light" | "dark";
+}
+
+export function CartIcon({ variant = "dark" }: CartIconProps) {
   const { itemCount } = useCart();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -14,10 +19,18 @@ export function CartIcon() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="relative p-2 rounded-full hover:bg-mauve-tint transition-colors"
+        className={cn(
+          "relative p-2 rounded-full transition-colors",
+          variant === "light"
+            ? "hover:bg-ivory/10"
+            : "hover:bg-deep/5"
+        )}
         aria-label="Shopping cart"
       >
-        <ShoppingBag className="h-5 w-5 text-deep" strokeWidth={1.5} />
+        <ShoppingBag
+          className={cn("h-5 w-5", variant === "light" ? "text-ivory" : "text-deep")}
+          strokeWidth={1.5}
+        />
         
         {/* Badge */}
         <AnimatePresence>

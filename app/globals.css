@@ -25,7 +25,7 @@
       radial-gradient(at 8% 12%, rgba(138, 111, 136, 0.18) 0, transparent 45%),
       radial-gradient(at 92% 88%, rgba(79, 114, 136, 0.16) 0, transparent 50%),
       radial-gradient(at 50% 50%, rgba(252, 251, 252, 1) 0, transparent 70%);
-    background-attachment: fixed;
+    background-attachment: scroll;
   }
 
   ::selection {

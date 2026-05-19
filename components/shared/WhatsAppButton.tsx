@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
-const WHATSAPP_NUMBER = "2348148303684";
+const WHATSAPP_NUMBER = "2349039775287";
 const WHATSAPP_MESSAGE = "Hello! I'd like to book an appointment at Skin Essential Plus.";
 
 export function WhatsAppButton() {

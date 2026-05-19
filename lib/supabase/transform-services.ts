@@ -43,7 +43,7 @@ export function transformServiceToItem(service: Service): ServiceItem {
     location: 'Main Studio', // Default location
     rating: 4.8, // Default rating
     reviewCount: 0, // Default review count
-    image: service.image_url || 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80&auto=format&fit=crop',
+    image: service.image_url || 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=70&auto=format&fit=crop',
     employeeIds: [], // No employee mapping yet
     popular: false, // Can be determined by other factors
     isNew: false, // Can be determined by created_at

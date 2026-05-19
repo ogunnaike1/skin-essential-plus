@@ -52,7 +52,7 @@ export function BeforeAfter(): React.ReactElement {
                 {/* Before */}
                 <div className="relative aspect-[3/4] overflow-hidden">
                   <Image
-                    src="https://res.cloudinary.com/dhmqhless/image/upload/v1778613290/before-eye_xnmfcb.jpg"
+                    src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778613290/before-eye_xnmfcb.jpg"
                     alt="Natural lashes — Before"
                     fill
                     sizes="(max-width: 1024px) 50vw, 25vw"
@@ -67,7 +67,7 @@ export function BeforeAfter(): React.ReactElement {
                 {/* After */}
                 <div className="relative aspect-[3/4] overflow-hidden">
                   <Image
-                    src="https://res.cloudinary.com/dhmqhless/image/upload/v1778613290/after-eye_f8azs4.jpg"
+                    src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778613290/after-eye_f8azs4.jpg"
                     alt="Volume lash extensions — After"
                     fill
                     sizes="(max-width: 1024px) 50vw, 25vw"

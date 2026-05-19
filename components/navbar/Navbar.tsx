@@ -11,6 +11,8 @@ import { Logo } from "@/components/ui/Logo";
 import { NAV_LINKS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { CartIcon } from "@/components/cart/CartIcon";
+import { ServiceCartIcon } from "@/components/cart/ServiceCartIcon";
+
 
 export function Navbar(): React.ReactElement {
   const pathname = usePathname();
@@ -142,15 +144,11 @@ export function Navbar(): React.ReactElement {
 
             {/* Right cluster */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Cart Icon - Desktop & Mobile */}
-              <div
-                className={cn(
-                  "transition-colors duration-500",
-                  scrolled ? "text-deep" : "text-ivory"
-                )}
-              >
-                <CartIcon />
-              </div>
+              {/* Bookings cart icon */}
+              <ServiceCartIcon variant={scrolled ? "dark" : "light"} onClick={openBookingModal} />
+
+              {/* Shop cart icon */}
+              <CartIcon variant={scrolled ? "dark" : "light"} />
 
               <span
                 className={cn(

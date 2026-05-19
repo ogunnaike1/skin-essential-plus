@@ -9,6 +9,7 @@ import Script from "next/script";
 import { SITE } from "@/lib/constants";
 import { ConditionalLayout } from "@/components/shared/ConditionalLayout";
 import { CartProvider } from "@/app/contexts/CartContext";
+
 import { RootLayoutClient } from "@/components/layout/RootLayoutClient";
 
 import "./globals.css";
@@ -35,6 +36,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://skinessentialplus.com"
+  ),
   title: {
     default: `${SITE.name} — ${SITE.tagline}`,
     template: `%s · ${SITE.name}`,
@@ -72,6 +76,13 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${playfair.variable} ${manrope.variable}`}
     >
+      <head>
+        {/* Preconnect to image CDNs so DNS is resolved before hero image request */}
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      </head>
       <body className="min-h-screen overflow-x-hidden">
         {/* Suppress hydration warnings from browser extensions */}
         <Script
@@ -94,9 +105,11 @@ export default function RootLayout({
 
         {/* Loading Screen + Cart Provider - Wraps entire app */}
         <RootLayoutClient>
-          <CartProvider>
-            <ConditionalLayout>{children}</ConditionalLayout>
-          </CartProvider>
+       
+            <CartProvider>
+              <ConditionalLayout>{children}</ConditionalLayout>
+            </CartProvider>
+       
         </RootLayoutClient>
       </body>
     </html>

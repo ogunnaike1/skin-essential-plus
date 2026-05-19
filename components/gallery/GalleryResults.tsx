@@ -83,13 +83,13 @@ export function GalleryResults() {
         >
           {[
             {
-              src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795958/beforeandafter1_qyjabc.jpg',
+              src: 'https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778795958/beforeandafter1_qyjabc.jpg',
               alt: 'Skin transformation result',
               label: 'Before & After',
               accent: 'bg-mauve/80',
             },
             {
-              src: 'https://res.cloudinary.com/dhmqhless/image/upload/v1778795957/beforeandafter_xbmack.jpg',
+              src: 'https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778795957/beforeandafter_xbmack.jpg',
               alt: 'Skin transformation result',
               label: 'Visible Transformation',
               accent: 'bg-sage/80',

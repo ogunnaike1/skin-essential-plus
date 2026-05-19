@@ -53,7 +53,6 @@ export function ServicesGrid(): React.ReactElement {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedServiceForBooking, setSelectedServiceForBooking] = useState<Service | null>(null);
-
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [rawServices, setRawServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -400,8 +399,6 @@ export function ServicesGrid(): React.ReactElement {
                               accentColor={cat.color}
                               isFavorite={favorites.has(s.id)}
                               onToggleFavorite={toggleFavorite}
-                              onViewEmployees={setModalService}
-                              onBook={handleBook}
                             />
                           ))}
                         </div>
@@ -526,8 +523,6 @@ export function ServicesGrid(): React.ReactElement {
                                   accentColor={cat.color}
                                   isFavorite={favorites.has(s.id)}
                                   onToggleFavorite={toggleFavorite}
-                                  onViewEmployees={setModalService}
-                                  onBook={handleBook}
                                 />
                               ))}
                             </div>
@@ -560,6 +555,7 @@ export function ServicesGrid(): React.ReactElement {
         }}
         preselectedService={selectedServiceForBooking}
       />
+
     </>
   );
 }
