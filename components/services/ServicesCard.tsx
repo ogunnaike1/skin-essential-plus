@@ -16,6 +16,7 @@ import { useServiceCart } from "@/app/contexts/ServiceCartContext";
 import { formatDuration, formatPrice } from "@/lib/services-data";
 import { cn } from "@/lib/utils";
 import type { ServiceItem } from "@/types";
+import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
 interface ServiceCardProps {
   service: ServiceItem;
@@ -34,6 +35,7 @@ export function ServiceCard({
 }: ServiceCardProps): React.ReactElement {
   const { addService, hasService } = useServiceCart();
   const isInCart = hasService(service.id);
+  const { notification, showSuccess, hideSuccess } = useSuccessNotification();
   const isFullyBooked = service.slotsAvailable === 0;
   const isLowAvailability =
     service.slotsAvailable > 0 && service.slotsAvailable <= 1;
@@ -58,6 +60,7 @@ export function ServiceCard({
   };
 
   return (
+    <>
     <motion.article
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -241,7 +244,15 @@ export function ServiceCard({
         <div className="mt-auto mb-3">
           <button
             type="button"
-            onClick={() => !isFullyBooked && !isInCart && addService(service)}
+            onClick={() => {
+              if (!isFullyBooked && !isInCart) {
+                addService(service);
+                showSuccess("appointment-booked", {
+                  title: "Added to Bookings!",
+                  message: `${service.name} has been added to your bookings cart.`,
+                });
+              }
+            }}
             disabled={isFullyBooked || isInCart}
             className={cn(
               "w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full font-sans text-[9px] uppercase tracking-[0.15em] transition-colors duration-200 border",
@@ -289,5 +300,8 @@ export function ServiceCard({
         </a>
       </div>
     </motion.article>
+
+      <SuccessNotification {...notification} onClose={hideSuccess} />
+    </>
   );
 }

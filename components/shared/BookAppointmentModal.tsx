@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   X, CalendarDays, Clock3, User, Mail, MessageSquare,
   ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard,
-  Sparkles, Search, ChevronDown,
-  Loader2, AlertCircle, Lock,
+  Sparkles, Loader2, AlertCircle, Lock,
 } from "lucide-react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
-import { getPublicServices, type Service } from "@/lib/supabase/services-api-public";
+import { type Service } from "@/lib/supabase/services-api-public";
 import { createAppointment, type CreateAppointmentData } from "@/lib/supabase/appointments-api";
 import { SuccessNotification, useSuccessNotification } from "@/components/shared/SuccessNotification";
 
@@ -53,9 +51,6 @@ const detailsSchema = z.object({
 
 type DetailsFormErrors = Partial<Record<keyof z.infer<typeof detailsSchema>, string>>;
 
-const getServiceCategory = (service: Service): string =>
-  (service as any).category_name || (service as any).category || "Other";
-
 const getServiceDuration = (service: Service): number | string =>
   (service as any).duration_minutes || (service as any).duration || "N/A";
 
@@ -68,24 +63,20 @@ function computeEndTime(startTime: string, durationMins: number): string {
   return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
 }
 
-const getServiceImage = (service: Service): string | null =>
-  (service as any).image_url || (service as any).image || null;
-
 type BookAppointmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   preselectedService?: Service | null;
 };
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3;
 type Gateway = "paystack" | "moniwave" | null;
 type PaymentMethod = "card" | null;
 
 const STEP_META: Record<Step, { label: string; color: string }> = {
-  1: { label: "Choose a Service",   color: "text-mauve" },
-  2: { label: "Your Details",       color: "text-sage"  },
-  3: { label: "Payment Gateway",    color: "text-deep"  },
-  4: { label: "Complete Payment",   color: "text-mauve" },
+  1: { label: "Your Details",     color: "text-sage"  },
+  2: { label: "Payment Gateway",  color: "text-deep"  },
+  3: { label: "Complete Payment", color: "text-mauve" },
 };
 
 export default function BookAppointmentModal({
@@ -93,20 +84,16 @@ export default function BookAppointmentModal({
   onClose,
   preselectedService,
 }: BookAppointmentModalProps) {
-  const [step, setStep]                   = useState<Step>(1);
-  const [services, setServices]           = useState<Service[]>([]);
-  const [categories, setCategories]       = useState<Array<{ id: string; name: string; count: number }>>([]);
-  const [loading, setLoading]             = useState(false);
+  const [step, setStep]                       = useState<Step>(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [gateway, setGateway]             = useState<Gateway>(null);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
-  const [search, setSearch]               = useState("");
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [fieldErrors, setFieldErrors]     = useState<DetailsFormErrors>({});
-  const [slotStatus, setSlotStatus]       = useState<SlotStatus>("idle");
-  const [slots, setSlots]                 = useState<TimeSlot[]>([]);
-  const [closedReason, setClosedReason]   = useState("");
-  const [selectedSlot, setSelectedSlot]   = useState<TimeSlot | null>(null);
+  const [gateway, setGateway]                 = useState<Gateway>(null);
+  const [paymentMethod, setPaymentMethod]     = useState<PaymentMethod>(null);
+  const [loading, setLoading]                 = useState(false);
+  const [fieldErrors, setFieldErrors]         = useState<DetailsFormErrors>({});
+  const [slotStatus, setSlotStatus]           = useState<SlotStatus>("idle");
+  const [slots, setSlots]                     = useState<TimeSlot[]>([]);
+  const [closedReason, setClosedReason]       = useState("");
+  const [selectedSlot, setSelectedSlot]       = useState<TimeSlot | null>(null);
   const dateInputRef = useRef<HTMLInputElement>(null);
 
   const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();
@@ -121,13 +108,8 @@ export default function BookAppointmentModal({
   });
 
   useEffect(() => {
-    if (isOpen && step === 1) loadServices();
-  }, [isOpen, step]);
-
-  useEffect(() => {
     if (preselectedService && isOpen) {
       setSelectedService(preselectedService);
-      setStep(2);
     }
   }, [preselectedService, isOpen]);
 
@@ -156,58 +138,12 @@ export default function BookAppointmentModal({
       .catch(() => setSlotStatus("error"));
   }, [formData.appointment_date]);
 
-  const loadServices = async () => {
-    try {
-      const data = await getPublicServices();
-      setServices(data);
-      const categoryMap = new Map<string, number>();
-      data.forEach((s) => {
-        const n = getServiceCategory(s);
-        categoryMap.set(n, (categoryMap.get(n) || 0) + 1);
-      });
-      const cats = Array.from(categoryMap.entries())
-        .map(([name, count]) => ({ id: name.toLowerCase().replace(/\s+/g, "-"), name, count }))
-        .sort((a, b) => a.name.localeCompare(b.name));
-      setCategories(cats);
-      if (cats.length > 0) setExpandedCategories(new Set([cats[0]!.id]));
-    } catch (err) {
-      console.error("Error loading services:", err);
-    }
-  };
-
-  const filteredServices = useMemo(() => {
-    if (!search.trim()) return services;
-    const q = search.toLowerCase().trim();
-    return services.filter((s) => {
-      const cat = getServiceCategory(s);
-      return (
-        s.name.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q) ||
-        cat.toLowerCase().includes(q)
-      );
-    });
-  }, [services, search]);
-
-  const servicesByCategory = useMemo(() => {
-    const map = new Map<string, Service[]>();
-    filteredServices.forEach((s) => {
-      const id = getServiceCategory(s).toLowerCase().replace(/\s+/g, "-");
-      if (!map.has(id)) map.set(id, []);
-      map.get(id)!.push(s);
-    });
-    return map;
-  }, [filteredServices]);
-
-  const totalResults = filteredServices.length;
-
   const handleClose = useCallback(() => {
     setStep(1);
     setSelectedService(null);
     setGateway(null);
     setPaymentMethod(null);
     setLoading(false);
-    setSearch("");
-    setExpandedCategories(new Set(categories.length > 0 ? [categories[0]!.id] : []));
     setFormData({ customer_name: "", customer_email: "", customer_phone: "", appointment_date: "", start_time: "", notes: "" });
     setFieldErrors({});
     setSlotStatus("idle");
@@ -216,7 +152,7 @@ export default function BookAppointmentModal({
     setClosedReason("");
     hideSuccess();
     onClose();
-  }, [categories, hideSuccess, onClose]);
+  }, [hideSuccess, onClose]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -235,20 +171,13 @@ export default function BookAppointmentModal({
     setFieldErrors((p) => ({ ...p, start_time: undefined }));
   };
 
-  const toggleCategory = (id: string) =>
-    setExpandedCategories((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-
-  // ── Step 2 submit → Step 3 (gateway) ──────────────────────────
+  // ── Step 1 submit → Step 2 (gateway) ──────────────────────────
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const result = detailsSchema.safeParse(formData);
     if (!result.success) {
       const errs: DetailsFormErrors = {};
-      result.error.issues.forEach((issue: z.core.$ZodIssue) => {
+      result.error.issues.forEach((issue: z.ZodIssue) => {
         const field = issue.path[0] as keyof DetailsFormErrors;
         if (field && !errs[field]) errs[field] = issue.message;
       });
@@ -256,14 +185,14 @@ export default function BookAppointmentModal({
       return;
     }
     setFieldErrors({});
-    setStep(3);
+    setStep(2);
   };
 
-  // ── Gateway: Paystack → Step 4 (card directly) ───────────────
+  // ── Gateway: Paystack → Step 3 (card) ───────────────────────
   const handleSelectPaystack = () => {
     setGateway("paystack");
     setPaymentMethod("card");
-    setStep(4);
+    setStep(3);
   };
 
   // ── Gateway: Moniwave → fire SDK directly ─────────────────────
@@ -326,7 +255,7 @@ export default function BookAppointmentModal({
     }
   };
 
-  // ── Shared Paystack launcher (card or opay) ───────────────────
+  // ── Shared Paystack launcher ───────────────────────────────────
   const launchPaystack = async (channels?: string[]) => {
     if (!selectedService) return;
 
@@ -367,7 +296,6 @@ export default function BookAppointmentModal({
           ],
         },
         callback: (response: { reference: string }) => {
-          // Confirm appointment + send brand notification (fire-and-forget)
           fetch("/api/appointments/notify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -397,7 +325,6 @@ export default function BookAppointmentModal({
 
   return (
     <>
-
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0 }}
@@ -410,19 +337,19 @@ export default function BookAppointmentModal({
           initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-ivory shadow-glass-lg"
+          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-ivory shadow-glass-lg"
           onClick={(e) => e.stopPropagation()}
         >
           {/* ── HEADER ── */}
           <div className="sticky top-0 z-10 bg-ivory border-b border-deep/10">
-            {/* Step progress bar */}
+            {/* Step progress bar — 3 segments */}
             <div className="flex h-1.5">
-              {([1, 2, 3, 4] as Step[]).map((s) => (
+              {([1, 2, 3] as Step[]).map((s) => (
                 <span
                   key={s}
                   className={`flex-1 transition-colors duration-500 ${
                     step >= s
-                      ? s === 1 ? "bg-mauve" : s === 2 ? "bg-sage" : s === 3 ? "bg-deep" : "bg-mauve"
+                      ? s === 1 ? "bg-sage" : s === 2 ? "bg-deep" : "bg-mauve"
                       : "bg-deep/10"
                   }`}
                 />
@@ -432,7 +359,7 @@ export default function BookAppointmentModal({
             <div className="flex items-center justify-between px-6 py-5">
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-deep/40 font-light mb-0.5">
-                  Step {step} of 4
+                  Step {step} of 3
                 </p>
                 <h2 className={`font-display text-2xl sm:text-3xl font-light ${STEP_META[step].color}`}>
                   {STEP_META[step].label}
@@ -441,7 +368,7 @@ export default function BookAppointmentModal({
 
               {/* Step dots */}
               <div className="hidden sm:flex items-center gap-2 mr-4">
-                {([1, 2, 3, 4] as Step[]).map((s) => (
+                {([1, 2, 3] as Step[]).map((s) => (
                   <span
                     key={s}
                     className={`h-2 rounded-full transition-all duration-300 ${
@@ -464,89 +391,9 @@ export default function BookAppointmentModal({
           <div className="p-6 sm:p-8">
             <AnimatePresence mode="wait">
 
-              {/* ══ STEP 1 — Service selection ══════════════════════════ */}
-              {step === 1 && (
+              {/* ══ STEP 1 — Your Details ════════════════════════════════ */}
+              {step === 1 && selectedService && (
                 <motion.div key="step-1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  <div className="mb-6 relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40" />
-                    <input
-                      type="text"
-                      placeholder="Search services..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="w-full h-12 pl-11 pr-10 rounded-full bg-mauve-tint border-2 border-transparent text-deep placeholder:text-deep/50 text-sm font-light focus:border-mauve focus:outline-none transition-colors"
-                    />
-                    {search && (
-                      <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-mauve/10 transition-colors">
-                        <X className="h-4 w-4 text-deep/40" />
-                      </button>
-                    )}
-                    {search && <p className="mt-2 text-xs text-deep/50">{totalResults} result{totalResults === 1 ? "" : "s"} found</p>}
-                  </div>
-
-                  <div className="space-y-3">
-                    {categories.map((cat) => {
-                      const catServices = servicesByCategory.get(cat.id) || [];
-                      if (search && catServices.length === 0) return null;
-                      const isExpanded = !!search || expandedCategories.has(cat.id);
-                      return (
-                        <div key={cat.id} className="border-2 border-deep/10 rounded-2xl overflow-hidden">
-                          <button onClick={() => toggleCategory(cat.id)} className="w-full flex items-center justify-between p-4 hover:bg-mauve-tint transition-colors">
-                            <div className="flex items-center gap-3">
-                              <h3 className="font-display text-lg font-light text-deep">{cat.name}</h3>
-                              <span className="text-xs text-deep/40">({catServices.length})</span>
-                            </div>
-                            <ChevronDown className={`h-5 w-5 text-deep/40 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
-                          </button>
-                          {isExpanded && (
-                            <div className="border-t border-deep/10 p-4 bg-ivory space-y-2">
-                              {catServices.map((service) => (
-                                <button
-                                  key={service.id}
-                                  onClick={() => { setSelectedService(service); setStep(2); }}
-                                  className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-sage-tint border-2 border-transparent hover:border-sage transition-all group"
-                                >
-                                  {getServiceImage(service) && (
-                                    <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                                      <Image src={getServiceImage(service)!} alt={service.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                                    </div>
-                                  )}
-                                  <div className="flex-1 text-left">
-                                    <h4 className="font-medium text-deep group-hover:text-sage transition-colors">{service.name}</h4>
-                                    <p className="text-xs text-deep/60 line-clamp-1">{service.description}</p>
-                                    <div className="flex items-center gap-3 mt-1">
-                                      <span className="text-sm font-semibold text-mauve">₦{service.price.toLocaleString()}</span>
-                                      {service.original_price && service.original_price > service.price && (
-                                        <span className="text-xs text-deep/40 line-through">₦{service.original_price.toLocaleString()}</span>
-                                      )}
-                                      <span className="text-xs text-deep/40">{getServiceDuration(service)} min</span>
-                                    </div>
-                                  </div>
-                                  <ArrowRight className="h-5 w-5 text-deep/30 group-hover:text-sage group-hover:translate-x-1 transition-all shrink-0" />
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                    {totalResults === 0 && (
-                      <div className="text-center py-12">
-                        <p className="text-deep/50 font-light">No services found for &ldquo;{search}&rdquo;</p>
-                        <button onClick={() => setSearch("")} className="mt-3 text-sm text-mauve hover:underline">Clear search</button>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ══ STEP 2 — Customer details ════════════════════════════ */}
-              {step === 2 && selectedService && (
-                <motion.div key="step-2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  <button onClick={() => setStep(1)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-5 transition-colors">
-                    <ArrowLeft className="h-4 w-4" /> Change service
-                  </button>
-
                   {/* Selected service pill */}
                   <div className="flex items-center gap-3 mb-8 p-4 rounded-2xl bg-sage-tint border border-sage/20">
                     <div className="h-10 w-10 rounded-xl bg-sage flex items-center justify-center shrink-0">
@@ -739,10 +586,10 @@ export default function BookAppointmentModal({
                 </motion.div>
               )}
 
-              {/* ══ STEP 3 — Gateway selection ═══════════════════════════ */}
-              {step === 3 && selectedService && (
-                <motion.div key="step-3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  <button onClick={() => setStep(2)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
+              {/* ══ STEP 2 — Gateway selection ═══════════════════════════ */}
+              {step === 2 && selectedService && (
+                <motion.div key="step-2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <button onClick={() => setStep(1)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
                     <ArrowLeft className="h-4 w-4" /> Back to details
                   </button>
 
@@ -805,10 +652,10 @@ export default function BookAppointmentModal({
                 </motion.div>
               )}
 
-              {/* ══ STEP 4 / Card payment ════════════════════════════════ */}
-              {step === 4 && selectedService && paymentMethod === "card" && (
-                <motion.div key="step-4-card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  <button onClick={() => { setStep(3); setGateway(null); setPaymentMethod(null); }} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
+              {/* ══ STEP 3 / Card payment ════════════════════════════════ */}
+              {step === 3 && selectedService && paymentMethod === "card" && (
+                <motion.div key="step-3-card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+                  <button onClick={() => { setStep(2); setGateway(null); setPaymentMethod(null); }} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
                     <ArrowLeft className="h-4 w-4" /> Back to gateway
                   </button>
 
