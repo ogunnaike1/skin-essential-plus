@@ -245,13 +245,14 @@ export default function BookAppointmentModal({
           ],
         },
         callback: (response: { reference: string }) => {
-          appointments.forEach((appt) => {
-            fetch("/api/appointments/notify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ appointmentId: appt.id, reference: response.reference }),
-            }).catch((err) => console.error("Notify failed:", err));
-          });
+          fetch("/api/appointments/notify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              appointmentIds: appointments.map((a) => a.id),
+              reference: response.reference,
+            }),
+          }).catch((err) => console.error("Notify failed:", err));
 
           const label = selectedServices.length === 1
             ? selectedServices[0]!.name

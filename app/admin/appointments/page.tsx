@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { Appointment } from '@/lib/supabase/appointments-api';
 import {
-  Calendar, Clock, Mail, Phone, User,
+  Calendar, Clock, Mail, Phone,
   Filter, Search, X, Loader2, CheckCircle2,
   Ban, RotateCcw, CreditCard, ChevronRight,
   CalendarOff, Plus, Trash2, ChevronDown, ChevronUp,
@@ -16,6 +16,14 @@ interface BlockedDate {
   id: string;
   date: string;
   reason?: string;
+}
+
+interface BookingGroup {
+  key: string;
+  representative: Appointment;
+  appointments: Appointment[];
+  serviceNames: string;
+  totalPrice: number;
 }
 
 type StatusFilter  = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
@@ -91,9 +99,9 @@ export default function AppointmentsPage() {
   const [searchTerm, setSearchTerm]         = useState('');
   const [statusFilter, setStatusFilter]     = useState<StatusFilter>('all');
   const [paymentFilter, setPaymentFilter]   = useState<PaymentFilter>('all');
-  const [selectedApt, setSelectedApt]       = useState<Appointment | null>(null);
+  const [selectedGroup, setSelectedGroup]   = useState<BookingGroup | null>(null);
   const [updating, setUpdating]             = useState(false);
-  const [deleteTarget, setDeleteTarget]     = useState<Appointment | null>(null);
+  const [deleteGroup, setDeleteGroup]       = useState<BookingGroup | null>(null);
   const [deleting, setDeleting]             = useState(false);
 
   // Blocked dates
@@ -134,7 +142,7 @@ export default function AppointmentsPage() {
 
   useEffect(() => { fetchAppointments(); fetchBlockedDates(); }, [fetchAppointments, fetchBlockedDates]);
 
-  // ── Computed values (no unnecessary re-renders) ────────────
+  // ── Stats ──────────────────────────────────────────────────
   const stats = useMemo(() => ({
     total:     appointments.length,
     pending:   appointments.filter((a) => a.status === 'pending').length,
@@ -145,6 +153,7 @@ export default function AppointmentsPage() {
       .reduce((s, a) => s + (a.service_price || 0), 0),
   }), [appointments]);
 
+  // ── Filtered appointments ──────────────────────────────────
   const filtered = useMemo(() => {
     let list = [...appointments];
     if (searchTerm) {
@@ -165,59 +174,97 @@ export default function AppointmentsPage() {
     });
   }, [appointments, searchTerm, statusFilter, paymentFilter]);
 
-  const grouped = useMemo(() => ({
-    today:    filtered.filter((a) => getDateGroup(a.appointment_date) === 'today'),
-    upcoming: filtered.filter((a) => getDateGroup(a.appointment_date) === 'upcoming'),
-    past:     filtered.filter((a) => getDateGroup(a.appointment_date) === 'past'),
-  }), [filtered]);
+  // ── Group by payment_reference ─────────────────────────────
+  const bookingGroups = useMemo((): BookingGroup[] => {
+    const map = new Map<string, Appointment[]>();
+    for (const apt of filtered) {
+      const key = apt.payment_reference || apt.id;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(apt);
+    }
+    return Array.from(map.values()).map((apts): BookingGroup => ({
+      key:          apts[0]!.payment_reference || apts[0]!.id,
+      representative: apts[0]!,
+      appointments: apts,
+      serviceNames: apts.map((a) => a.service_name).join(', '),
+      totalPrice:   apts.reduce((sum, a) => sum + (a.service_price || 0), 0),
+    }));
+  }, [filtered]);
 
-  // ── Appointment actions ────────────────────────────────────
-  const handleStatusUpdate = useCallback(async (
-    id: string,
+  const grouped = useMemo(() => ({
+    today:    bookingGroups.filter((g) => getDateGroup(g.representative.appointment_date) === 'today'),
+    upcoming: bookingGroups.filter((g) => getDateGroup(g.representative.appointment_date) === 'upcoming'),
+    past:     bookingGroups.filter((g) => getDateGroup(g.representative.appointment_date) === 'past'),
+  }), [bookingGroups]);
+
+  // ── Actions ────────────────────────────────────────────────
+  const handleGroupStatusUpdate = useCallback(async (
+    group: BookingGroup,
     status: string,
     paymentStatus?: string
   ) => {
     setUpdating(true);
     try {
-      const updates: Record<string, string> = { status };
-      if (paymentStatus) updates.payment_status = paymentStatus;
-      const res  = await fetch('/api/admin/appointments', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, updates }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
-      setAppointments((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, ...json.appointment } : a))
+      const results: Appointment[] = await Promise.all(
+        group.appointments.map(async (apt) => {
+          const updates: Record<string, string> = { status };
+          if (paymentStatus) updates.payment_status = paymentStatus;
+          const res  = await fetch('/api/admin/appointments', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: apt.id, updates }),
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error);
+          return json.appointment as Appointment;
+        })
       );
-      setSelectedApt((prev) => (prev?.id === id ? { ...prev, ...json.appointment } : prev));
+
+      setAppointments((prev) =>
+        prev.map((a) => {
+          const updated = results.find((r) => r.id === a.id);
+          return updated ? { ...a, ...updated } : a;
+        })
+      );
+
+      setSelectedGroup((prev) => {
+        if (!prev || prev.key !== group.key) return prev;
+        const updatedApts = prev.appointments.map((a) => {
+          const updated = results.find((r) => r.id === a.id);
+          return updated ? { ...a, ...updated } : a;
+        });
+        return {
+          ...prev,
+          appointments: updatedApts,
+          representative: updatedApts[0]!,
+        };
+      });
     } catch (err) {
-      console.error('Error updating appointment:', err);
+      console.error('Error updating appointments:', err);
     } finally {
       setUpdating(false);
     }
   }, []);
 
-  const handleQuickComplete = useCallback((id: string) => {
-    handleStatusUpdate(id, 'completed');
-  }, [handleStatusUpdate]);
-
-  const handleDelete = useCallback(async () => {
-    if (!deleteTarget) return;
+  const handleGroupDelete = useCallback(async () => {
+    if (!deleteGroup) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/admin/appointments/${deleteTarget.id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      setAppointments((prev) => prev.filter((a) => a.id !== deleteTarget.id));
-      if (selectedApt?.id === deleteTarget.id) setSelectedApt(null);
-      setDeleteTarget(null);
+      await Promise.all(
+        deleteGroup.appointments.map((apt) =>
+          fetch(`/api/admin/appointments/${apt.id}`, { method: 'DELETE' })
+        )
+      );
+      const deletedIds = new Set(deleteGroup.appointments.map((a) => a.id));
+      setAppointments((prev) => prev.filter((a) => !deletedIds.has(a.id)));
+      if (selectedGroup?.key === deleteGroup.key) setSelectedGroup(null);
+      setDeleteGroup(null);
     } catch {
       console.error('Delete failed');
     } finally {
       setDeleting(false);
     }
-  }, [deleteTarget, selectedApt]);
+  }, [deleteGroup, selectedGroup]);
 
   // ── Blocked dates actions ──────────────────────────────────
   const handleAddBlockedDate = useCallback(async () => {
@@ -252,7 +299,6 @@ export default function AppointmentsPage() {
     }
   }, []);
 
-  // ── Render helpers ─────────────────────────────────────────
   const hasFilters = searchTerm || statusFilter !== 'all' || paymentFilter !== 'all';
 
   return (
@@ -364,7 +410,7 @@ export default function AppointmentsPage() {
           <Loader2 className="h-8 w-8 animate-spin text-mauve" />
           <p className="text-sm text-deep/40 font-light">Loading appointments…</p>
         </div>
-      ) : filtered.length === 0 ? (
+      ) : bookingGroups.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-3 rounded-2xl border-2 border-deep/10 bg-ivory">
           <div className="h-12 w-12 rounded-full bg-mauve-tint flex items-center justify-center">
             <Calendar className="h-5 w-5 text-mauve" />
@@ -392,13 +438,13 @@ export default function AppointmentsPage() {
               </div>
 
               <div className="rounded-2xl border-2 border-deep/10 bg-ivory overflow-hidden divide-y divide-deep/5">
-                {group.items.map((apt) => (
+                {group.items.map((bg) => (
                   <AppointmentRow
-                    key={apt.id}
-                    apt={apt}
-                    onOpen={() => setSelectedApt(apt)}
-                    onComplete={() => handleQuickComplete(apt.id)}
-                    onDelete={() => setDeleteTarget(apt)}
+                    key={bg.key}
+                    group={bg}
+                    onOpen={() => setSelectedGroup(bg)}
+                    onComplete={() => handleGroupStatusUpdate(bg, 'completed')}
+                    onDelete={() => setDeleteGroup(bg)}
                   />
                 ))}
               </div>
@@ -503,23 +549,23 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Detail modal */}
-      {selectedApt && (
+      {selectedGroup && (
         <DetailModal
-          apt={selectedApt}
+          group={selectedGroup}
           updating={updating}
-          onClose={() => setSelectedApt(null)}
-          onStatusUpdate={handleStatusUpdate}
-          onDelete={() => { setDeleteTarget(selectedApt); setSelectedApt(null); }}
+          onClose={() => setSelectedGroup(null)}
+          onStatusUpdate={handleGroupStatusUpdate}
+          onDelete={() => { setDeleteGroup(selectedGroup); setSelectedGroup(null); }}
         />
       )}
 
       {/* Delete confirmation */}
-      {deleteTarget && (
+      {deleteGroup && (
         <DeleteModal
-          apt={deleteTarget}
+          group={deleteGroup}
           deleting={deleting}
-          onConfirm={handleDelete}
-          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleGroupDelete}
+          onCancel={() => setDeleteGroup(null)}
         />
       )}
     </div>
@@ -528,36 +574,37 @@ export default function AppointmentsPage() {
 
 // ── Appointment row ────────────────────────────────────────────
 function AppointmentRow({
-  apt,
+  group,
   onOpen,
   onComplete,
   onDelete,
 }: {
-  apt: Appointment;
+  group: BookingGroup;
   onOpen: () => void;
   onComplete: () => void;
   onDelete: () => void;
 }) {
+  const apt = group.representative;
+  const isMulti = group.appointments.length > 1;
   const canComplete = apt.status !== 'completed' && apt.status !== 'cancelled';
 
   return (
     <div className="flex items-center gap-3 px-4 py-3.5 hover:bg-mauve-tint/15 transition-colors group">
-      {/* Avatar */}
       <AvatarInitial name={apt.customer_name} />
 
-      {/* Main info — clickable */}
-      <button
-        type="button"
-        onClick={onOpen}
-        className="flex-1 min-w-0 text-left"
-      >
+      <button type="button" onClick={onOpen} className="flex-1 min-w-0 text-left">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-0.5">
           <span className="font-medium text-deep text-sm">{apt.customer_name}</span>
           <StatusPill status={apt.status} />
           {apt.payment_status && <PaymentPill status={apt.payment_status} />}
+          {isMulti && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-mauve-tint text-mauve text-[10px] font-medium">
+              {group.appointments.length} services
+            </span>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-deep/40">
-          <span className="truncate max-w-[180px]">{apt.service_name}</span>
+          <span className="truncate max-w-[220px]">{group.serviceNames}</span>
           <span className="flex items-center gap-1">
             <Calendar className="h-3 w-3" strokeWidth={1.5} />
             {formatDate(apt.appointment_date)}
@@ -572,12 +619,10 @@ function AppointmentRow({
         </div>
       </button>
 
-      {/* Price */}
       <span className="hidden sm:block font-display text-base font-light text-mauve shrink-0">
-        {formatShopPrice(apt.service_price || 0)}
+        {formatShopPrice(group.totalPrice)}
       </span>
 
-      {/* Quick actions */}
       <div className="flex items-center gap-1 shrink-0">
         {canComplete && (
           <button
@@ -609,18 +654,21 @@ function AppointmentRow({
 
 // ── Detail modal ───────────────────────────────────────────────
 function DetailModal({
-  apt,
+  group,
   updating,
   onClose,
   onStatusUpdate,
   onDelete,
 }: {
-  apt: Appointment;
+  group: BookingGroup;
   updating: boolean;
   onClose: () => void;
-  onStatusUpdate: (id: string, status: string, payment?: string) => void;
+  onStatusUpdate: (group: BookingGroup, status: string, payment?: string) => void;
   onDelete: () => void;
 }) {
+  const apt = group.representative;
+  const isMulti = group.appointments.length > 1;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
@@ -657,10 +705,30 @@ function DetailModal({
           {/* Service summary */}
           <div className="rounded-2xl bg-white border border-deep/8 p-5">
             <div className="grid grid-cols-2 gap-4">
+
+              {/* Services section */}
               <div className="col-span-2 pb-3 border-b border-deep/6">
-                <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Service</p>
-                <p className="font-medium text-deep">{apt.service_name}</p>
+                <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-2">
+                  {isMulti ? `Services (${group.appointments.length})` : 'Service'}
+                </p>
+                {isMulti ? (
+                  <div className="space-y-2">
+                    {group.appointments.map((a) => (
+                      <div key={a.id} className="flex items-center justify-between">
+                        <span className="text-sm text-deep font-medium">{a.service_name}</span>
+                        <span className="text-sm text-deep/60 tabular-nums">{formatShopPrice(a.service_price || 0)}</span>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between pt-2 border-t border-deep/10">
+                      <span className="text-[11px] uppercase tracking-wider text-deep/40 font-medium">Total Paid</span>
+                      <span className="font-display text-xl font-light text-mauve">{formatShopPrice(group.totalPrice)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="font-medium text-deep">{apt.service_name}</p>
+                )}
               </div>
+
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Date</p>
                 <p className="text-sm font-medium text-deep">{formatDate(apt.appointment_date)}</p>
@@ -669,10 +737,12 @@ function DetailModal({
                 <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Time</p>
                 <p className="text-sm font-medium text-deep">{formatTime(apt.start_time)}</p>
               </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Amount</p>
-                <p className="font-display text-2xl font-light text-mauve">{formatShopPrice(apt.service_price || 0)}</p>
-              </div>
+              {!isMulti && (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Amount</p>
+                  <p className="font-display text-2xl font-light text-mauve">{formatShopPrice(apt.service_price || 0)}</p>
+                </div>
+              )}
               <div className="col-span-2 pt-3 border-t border-deep/6">
                 <p className="text-[10px] uppercase tracking-wider text-deep/35 mb-1">Booked On</p>
                 <p className="text-sm font-medium text-deep">
@@ -717,21 +787,23 @@ function DetailModal({
             )}
           </div>
 
-          {/* Update appointment status */}
+          {/* Update status */}
           <div className="rounded-2xl bg-white border border-deep/8 p-5 space-y-3">
-            <p className="text-[10px] uppercase tracking-wider text-deep/35">Update Status</p>
+            <p className="text-[10px] uppercase tracking-wider text-deep/35">
+              Update Status{isMulti ? ' — applies to all services' : ''}
+            </p>
             <div className="grid grid-cols-2 gap-2">
               {([
-                { status: 'confirmed', label: 'Confirm',     Icon: CheckCircle2, active: 'bg-sage text-ivory',    idle: 'bg-sage-tint text-sage border border-sage/20'      },
-                { status: 'completed', label: 'Complete',    Icon: CheckCheck,   active: 'bg-deep text-ivory',    idle: 'bg-deep-tint text-deep border border-deep/15'      },
-                { status: 'pending',   label: 'Set Pending', Icon: RotateCcw,    active: 'bg-amber-400 text-white', idle: 'bg-amber-50 text-amber-600 border border-amber-200' },
-                { status: 'cancelled', label: 'Cancel',      Icon: Ban,          active: 'bg-red-500 text-white', idle: 'bg-ivory text-deep/45 border border-deep/15'       },
+                { status: 'confirmed', label: 'Confirm',     Icon: CheckCircle2, active: 'bg-sage text-ivory',       idle: 'bg-sage-tint text-sage border border-sage/20'        },
+                { status: 'completed', label: 'Complete',    Icon: CheckCheck,   active: 'bg-deep text-ivory',       idle: 'bg-deep-tint text-deep border border-deep/15'        },
+                { status: 'pending',   label: 'Set Pending', Icon: RotateCcw,    active: 'bg-amber-400 text-white',  idle: 'bg-amber-50 text-amber-600 border border-amber-200'  },
+                { status: 'cancelled', label: 'Cancel',      Icon: Ban,          active: 'bg-red-500 text-white',    idle: 'bg-ivory text-deep/45 border border-deep/15'         },
               ] as const).map(({ status, label, Icon, active, idle }) => {
                 const isCurrent = apt.status === status;
                 return (
                   <button
                     key={status}
-                    onClick={() => onStatusUpdate(apt.id, status)}
+                    onClick={() => onStatusUpdate(group, status)}
                     disabled={isCurrent || updating}
                     className={`h-10 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isCurrent ? active : idle}`}
                   >
@@ -743,20 +815,22 @@ function DetailModal({
             </div>
           </div>
 
-          {/* Update payment status */}
+          {/* Update payment */}
           <div className="rounded-2xl bg-white border border-deep/8 p-5 space-y-3">
-            <p className="text-[10px] uppercase tracking-wider text-deep/35">Update Payment</p>
+            <p className="text-[10px] uppercase tracking-wider text-deep/35">
+              Update Payment{isMulti ? ' — applies to all services' : ''}
+            </p>
             <div className="grid grid-cols-3 gap-2">
               {([
-                { status: 'paid',    label: 'Mark Paid',   active: 'bg-sage text-ivory',         idle: 'bg-sage-tint text-sage border border-sage/20'     },
-                { status: 'pending', label: 'Set Unpaid',  active: 'bg-amber-400 text-white',     idle: 'bg-amber-50 text-amber-600 border border-amber-200' },
-                { status: 'failed',  label: 'Mark Failed', active: 'bg-red-500 text-white',       idle: 'bg-red-50 text-red-500 border border-red-200'       },
+                { status: 'paid',    label: 'Mark Paid',   active: 'bg-sage text-ivory',        idle: 'bg-sage-tint text-sage border border-sage/20'      },
+                { status: 'pending', label: 'Set Unpaid',  active: 'bg-amber-400 text-white',   idle: 'bg-amber-50 text-amber-600 border border-amber-200' },
+                { status: 'failed',  label: 'Mark Failed', active: 'bg-red-500 text-white',     idle: 'bg-red-50 text-red-500 border border-red-200'       },
               ] as const).map(({ status, label, active, idle }) => {
                 const isCurrent = apt.payment_status === status;
                 return (
                   <button
                     key={status}
-                    onClick={() => onStatusUpdate(apt.id, apt.status, status)}
+                    onClick={() => onStatusUpdate(group, apt.status, status)}
                     disabled={isCurrent || updating}
                     className={`h-10 rounded-xl text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isCurrent ? active : idle}`}
                   >
@@ -767,7 +841,6 @@ function DetailModal({
             </div>
           </div>
 
-          {/* Last updated */}
           {apt.updated_at !== apt.created_at && (
             <p className="text-[11px] text-deep/25 pb-1">
               Last updated: {new Date(apt.updated_at).toLocaleString('en-NG', { dateStyle: 'medium', timeStyle: 'short' })}
@@ -787,16 +860,19 @@ function DetailModal({
 
 // ── Delete confirmation modal ──────────────────────────────────
 function DeleteModal({
-  apt,
+  group,
   deleting,
   onConfirm,
   onCancel,
 }: {
-  apt: Appointment;
+  group: BookingGroup;
   deleting: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const apt = group.representative;
+  const isMulti = group.appointments.length > 1;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-ivory rounded-3xl w-full max-w-sm shadow-2xl p-6 space-y-5">
@@ -807,9 +883,14 @@ function DeleteModal({
           <div>
             <h3 className="font-display text-lg font-light text-deep">Delete Appointment?</h3>
             <p className="text-sm text-deep/55 mt-1 leading-relaxed">
-              This will permanently delete the appointment for{' '}
+              {isMulti
+                ? `This will permanently delete all ${group.appointments.length} services booked by `
+                : 'This will permanently delete the appointment for '}
               <strong className="text-deep font-medium">{apt.customer_name}</strong>
-              {' '}({apt.service_name} on {formatDate(apt.appointment_date)}). This cannot be undone.
+              {isMulti
+                ? ` (${group.serviceNames})`
+                : ` (${apt.service_name})`}
+              {' '}on {formatDate(apt.appointment_date)}. This cannot be undone.
             </p>
           </div>
         </div>
@@ -832,7 +913,7 @@ function DeleteModal({
             ) : (
               <Trash2 className="h-4 w-4" strokeWidth={1.5} />
             )}
-            Delete
+            Delete{isMulti ? ' All' : ''}
           </button>
         </div>
       </div>
