@@ -247,50 +247,6 @@ export function ServicesGrid(): React.ReactElement {
               {loading ? 'Loading our curated treatments...' : `${totalResults} premium treatments await you`}
             </p>
 
-            {/* Enhanced Search Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="max-w-2xl mx-auto"
-            >
-              <div className="relative group">
-                {/* Glow effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-mauve via-sage to-deep rounded-full blur opacity-25 group-hover:opacity-40 transition duration-1000" />
-                
-                {/* Search input */}
-                <div className="relative">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-deep/40 z-10" />
-                  <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="relative w-full h-16 pl-14 pr-14 rounded-full border-2 border-ivory/20 bg-ivory/95 backdrop-blur-xl text-deep placeholder:text-deep/40 text-lg font-light focus:border-ivory focus:outline-none focus:ring-4 focus:ring-ivory/20 transition-all shadow-xl"
-                    placeholder="Search for treatments, skincare, spa..."
-                    disabled={loading}
-                  />
-                  {search && (
-                    <button
-                      onClick={() => setSearch("")}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-deep/5 transition-colors"
-                    >
-                      <X className="h-5 w-5 text-deep/60" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Search results count */}
-              {search && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mt-4 text-sm text-ivory/80"
-                >
-                  {totalResults} result{totalResults === 1 ? "" : "s"} found
-                </motion.p>
-              )}
-            </motion.div>
-
             {/* Eid promo strip */}
             <EidPromoStrip />
           </motion.div>
@@ -307,6 +263,34 @@ export function ServicesGrid(): React.ReactElement {
         className="relative py-8 sm:py-12 bg-ivory"
       >
         <div className="mx-auto max-w-[1600px] px-6 sm:px-10 lg:px-14">
+
+          {/* ── SEARCH BAR ── */}
+          <div className="mb-8">
+            <div className="relative max-w-xl">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-deep/40 pointer-events-none" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                disabled={loading}
+                placeholder="Search treatments, skincare, spa…"
+                className="w-full h-12 pl-11 pr-10 rounded-full border border-deep/15 bg-white text-sm text-deep placeholder:text-deep/40 focus:outline-none focus:border-mauve focus:ring-2 focus:ring-mauve/15 transition-all shadow-sm"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full hover:bg-deep/5 transition-colors"
+                >
+                  <X className="h-3.5 w-3.5 text-deep/50" />
+                </button>
+              )}
+            </div>
+            {search && (
+              <p className="mt-2 text-xs text-deep/50 font-light pl-1">
+                {totalResults} result{totalResults === 1 ? "" : "s"} for &ldquo;{search}&rdquo;
+              </p>
+            )}
+          </div>
+
           {/* DESKTOP LAYOUT */}
           <div className="hidden lg:block">
             {error && (

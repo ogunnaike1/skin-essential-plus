@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import {
   X, CalendarDays, Clock3, User, Mail, MessageSquare,
   ArrowRight, ArrowLeft, Phone, CreditCard,
@@ -86,9 +86,8 @@ export default function BookAppointmentModal({
   preselectedService,
   preselectedServices,
 }: BookAppointmentModalProps) {
-  const [step, setStep]                       = useState<Step>(1);
-  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
-  const [gateway, setGateway]                 = useState<Gateway>(null);
+  const [step, setStep]       = useState<Step>(1);
+  const [gateway, setGateway] = useState<Gateway>(null);
   const [paymentMethod, setPaymentMethod]     = useState<PaymentMethod>(null);
   const [loading, setLoading]                 = useState(false);
   const [fieldErrors, setFieldErrors]         = useState<DetailsFormErrors>({});
@@ -97,6 +96,13 @@ export default function BookAppointmentModal({
   const [closedReason, setClosedReason]       = useState("");
   const [selectedSlot, setSelectedSlot]       = useState<TimeSlot | null>(null);
   const dateInputRef = useRef<HTMLInputElement>(null);
+
+  // Always derived from props — no useState so there's no flash of empty content on open
+  const selectedServices = useMemo(() => {
+    if (preselectedServices && preselectedServices.length > 0) return preselectedServices;
+    if (preselectedService) return [preselectedService];
+    return [];
+  }, [preselectedServices, preselectedService]);
 
   const { notification, showSuccess, showError, hideSuccess } = useSuccessNotification();
 
@@ -113,14 +119,6 @@ export default function BookAppointmentModal({
   const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
   const serviceNames = selectedServices.map((s) => s.name).join(", ");
 
-  useEffect(() => {
-    if (!isOpen) return;
-    if (preselectedServices && preselectedServices.length > 0) {
-      setSelectedServices(preselectedServices);
-    } else if (preselectedService) {
-      setSelectedServices([preselectedService]);
-    }
-  }, [preselectedServices, preselectedService, isOpen]);
 
   useEffect(() => {
     if (!formData.appointment_date) {
@@ -149,7 +147,6 @@ export default function BookAppointmentModal({
 
   const handleClose = useCallback(() => {
     setStep(1);
-    setSelectedServices([]);
     setGateway(null);
     setPaymentMethod(null);
     setLoading(false);
