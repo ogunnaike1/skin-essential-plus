@@ -1,12 +1,14 @@
 "use client";
 
-import { X, Trash2, CalendarCheck, Sparkles, Clock, ArrowRight } from "lucide-react";
+import { X, Trash2, CalendarCheck, Sparkles, Clock, ArrowRight, MoveRight } from "lucide-react";
+import Link from "next/link";
 import { useServiceCart } from "@/app/contexts/ServiceCartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/services-data";
 import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
+import type { Service } from "@/lib/supabase/services-api-public";
 
 interface ServiceCartDrawerProps {
   isOpen: boolean;
@@ -16,6 +18,7 @@ interface ServiceCartDrawerProps {
 export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
   const { services, removeService, clearServiceCart, serviceCount } = useServiceCart();
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingService, setBookingService] = useState<Service | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -29,6 +32,23 @@ export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
   const total = services.reduce((sum, s) => sum + s.price, 0);
 
   const handleBook = () => {
+    if (services.length === 0) return;
+    const first = services[0]!;
+    setBookingService({
+      id: first.id,
+      name: first.name,
+      slug: first.id,
+      category: first.categoryId,
+      description: first.description,
+      price: first.price,
+      original_price: first.originalPrice,
+      duration: first.durationMinutes,
+      image_url: first.image,
+      is_active: true,
+      display_order: 0,
+      created_at: "",
+      updated_at: "",
+    });
     onClose();
     setBookingOpen(true);
   };
@@ -114,17 +134,19 @@ export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
                     </div>
                   </div>
                   <h3 className="font-display text-2xl font-light text-deep mb-2">
-                    No services added yet
+                    No bookings added yet
                   </h3>
                   <p className="text-sm text-deep/50 font-light mb-8 max-w-xs leading-relaxed">
-                    Browse our treatments and add services to book your perfect ritual.
+                    Visit our services page, choose your treatments, and add them here to book.
                   </p>
-                  <button
+                  <Link
+                    href="/services"
                     onClick={onClose}
-                    className="px-8 py-3 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide hover:opacity-90 transition-opacity"
+                    className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-deep text-ivory text-sm font-light tracking-wide hover:opacity-90 transition-opacity"
                   >
                     Browse Services
-                  </button>
+                    <MoveRight className="h-4 w-4" strokeWidth={1.5} />
+                  </Link>
                 </div>
               )}
 
@@ -226,7 +248,11 @@ export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
         )}
       </AnimatePresence>
 
-      <BookAppointmentModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} />
+      <BookAppointmentModal
+        isOpen={bookingOpen}
+        onClose={() => { setBookingOpen(false); setBookingService(null); }}
+        preselectedService={bookingService}
+      />
     </>
   );
 }

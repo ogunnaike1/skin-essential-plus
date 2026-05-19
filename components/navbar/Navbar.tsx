@@ -6,19 +6,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
 import { Logo } from "@/components/ui/Logo";
 import { NAV_LINKS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { CartIcon } from "@/components/cart/CartIcon";
 import { ServiceCartIcon } from "@/components/cart/ServiceCartIcon";
+import { ServiceCartDrawer } from "@/components/cart/ServiceCartDrawer";
 
 
 export function Navbar(): React.ReactElement {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const [bookingOpen, setBookingOpen] = useState<boolean>(false);
+  const [serviceCartOpen, setServiceCartOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = (): void => {
@@ -46,9 +46,9 @@ export function Navbar(): React.ReactElement {
     };
   }, [mobileOpen]);
 
-  const openBookingModal = (): void => {
+  const openServiceCart = (): void => {
     setMobileOpen(false);
-    setBookingOpen(true);
+    setServiceCartOpen(true);
   };
 
   return (
@@ -145,7 +145,7 @@ export function Navbar(): React.ReactElement {
             {/* Right cluster */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Bookings cart icon */}
-              <ServiceCartIcon variant={scrolled ? "dark" : "light"} />
+              <ServiceCartIcon variant={scrolled ? "dark" : "light"} onClick={() => setServiceCartOpen(true)} />
 
               {/* Shop cart icon */}
               <CartIcon variant={scrolled ? "dark" : "light"} />
@@ -161,7 +161,7 @@ export function Navbar(): React.ReactElement {
               {/* Book Appointment CTA */}
               <button
                 type="button"
-                onClick={openBookingModal}
+                onClick={openServiceCart}
                 aria-label="Book Appointment"
                 className={cn(
                   "group relative inline-flex items-center gap-2 rounded-full py-1 pl-4 pr-1 font-sans text-[11px] uppercase tracking-[0.22em] transition-all duration-500",
@@ -289,7 +289,7 @@ export function Navbar(): React.ReactElement {
               <div className="space-y-3 px-6 pb-10">
                 <button
                   type="button"
-                  onClick={openBookingModal}
+                  onClick={openServiceCart}
                   className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full bg-deep font-sans text-[12px] uppercase tracking-[0.22em] text-ivory transition-colors hover:bg-deep-dark"
                 >
                   <CalendarCheck className="h-4 w-4" />
@@ -310,10 +310,7 @@ export function Navbar(): React.ReactElement {
         ) : null}
       </AnimatePresence>
 
-      <BookAppointmentModal
-        isOpen={bookingOpen}
-        onClose={() => setBookingOpen(false)}
-      />
+      <ServiceCartDrawer isOpen={serviceCartOpen} onClose={() => setServiceCartOpen(false)} />
     </>
   );
 }
