@@ -10,12 +10,13 @@ import { Logo } from "@/components/ui/Logo";
 import { NAV_LINKS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { CartIcon } from "@/components/cart/CartIcon";
-import { ServiceCartIcon } from "@/components/cart/ServiceCartIcon";
 import { ServiceCartDrawer } from "@/components/cart/ServiceCartDrawer";
+import { useServiceCart } from "@/app/contexts/ServiceCartContext";
 
 
 export function Navbar(): React.ReactElement {
   const pathname = usePathname();
+  const { serviceCount } = useServiceCart();
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [serviceCartOpen, setServiceCartOpen] = useState<boolean>(false);
@@ -144,9 +145,6 @@ export function Navbar(): React.ReactElement {
 
             {/* Right cluster */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Bookings cart icon */}
-              <ServiceCartIcon variant={scrolled ? "dark" : "light"} onClick={() => setServiceCartOpen(true)} />
-
               {/* Shop cart icon */}
               <CartIcon variant={scrolled ? "dark" : "light"} />
 
@@ -182,6 +180,16 @@ export function Navbar(): React.ReactElement {
                   )}
                 >
                   <CalendarCheck className="h-4 w-4" strokeWidth={1.75} />
+                  {serviceCount > 0 && (
+                    <motion.span
+                      key={serviceCount}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-ivory text-deep text-[9px] font-semibold flex items-center justify-center shadow-sm"
+                    >
+                      {serviceCount > 9 ? "9+" : serviceCount}
+                    </motion.span>
+                  )}
                 </span>
               </button>
 
