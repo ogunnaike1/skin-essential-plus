@@ -145,7 +145,7 @@ export function Navbar(): React.ReactElement {
             {/* Right cluster */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Bookings cart icon */}
-              <ServiceCartIcon variant={scrolled ? "dark" : "light"} onClick={openBookingModal} />
+              <ServiceCartIcon variant={scrolled ? "dark" : "light"} />
 
               {/* Shop cart icon */}
               <CartIcon variant={scrolled ? "dark" : "light"} />
