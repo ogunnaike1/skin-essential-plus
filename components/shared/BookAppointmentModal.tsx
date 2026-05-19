@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import {
   X, CalendarDays, Clock3, User, Mail, MessageSquare,
-  ArrowRight, ArrowLeft, CheckCircle2, Phone, CreditCard,
+  ArrowRight, ArrowLeft, Phone, CreditCard,
   Sparkles, Loader2, AlertCircle, Lock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,8 +51,8 @@ const detailsSchema = z.object({
 
 type DetailsFormErrors = Partial<Record<keyof z.infer<typeof detailsSchema>, string>>;
 
-const getServiceDuration = (service: Service): number | string =>
-  (service as any).duration_minutes || (service as any).duration || "N/A";
+const getServiceDuration = (service: Service): number =>
+  Number((service as any).duration_minutes || (service as any).duration) || 60;
 
 function computeEndTime(startTime: string, durationMins: number): string {
   if (!startTime) return "00:00";
@@ -67,6 +67,7 @@ type BookAppointmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   preselectedService?: Service | null;
+  preselectedServices?: Service[];
 };
 
 type Step = 1 | 2 | 3;
@@ -83,9 +84,10 @@ export default function BookAppointmentModal({
   isOpen,
   onClose,
   preselectedService,
+  preselectedServices,
 }: BookAppointmentModalProps) {
   const [step, setStep]                       = useState<Step>(1);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [gateway, setGateway]                 = useState<Gateway>(null);
   const [paymentMethod, setPaymentMethod]     = useState<PaymentMethod>(null);
   const [loading, setLoading]                 = useState(false);
@@ -107,11 +109,18 @@ export default function BookAppointmentModal({
     notes:            "",
   });
 
+  // Derived helpers
+  const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
+  const serviceNames = selectedServices.map((s) => s.name).join(", ");
+
   useEffect(() => {
-    if (preselectedService && isOpen) {
-      setSelectedService(preselectedService);
+    if (!isOpen) return;
+    if (preselectedServices && preselectedServices.length > 0) {
+      setSelectedServices(preselectedServices);
+    } else if (preselectedService) {
+      setSelectedServices([preselectedService]);
     }
-  }, [preselectedService, isOpen]);
+  }, [preselectedServices, preselectedService, isOpen]);
 
   useEffect(() => {
     if (!formData.appointment_date) {
@@ -140,7 +149,7 @@ export default function BookAppointmentModal({
 
   const handleClose = useCallback(() => {
     setStep(1);
-    setSelectedService(null);
+    setSelectedServices([]);
     setGateway(null);
     setPaymentMethod(null);
     setLoading(false);
@@ -171,7 +180,6 @@ export default function BookAppointmentModal({
     setFieldErrors((p) => ({ ...p, start_time: undefined }));
   };
 
-  // ── Step 1 submit → Step 2 (gateway) ──────────────────────────
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const result = detailsSchema.safeParse(formData);
@@ -188,76 +196,15 @@ export default function BookAppointmentModal({
     setStep(2);
   };
 
-  // ── Gateway: Paystack → Step 3 (card) ───────────────────────
   const handleSelectPaystack = () => {
     setGateway("paystack");
     setPaymentMethod("card");
     setStep(3);
   };
 
-  // ── Gateway: Moniwave → fire SDK directly ─────────────────────
-  const handleSelectMoniwave = () => {
-    if (!selectedService) return;
-    setLoading(true);
-    setGateway("moniwave");
-
-    // @ts-ignore
-    if (typeof window.MonnifySDK !== "undefined") {
-      // @ts-ignore
-      window.MonnifySDK.initialize({
-        amount: selectedService.price,
-        currency: "NGN",
-        reference: `APPT-MW-${Date.now()}`,
-        customerFullName: formData.customer_name,
-        customerEmail: formData.customer_email,
-        customerMobileNumber: formData.customer_phone,
-        apiKey: process.env.NEXT_PUBLIC_MONIWAVE_API_KEY ?? "",
-        contractCode: process.env.NEXT_PUBLIC_MONIWAVE_CONTRACT_CODE ?? "",
-        paymentDescription: `Appointment: ${selectedService.name}`,
-        onLoadStart: () => {},
-        onLoadComplete: () => {},
-        onComplete: async (response: { paymentStatus: string; transactionReference: string }) => {
-          if (response.paymentStatus === "PAID") {
-            try {
-              const durationMins = Number(getServiceDuration(selectedService)) || 60;
-              const endTime = selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins);
-              const appointment = await createAppointment({
-                ...formData,
-                service_id: selectedService.id,
-                service_name: selectedService.name,
-                service_price: selectedService.price,
-                end_time: endTime,
-                duration_minutes: durationMins,
-              } as CreateAppointmentData);
-              fetch("/api/appointments/notify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ appointmentId: appointment.id, reference: response.transactionReference }),
-              }).catch((err) => console.error("Notify failed:", err));
-            } catch (err) {
-              console.error("Appointment create failed after Moniwave:", err);
-            }
-            showSuccess("appointment-booked", {
-              title: "Payment Confirmed!",
-              message: `Your appointment for ${selectedService.name} is confirmed`,
-              details: `Ref: ${response.transactionReference}`,
-            });
-            setTimeout(() => handleClose(), 1500);
-          }
-          setLoading(false);
-        },
-        onClose: () => setLoading(false),
-      });
-    } else {
-      showError({ title: "Moniwave unavailable", message: "Please choose Paystack to continue." });
-      setGateway(null);
-      setLoading(false);
-    }
-  };
-
-  // ── Shared Paystack launcher ───────────────────────────────────
+  // ── Paystack: create one appointment per service, charge total ─
   const launchPaystack = async (channels?: string[]) => {
-    if (!selectedService) return;
+    if (selectedServices.length === 0) return;
 
     // @ts-ignore
     if (typeof window.PaystackPop === "undefined") {
@@ -267,44 +214,55 @@ export default function BookAppointmentModal({
 
     setLoading(true);
     try {
-      const durationMins = Number(getServiceDuration(selectedService)) || 60;
-      const endTime = selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins);
+      const appointments = await Promise.all(
+        selectedServices.map((service) => {
+          const durationMins = getServiceDuration(service);
+          const endTime = selectedSlot?.end ?? computeEndTime(formData.start_time, durationMins);
+          return createAppointment({
+            ...formData,
+            service_id: service.id,
+            service_name: service.name,
+            service_price: service.price,
+            end_time: endTime,
+            duration_minutes: durationMins,
+          } as CreateAppointmentData);
+        })
+      );
 
-      const appointment = await createAppointment({
-        ...formData,
-        service_id: selectedService.id,
-        service_name: selectedService.name,
-        service_price: selectedService.price,
-        end_time: endTime,
-        duration_minutes: durationMins,
-      } as CreateAppointmentData);
+      const primaryRef = `APPT-${appointments[0]!.id}`;
 
       // @ts-ignore
       const handler = window.PaystackPop.setup({
         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         email: formData.customer_email,
-        amount: Math.round(selectedService.price * 100),
+        amount: Math.round(totalPrice * 100),
         currency: "NGN",
-        ref: `APPT-${appointment.id}`,
+        ref: primaryRef,
         ...(channels && channels.length > 0 ? { channels } : {}),
         metadata: {
           custom_fields: [
-            { display_name: "Customer", variable_name: "customer_name", value: formData.customer_name },
-            { display_name: "Service",  variable_name: "service_name",  value: selectedService.name },
-            { display_name: "Date",     variable_name: "date",          value: formData.appointment_date },
-            { display_name: "Time",     variable_name: "time",          value: formData.start_time },
+            { display_name: "Customer",  variable_name: "customer_name",  value: formData.customer_name },
+            { display_name: "Services",  variable_name: "service_names",  value: serviceNames },
+            { display_name: "Date",      variable_name: "date",           value: formData.appointment_date },
+            { display_name: "Time",      variable_name: "time",           value: formData.start_time },
           ],
         },
         callback: (response: { reference: string }) => {
-          fetch("/api/appointments/notify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ appointmentId: appointment.id, reference: response.reference }),
-          }).catch((err) => console.error("Notify failed:", err));
+          appointments.forEach((appt) => {
+            fetch("/api/appointments/notify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ appointmentId: appt.id, reference: response.reference }),
+            }).catch((err) => console.error("Notify failed:", err));
+          });
+
+          const label = selectedServices.length === 1
+            ? selectedServices[0]!.name
+            : `${selectedServices.length} services`;
 
           showSuccess("appointment-booked", {
             title: "Payment Confirmed!",
-            message: `Your appointment for ${selectedService.name} is confirmed. We'll be in touch shortly.`,
+            message: `Your appointment for ${label} is confirmed. We'll be in touch shortly.`,
             details: `Reference: ${response.reference}`,
           });
           setTimeout(() => handleClose(), 2500);
@@ -342,7 +300,6 @@ export default function BookAppointmentModal({
         >
           {/* ── HEADER ── */}
           <div className="sticky top-0 z-10 bg-ivory border-b border-deep/10">
-            {/* Step progress bar — 3 segments */}
             <div className="flex h-1.5">
               {([1, 2, 3] as Step[]).map((s) => (
                 <span
@@ -366,7 +323,6 @@ export default function BookAppointmentModal({
                 </h2>
               </div>
 
-              {/* Step dots */}
               <div className="hidden sm:flex items-center gap-2 mr-4">
                 {([1, 2, 3] as Step[]).map((s) => (
                   <span
@@ -392,24 +348,56 @@ export default function BookAppointmentModal({
             <AnimatePresence mode="wait">
 
               {/* ══ STEP 1 — Your Details ════════════════════════════════ */}
-              {step === 1 && selectedService && (
+              {step === 1 && selectedServices.length > 0 && (
                 <motion.div key="step-1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-                  {/* Selected service pill */}
-                  <div className="flex items-center gap-3 mb-8 p-4 rounded-2xl bg-sage-tint border border-sage/20">
-                    <div className="h-10 w-10 rounded-xl bg-sage flex items-center justify-center shrink-0">
-                      <Sparkles className="h-4 w-4 text-ivory" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Selected service</p>
-                      <p className="font-display text-base font-light text-deep truncate">{selectedService.name}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-display text-lg text-sage">₦{selectedService.price.toLocaleString()}</p>
-                      {selectedService.original_price && selectedService.original_price > selectedService.price && (
-                        <p className="text-xs text-deep/40 line-through">₦{selectedService.original_price.toLocaleString()}</p>
-                      )}
-                      <p className="text-[10px] text-deep/40">{getServiceDuration(selectedService)} min</p>
-                    </div>
+
+                  {/* Services summary — single pill or multi-list */}
+                  <div className="mb-8 rounded-2xl bg-sage-tint border border-sage/20 overflow-hidden">
+                    {selectedServices.length === 1 ? (
+                      <div className="flex items-center gap-3 p-4">
+                        <div className="h-10 w-10 rounded-xl bg-sage flex items-center justify-center shrink-0">
+                          <Sparkles className="h-4 w-4 text-ivory" strokeWidth={1.5} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Selected service</p>
+                          <p className="font-display text-base font-light text-deep truncate">{selectedServices[0]!.name}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-display text-lg text-sage">₦{selectedServices[0]!.price.toLocaleString()}</p>
+                          {selectedServices[0]!.original_price && selectedServices[0]!.original_price! > selectedServices[0]!.price && (
+                            <p className="text-xs text-deep/40 line-through">₦{selectedServices[0]!.original_price!.toLocaleString()}</p>
+                          )}
+                          <p className="text-[10px] text-deep/40">{getServiceDuration(selectedServices[0]!)} min</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="px-4 pt-3 pb-1">
+                          <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light flex items-center gap-1.5">
+                            <Sparkles className="h-3 w-3 text-sage" strokeWidth={1.5} />
+                            {selectedServices.length} selected services
+                          </p>
+                        </div>
+                        {selectedServices.map((service, i) => (
+                          <div
+                            key={service.id}
+                            className={`flex items-center justify-between px-4 py-3 ${
+                              i < selectedServices.length - 1 ? "border-b border-sage/10" : ""
+                            }`}
+                          >
+                            <div className="flex-1 min-w-0 pr-4">
+                              <p className="font-display text-sm font-light text-deep truncate">{service.name}</p>
+                              <p className="text-[10px] text-deep/40 font-light mt-0.5">{getServiceDuration(service)} min</p>
+                            </div>
+                            <p className="font-display text-sm text-sage shrink-0">₦{service.price.toLocaleString()}</p>
+                          </div>
+                        ))}
+                        <div className="flex items-center justify-between px-4 py-3 bg-sage/10 border-t border-sage/20">
+                          <p className="text-xs text-deep/60 font-medium uppercase tracking-wider">Total</p>
+                          <p className="font-display text-lg text-sage">₦{totalPrice.toLocaleString()}</p>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   <form onSubmit={handleDetailsSubmit} className="space-y-5">
@@ -491,28 +479,24 @@ export default function BookAppointmentModal({
                           <p className="text-sm text-deep/40 font-light">Choose a date first to see available slots</p>
                         </div>
                       )}
-
                       {slotStatus === "loading" && (
                         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-deep-tint/50 border border-deep/10">
                           <Loader2 className="h-4 w-4 text-mauve animate-spin" />
                           <p className="text-sm text-deep/50 font-light">Checking availability…</p>
                         </div>
                       )}
-
                       {slotStatus === "error" && (
                         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-200">
                           <AlertCircle className="h-4 w-4 text-red-400 shrink-0" strokeWidth={1.5} />
                           <p className="text-sm text-red-500 font-light">Could not load slots. Please try again.</p>
                         </div>
                       )}
-
                       {slotStatus === "closed" && (
                         <div className="flex items-start gap-2 px-4 py-3 rounded-xl bg-mauve-tint border border-mauve/20">
                           <AlertCircle className="h-4 w-4 text-mauve mt-0.5 shrink-0" strokeWidth={1.5} />
                           <p className="text-sm text-deep/70 font-light">{closedReason}</p>
                         </div>
                       )}
-
                       {slotStatus === "loaded" && (
                         <div className="space-y-2">
                           {slots.map((slot) => {
@@ -535,21 +519,17 @@ export default function BookAppointmentModal({
                                 }`}
                               >
                                 <div className="flex items-center gap-2">
-                                  {slot.locked ? (
-                                    <Lock className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-                                  ) : (
-                                    <Clock3 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-                                  )}
+                                  {slot.locked
+                                    ? <Lock className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                                    : <Clock3 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+                                  }
                                   <span className="font-light">{slot.label}</span>
                                 </div>
                                 <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
-                                  isSelected
-                                    ? "bg-ivory/20 text-ivory"
-                                    : slot.full
-                                    ? "bg-deep/10 text-deep/40"
-                                    : slot.locked
-                                    ? "bg-deep/10 text-deep/30"
-                                    : "bg-sage-tint text-sage"
+                                  isSelected ? "bg-ivory/20 text-ivory"
+                                  : slot.full ? "bg-deep/10 text-deep/40"
+                                  : slot.locked ? "bg-deep/10 text-deep/30"
+                                  : "bg-sage-tint text-sage"
                                 }`}>
                                   {slot.full ? "Full" : slot.locked ? "Opens later" : `${slot.max - slot.count} spot${slot.max - slot.count === 1 ? "" : "s"} left`}
                                 </span>
@@ -558,7 +538,6 @@ export default function BookAppointmentModal({
                           })}
                         </div>
                       )}
-
                       {fieldErrors.start_time && (
                         <p className="mt-1.5 text-[11px] text-red-500">{fieldErrors.start_time}</p>
                       )}
@@ -587,30 +566,34 @@ export default function BookAppointmentModal({
               )}
 
               {/* ══ STEP 2 — Gateway selection ═══════════════════════════ */}
-              {step === 2 && selectedService && (
+              {step === 2 && selectedServices.length > 0 && (
                 <motion.div key="step-2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
                   <button onClick={() => setStep(1)} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
                     <ArrowLeft className="h-4 w-4" /> Back to details
                   </button>
 
-                  {/* Amount summary */}
-                  <div className="flex items-center justify-between mb-8 px-5 py-4 rounded-2xl bg-deep-tint border border-deep/10">
-                    <div>
+                  {/* Services + total summary */}
+                  <div className="mb-8 rounded-2xl bg-deep-tint border border-deep/10 overflow-hidden">
+                    {selectedServices.map((service, i) => (
+                      <div
+                        key={service.id}
+                        className={`flex items-center justify-between px-5 py-3 ${
+                          i < selectedServices.length - 1 ? "border-b border-deep/10" : ""
+                        }`}
+                      >
+                        <p className="text-sm text-deep font-light truncate pr-4">{service.name}</p>
+                        <p className="text-sm text-deep font-light shrink-0">₦{service.price.toLocaleString()}</p>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between px-5 py-4 border-t border-deep/15 bg-deep/5">
                       <p className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Booking total</p>
-                      <p className="font-display text-lg text-deep">{selectedService.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-display text-2xl text-deep">₦{selectedService.price.toLocaleString()}</p>
-                      {selectedService.original_price && selectedService.original_price > selectedService.price && (
-                        <p className="text-xs text-deep/40 line-through">₦{selectedService.original_price.toLocaleString()}</p>
-                      )}
+                      <p className="font-display text-2xl text-deep">₦{totalPrice.toLocaleString()}</p>
                     </div>
                   </div>
 
                   <p className="text-sm text-deep/50 font-light mb-5">Choose your preferred payment provider.</p>
 
                   <div className="space-y-3">
-                    {/* Paystack */}
                     <button
                       onClick={handleSelectPaystack}
                       className="group w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white hover:border-[#00C46E] hover:shadow-[0_0_0_4px_rgba(0,196,110,0.08)] transition-all text-left"
@@ -628,7 +611,6 @@ export default function BookAppointmentModal({
                       <ArrowRight className="h-4 w-4 text-deep/30 group-hover:text-[#00C46E] transition-colors shrink-0" strokeWidth={1.5} />
                     </button>
 
-                    {/* Moniwave — coming soon */}
                     <div className="relative select-none cursor-not-allowed">
                       <div className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 border-deep/10 bg-white text-left blur-[2px] pointer-events-none">
                         <div className="h-12 w-12 rounded-xl bg-[#FF6B00]/10 flex items-center justify-center shrink-0">
@@ -653,17 +635,24 @@ export default function BookAppointmentModal({
               )}
 
               {/* ══ STEP 3 / Card payment ════════════════════════════════ */}
-              {step === 3 && selectedService && paymentMethod === "card" && (
+              {step === 3 && selectedServices.length > 0 && paymentMethod === "card" && (
                 <motion.div key="step-3-card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
                   <button onClick={() => { setStep(2); setGateway(null); setPaymentMethod(null); }} className="inline-flex items-center gap-1.5 text-sm text-deep/50 hover:text-deep mb-6 transition-colors">
                     <ArrowLeft className="h-4 w-4" /> Back to gateway
                   </button>
 
                   {/* Summary card */}
-                  <div className="p-5 rounded-2xl bg-mauve-tint border border-mauve/20 mb-6 space-y-3">
-                    <h3 className="text-[10px] uppercase tracking-wider text-deep/40 font-light">Booking summary</h3>
+                  <div className="p-5 rounded-2xl bg-mauve-tint border border-mauve/20 mb-6 space-y-2">
+                    <h3 className="text-[10px] uppercase tracking-wider text-deep/40 font-light mb-3">Booking summary</h3>
+
+                    {selectedServices.map((service) => (
+                      <div key={service.id} className="flex items-center justify-between text-sm">
+                        <span className="text-deep/60 font-light truncate pr-4">{service.name}</span>
+                        <span className="text-deep font-light shrink-0">₦{service.price.toLocaleString()}</span>
+                      </div>
+                    ))}
+
                     {[
-                      { label: "Service",  value: selectedService.name },
                       { label: "Date",     value: new Date(formData.appointment_date).toLocaleDateString("en-NG", { weekday: "long", day: "numeric", month: "long" }) },
                       { label: "Time",     value: formData.start_time },
                       { label: "Customer", value: formData.customer_name },
@@ -673,14 +662,10 @@ export default function BookAppointmentModal({
                         <span className="text-deep font-light">{value}</span>
                       </div>
                     ))}
-                    <div className="flex items-center justify-between pt-3 border-t border-mauve/20">
+
+                    <div className="flex items-center justify-between pt-3 border-t border-mauve/20 mt-1">
                       <span className="text-sm text-deep font-light">Total</span>
-                      <div className="text-right">
-                        <span className="font-display text-2xl text-mauve">₦{selectedService.price.toLocaleString()}</span>
-                        {selectedService.original_price && selectedService.original_price > selectedService.price && (
-                          <p className="text-xs text-deep/40 line-through">₦{selectedService.original_price.toLocaleString()}</p>
-                        )}
-                      </div>
+                      <span className="font-display text-2xl text-mauve">₦{totalPrice.toLocaleString()}</span>
                     </div>
                   </div>
 
@@ -692,7 +677,7 @@ export default function BookAppointmentModal({
                     {loading ? (
                       <><span className="h-4 w-4 border-2 border-ivory/30 border-t-ivory rounded-full animate-spin" /> Processing…</>
                     ) : (
-                      <><CreditCard className="h-4 w-4" strokeWidth={1.5} /> Pay ₦{selectedService.price.toLocaleString()} with Paystack</>
+                      <><CreditCard className="h-4 w-4" strokeWidth={1.5} /> Pay ₦{totalPrice.toLocaleString()} with Paystack</>
                     )}
                   </button>
                   <p className="mt-3 text-[11px] text-center text-deep/40 font-light">Secured by Paystack — 256-bit SSL encryption</p>

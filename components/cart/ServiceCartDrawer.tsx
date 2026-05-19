@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Trash2, CalendarCheck, Sparkles, Clock, ArrowRight, MoveRight } from "lucide-react";
+import { X, Trash2, CalendarCheck, Sparkles, Clock, ArrowRight, MoveRight, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useServiceCart } from "@/app/contexts/ServiceCartContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,7 +18,8 @@ interface ServiceCartDrawerProps {
 export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
   const { services, removeService, clearServiceCart, serviceCount } = useServiceCart();
   const [bookingOpen, setBookingOpen] = useState(false);
-  const [bookingService, setBookingService] = useState<Service | null>(null);
+  const [bookingServices, setBookingServices] = useState<Service[]>([]);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -33,24 +34,29 @@ export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
 
   const handleBook = () => {
     if (services.length === 0) return;
-    const first = services[0]!;
-    setBookingService({
-      id: first.id,
-      name: first.name,
-      slug: first.id,
-      category: first.categoryId,
-      description: first.description,
-      price: first.price,
-      original_price: first.originalPrice,
-      duration: first.durationMinutes,
-      image_url: first.image,
+    const mapped: Service[] = services.map((s) => ({
+      id: s.id,
+      name: s.name,
+      slug: s.id,
+      category: s.categoryId,
+      description: s.description,
+      price: s.price,
+      original_price: s.originalPrice,
+      duration: s.durationMinutes,
+      image_url: s.image,
       is_active: true,
       display_order: 0,
       created_at: "",
       updated_at: "",
-    });
+    }));
+    setBookingServices(mapped);
     onClose();
     setBookingOpen(true);
+  };
+
+  const handleClearConfirmed = () => {
+    clearServiceCart();
+    setShowClearConfirm(false);
   };
 
   return (
@@ -213,13 +219,11 @@ export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
 
                   {/* ── SUMMARY PANEL ── */}
                   <div className="shrink-0 bg-deep-tint border-t border-deep/10 px-5 pt-4 pb-6 space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between pt-3 border-t border-deep/10">
-                        <span className="text-sm text-deep font-light tracking-wide">Total</span>
-                        <span className="font-display text-2xl text-deep">
-                          {formatPrice(total)}
-                        </span>
-                      </div>
+                    <div className="flex items-center justify-between pt-3 border-t border-deep/10">
+                      <span className="text-sm text-deep font-light tracking-wide">Total</span>
+                      <span className="font-display text-2xl text-deep">
+                        {formatPrice(total)}
+                      </span>
                     </div>
 
                     <button
@@ -232,9 +236,7 @@ export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
 
                     <div className="text-center">
                       <button
-                        onClick={() => {
-                          if (confirm("Remove all selected services?")) clearServiceCart();
-                        }}
+                        onClick={() => setShowClearConfirm(true)}
                         className="text-[11px] text-deep/40 hover:text-deep/70 transition-colors tracking-wide"
                       >
                         Clear all
@@ -244,14 +246,66 @@ export function ServiceCartDrawer({ isOpen, onClose }: ServiceCartDrawerProps) {
                 </>
               )}
             </div>
+
+            {/* ── CLEAR CONFIRM OVERLAY ── */}
+            <AnimatePresence>
+              {showClearConfirm && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute inset-0 z-20 flex items-end justify-center p-5 bg-deep/50 backdrop-blur-sm"
+                  onClick={() => setShowClearConfirm(false)}
+                >
+                  <motion.div
+                    initial={{ y: 32, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 32, opacity: 0 }}
+                    transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full bg-ivory rounded-3xl p-6 shadow-glass-lg"
+                  >
+                    <div className="flex items-start gap-4 mb-5">
+                      <div className="h-11 w-11 rounded-2xl bg-mauve-tint flex items-center justify-center shrink-0 mt-0.5">
+                        <AlertTriangle className="h-5 w-5 text-mauve" strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h3 className="font-display text-xl font-light text-deep leading-tight">
+                          Clear all bookings?
+                        </h3>
+                        <p className="text-sm text-deep/50 font-light mt-1 leading-relaxed">
+                          This will remove all {serviceCount} {serviceCount === 1 ? "service" : "services"} from your cart. This cannot be undone.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setShowClearConfirm(false)}
+                        className="flex-1 py-3 rounded-full border border-deep/20 text-deep text-sm font-light tracking-wide hover:bg-deep/5 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleClearConfirmed}
+                        className="flex-1 py-3 rounded-full bg-mauve text-ivory text-sm font-light tracking-wide hover:opacity-90 active:scale-[0.98] transition-all"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
 
       <BookAppointmentModal
         isOpen={bookingOpen}
-        onClose={() => { setBookingOpen(false); setBookingService(null); }}
-        preselectedService={bookingService}
+        onClose={() => { setBookingOpen(false); setBookingServices([]); }}
+        preselectedServices={bookingServices}
       />
     </>
   );
