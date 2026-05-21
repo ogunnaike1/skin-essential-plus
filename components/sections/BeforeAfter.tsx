@@ -57,6 +57,7 @@ export function BeforeAfter(): React.ReactElement {
                     fill
                     sizes="(max-width: 1024px) 50vw, 25vw"
                     className="object-cover object-center"
+                    unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-deep/40 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-4 px-3 py-1.5 rounded-full bg-deep/80 backdrop-blur-sm">
@@ -72,6 +73,7 @@ export function BeforeAfter(): React.ReactElement {
                     fill
                     sizes="(max-width: 1024px) 50vw, 25vw"
                     className="object-cover object-center"
+                    unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-mauve/40 via-transparent to-transparent" />
                   <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-mauve/80 backdrop-blur-sm">

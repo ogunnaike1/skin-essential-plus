@@ -48,6 +48,7 @@ export function ShopCTA(): React.ReactElement {
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
+                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-deep/40 via-transparent to-transparent" />
 
@@ -82,6 +83,7 @@ export function ShopCTA(): React.ReactElement {
                 fill
                 sizes="176px"
                 className="object-cover"
+                unoptimized
               />
             </motion.div>
 

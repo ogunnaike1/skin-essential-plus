@@ -29,6 +29,7 @@ export function BookingCTA(): React.ReactElement {
                 fill
                 sizes="100vw"
                 className="object-cover mix-blend-overlay"
+                unoptimized
               />
             </div>
 

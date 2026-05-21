@@ -34,6 +34,7 @@ function Tile({ image, index }: TileProps): React.ReactElement {
         fill
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         className="object-cover transition-transform duration-[1.2s] ease-cinematic group-hover:scale-110"
+        unoptimized
       />
       <div className="absolute inset-0 bg-gradient-to-br from-deep/0 via-deep/0 to-deep/90 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">

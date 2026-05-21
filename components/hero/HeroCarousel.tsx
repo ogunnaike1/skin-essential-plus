@@ -165,7 +165,7 @@ export function HeroCarousel(): React.ReactElement {
                     priority={idx === 0}
                     sizes="100vw"
                     className="object-cover"
-                    quality={85}
+                    unoptimized
                     placeholder="blur"
                     blurDataURL={HERO_BLUR}
                   />
