@@ -18,7 +18,7 @@ export function JoinCTA(): React.ReactElement {
           {/* Background image */}
           <div className="absolute inset-0">
             <Image
-              src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1920&q=75&auto=format&fit=crop"
+              src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778795958/sanctuary_abo2g1.jpg"
               alt=""
               fill
               sizes="100vw"

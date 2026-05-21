@@ -235,6 +235,7 @@ function EmployeeRow({
             fill
             sizes="64px"
             className="object-cover"
+            unoptimized
           />
         </div>
         <span

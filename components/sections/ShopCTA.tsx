@@ -77,7 +77,7 @@ export function ShopCTA(): React.ReactElement {
               className="absolute -top-6 -left-4 sm:-left-8 w-36 sm:w-44 aspect-square rounded-2xl overflow-hidden shadow-lift border-4 border-ivory ring-2 ring-sage/20"
             >
               <Image
-                src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=70&auto=format&fit=crop"
+                src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778181113/skin-ig6_l62kds.jpg"
                 alt="Skincare product detail"
                 fill
                 sizes="176px"

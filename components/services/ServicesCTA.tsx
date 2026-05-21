@@ -24,7 +24,7 @@ export function ServicesCTA(): React.ReactElement {
           {/* Background */}
           <div className="absolute inset-0">
             <Image
-              src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1920&q=75&auto=format&fit=crop"
+              src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778028811/skin-essential-plus/homepage/hero/home-page-hero2.jpg"
               alt=""
               fill
               sizes="100vw"

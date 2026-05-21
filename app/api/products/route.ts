@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-export const revalidate = 60; // Cache products for 60 seconds
+export const dynamic = 'force-dynamic';
 
 function getClient() {
   return createClient(

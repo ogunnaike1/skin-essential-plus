@@ -116,7 +116,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Therapeutic deep-tissue and relaxation massages that melt tension, restore circulation, and leave you completely renewed.",
     image:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=70&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig2_w7tvnk.jpg",
     icon: HandMetal,
   },
   {
@@ -134,7 +134,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Clinically-led facial protocols — from mesotherapy to PRP — engineered to transform dull, tired skin into a luminous, youthful complexion.",
     image:
-      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=70&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778093141/skin-ig4_ihjvl0.jpg",
     icon: Sparkles,
   },
   {
@@ -143,7 +143,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Microblading and powder brow techniques that frame your face with perfectly defined, natural-looking brows that last.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778854844/semi_eyebrows_frgwhg.avif",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_jpg/v1778854844/semi_eyebrows_frgwhg.avif",
     icon: Brush,
   },
   {
@@ -152,7 +152,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Indulgent foot and nail rituals that restore softness, shape, and polish — from a classic refresh to a full spa pedicure experience.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778854844/pedicure_treatment_a7eyt1.avif",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_jpg/v1778854844/pedicure_treatment_a7eyt1.avif",
     icon: Footprints,
   },
   {
@@ -161,7 +161,7 @@ export const SERVICES: readonly HomeService[] = [
     description:
       "Safe, effective laser tattoo removal that fades unwanted ink with precision, leaving your skin clear and refreshed.",
     image:
-      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778854844/tatoo_removal_ljuzge.avif",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_jpg/v1778854844/tatoo_removal_ljuzge.avif",
     icon: Zap,
   },
 ] as const;
@@ -245,9 +245,9 @@ export const BEFORE_AFTER: readonly BeforeAfterItem[] = [
     id: 1,
     label: "12-Week Skin Renewal Program",
     before:
-      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=70&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778613290/before-eye_xnmfcb.jpg",
     after:
-      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=70&auto=format&fit=crop",
+      "https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778613290/after-eye_f8azs4.jpg",
   },
 ] as const;
 

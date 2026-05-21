@@ -109,7 +109,7 @@ export function About(): React.ReactElement {
           >
             <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-glass-lg ring-1 ring-ivory/50">
               <Image
-                src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&q=75&auto=format&fit=crop"
+                src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092844/skin-ig1_ksvzcl.jpg"
                 alt="The Skin Essential Plus sanctuary interior"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -126,7 +126,7 @@ export function About(): React.ReactElement {
               className="absolute -bottom-8 -right-4 sm:right-8 w-40 sm:w-56 aspect-square rounded-3xl overflow-hidden shadow-lift border-4 border-ivory ring-2 ring-mauve/20"
             >
               <Image
-                src="https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=600&q=70&auto=format&fit=crop"
+                src="https://res.cloudinary.com/dhmqhless/image/upload/q_auto:good,f_auto/v1778092806/skin-ig3_og3xnh.jpg"
                 alt="Spa treatment detail"
                 fill
                 sizes="224px"
