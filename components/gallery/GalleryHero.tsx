@@ -15,6 +15,7 @@ export function GalleryHero() {
           fill
           className="object-cover"
           priority
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-br from-deep/80 via-deep/55 to-mauve/65" />
       </div>

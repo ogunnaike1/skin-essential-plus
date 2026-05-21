@@ -79,6 +79,7 @@ export function GalleryLightbox({
                 className="object-contain"
                 sizes="90vw"
                 priority
+                unoptimized
               />
             </div>
 

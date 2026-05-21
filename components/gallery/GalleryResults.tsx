@@ -109,6 +109,7 @@ export function GalleryResults() {
                 fill
                 sizes="(max-width: 640px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 hover:scale-105"
+                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               <div className={`absolute bottom-4 left-4 px-3 py-1.5 rounded-full ${img.accent} backdrop-blur-sm`}>
