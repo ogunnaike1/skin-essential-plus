@@ -145,7 +145,7 @@ export function AboutHero(): React.ReactElement {
                   priority={idx === 0}
                   sizes="100vw"
                   className="object-cover"
-                  quality={92}
+                  unoptimized
                 />
               </motion.div>
               <div

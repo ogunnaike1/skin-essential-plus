@@ -23,6 +23,7 @@ export function JoinCTA(): React.ReactElement {
               fill
               sizes="100vw"
               className="object-cover"
+              unoptimized
             />
             <div
               className="absolute inset-0"

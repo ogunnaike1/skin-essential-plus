@@ -111,6 +111,7 @@ export function OurStory(): React.ReactElement {
               fill
               sizes="(max-width: 1024px) 100vw, 60vw"
               className="object-cover"
+              unoptimized
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-deep/50 via-transparent to-transparent" />
           </motion.div>
@@ -129,6 +130,7 @@ export function OurStory(): React.ReactElement {
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover"
+                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-mauve/25 to-transparent" />
             </div>
