@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,6 +18,15 @@ function getClient() {
 }
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { allowed } = rateLimit(`appt-notify:${ip}`, 10, 60 * 60 * 1000); // 10 per hour
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = await request.json();
 

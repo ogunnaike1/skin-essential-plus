@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
@@ -16,6 +17,15 @@ function esc(str: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { allowed } = rateLimit(`contact:${ip}`, 5, 60 * 60 * 1000); // 5 per hour
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { name, email, phone, serviceInterest, message } = body;

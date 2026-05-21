@@ -22,7 +22,7 @@ export interface Service {
 
 // Get all active services for public display
 export async function getPublicServices(): Promise<Service[]> {
-  const res = await fetch(`/api/services?t=${Date.now()}`, { cache: 'no-store' });
+  const res = await fetch('/api/services', { next: { revalidate: 60 } });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || 'Failed to fetch services');

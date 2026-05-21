@@ -12,41 +12,25 @@ export async function getProducts() {
   return data as Product[];
 }
 
-// Get public products (for shop page)
-export async function getPublicProducts() {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return data as Product[];
+// Get public products (for shop page) — routed through server API for caching
+export async function getPublicProducts(): Promise<Product[]> {
+  const res = await fetch('/api/products', { next: { revalidate: 60 } });
+  if (!res.ok) throw new Error('Failed to fetch products');
+  return res.json();
 }
 
-// Get new arrivals (products marked as is_new_arrival = true)
-export async function getNewArrivals(limit: number = 6) {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('is_new_arrival', true)
-    .order('created_at', { ascending: false })
-    .limit(limit);
-
-  if (error) throw error;
-  return data as Product[];
+// Get new arrivals — routed through server API for caching
+export async function getNewArrivals(limit: number = 6): Promise<Product[]> {
+  const res = await fetch(`/api/products?type=new_arrivals&limit=${limit}`, { next: { revalidate: 60 } });
+  if (!res.ok) throw new Error('Failed to fetch new arrivals');
+  return res.json();
 }
 
-// Get bestsellers (products marked as is_bestseller = true)
-export async function getBestSellers(limit: number = 4) {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('is_bestseller', true)
-    .order('created_at', { ascending: false })
-    .limit(limit);
-
-  if (error) throw error;
-  return data as Product[];
+// Get bestsellers — routed through server API for caching
+export async function getBestSellers(limit: number = 4): Promise<Product[]> {
+  const res = await fetch(`/api/products?type=bestsellers&limit=${limit}`, { next: { revalidate: 60 } });
+  if (!res.ok) throw new Error('Failed to fetch best sellers');
+  return res.json();
 }
 
 // Create product
