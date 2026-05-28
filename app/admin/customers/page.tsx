@@ -18,13 +18,7 @@ import {
   Plus,
   TrendingUp,
 } from "lucide-react";
-import {
-  getCustomers,
-  getCustomerStats,
-  deleteCustomer,
-  searchCustomers,
-  type Customer,
-} from "@/lib/supabase/customers-api";
+import type { Customer } from "@/lib/supabase/customers-api";
 
 export default function CustomersManagement() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -43,13 +37,26 @@ export default function CustomersManagement() {
   const loadCustomers = async () => {
     try {
       setLoading(true);
-      const [customersData, statsData] = await Promise.all([
-        getCustomers(),
-        getCustomerStats(),
-      ]);
+      const res = await fetch("/api/admin/customers");
+      if (!res.ok) throw new Error("Failed to load customers");
+      const { customers: customersData } = await res.json();
       setCustomers(customersData);
       setFilteredCustomers(customersData);
-      setStats(statsData);
+
+      // Compute stats from the fetched data
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      setStats({
+        totalCustomers: customersData.length,
+        totalRevenue: customersData.reduce((s: number, c: Customer) => s + c.total_spent, 0),
+        totalOrders: customersData.reduce((s: number, c: Customer) => s + c.total_orders, 0),
+        newThisMonth: customersData.filter((c: Customer) => new Date(c.created_at) >= firstDayOfMonth).length,
+        averageOrderValue:
+          customersData.reduce((s: number, c: Customer) => s + c.total_orders, 0) > 0
+            ? customersData.reduce((s: number, c: Customer) => s + c.total_spent, 0) /
+              customersData.reduce((s: number, c: Customer) => s + c.total_orders, 0)
+            : 0,
+      });
     } catch (error) {
       console.error("Error loading customers:", error);
       alert("Failed to load customers");
@@ -72,7 +79,9 @@ export default function CustomersManagement() {
     }
 
     try {
-      const results = await searchCustomers(query);
+      const res = await fetch(`/api/admin/customers?search=${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error("Search failed");
+      const { customers: results } = await res.json();
       setFilteredCustomers(results);
     } catch (error) {
       console.error("Search error:", error);
@@ -83,7 +92,8 @@ export default function CustomersManagement() {
     if (!confirm("Are you sure you want to delete this customer? This cannot be undone.")) return;
 
     try {
-      await deleteCustomer(id);
+      const res = await fetch(`/api/admin/customers?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
       await loadCustomers();
       setSelectedCustomer(null);
     } catch (error) {

@@ -14,7 +14,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import BookAppointmentModal from "@/components/shared/BookAppointmentModal";
 import { EidHeroCard } from "@/components/shared/EidBanner";
 import { HERO_SLIDES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -27,23 +26,13 @@ const HERO_BLUR = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5
 // Helper function to determine link behavior
 function getLinkProps(ctaText: string) {
   const normalizedText = ctaText.toLowerCase();
-  
-  // Book appointment triggers
-  if (
-    normalizedText.includes('book an appointment') ||
-    normalizedText.includes('reserve a session') ||
-    normalizedText.includes('meet our experts') ||
-    normalizedText.includes('book lash artist')
-  ) {
-    return { type: 'modal' as const };
-  }
-  
+
   // Gallery page
   if (normalizedText.includes('see gallery')) {
     return { type: 'link' as const, href: '/gallery' };
   }
-  
-  // Services page (all other cases)
+
+  // All other CTAs (book appointment, reserve a session, book lash artist, start your journey, etc.)
   return { type: 'link' as const, href: '/services' };
 }
 
@@ -64,8 +53,6 @@ export function HeroCarousel(): React.ReactElement {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [progressKey, setProgressKey] = useState<number>(0);
-  const [showBookingModal, setShowBookingModal] = useState<boolean>(false);
-
   const scrollPrev = useCallback((): void => {
     emblaApi?.scrollPrev();
   }, [emblaApi]);
@@ -92,13 +79,6 @@ export function HeroCarousel(): React.ReactElement {
       setIsPlaying(true);
     }
   }, [isPlaying]);
-
-  const handleCTAClick = useCallback((ctaText: string) => {
-    const linkProps = getLinkProps(ctaText);
-    if (linkProps.type === 'modal') {
-      setShowBookingModal(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -312,7 +292,7 @@ export function HeroCarousel(): React.ReactElement {
                       className="mt-7 flex flex-wrap items-center gap-3"
                     >
                       {/* Primary CTA */}
-                      {primaryLinkProps?.type === 'link' ? (
+                      {primaryLinkProps && (
                         <Link
                           href={primaryLinkProps.href}
                           className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:shadow-[0_8px_40px_rgba(138,111,136,0.5)] transition-all duration-500"
@@ -322,21 +302,10 @@ export function HeroCarousel(): React.ReactElement {
                             <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                           </span>
                         </Link>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleCTAClick(activeSlide.ctaPrimary)}
-                          className="group relative inline-flex items-center gap-2 pl-6 pr-1.5 py-1.5 rounded-full bg-ivory text-deep font-sans text-[11px] uppercase tracking-[0.22em] shadow-[0_4px_30px_rgba(252,251,252,0.25)] hover:shadow-[0_8px_40px_rgba(138,111,136,0.5)] transition-all duration-500"
-                        >
-                          <span>{activeSlide.ctaPrimary}</span>
-                          <span className="h-9 w-9 rounded-full bg-deep text-ivory flex items-center justify-center transition-all duration-500 group-hover:bg-mauve group-hover:rotate-[22deg]">
-                            <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
-                          </span>
-                        </button>
                       )}
 
                       {/* Secondary CTA */}
-                      {secondaryLinkProps?.type === 'link' ? (
+                      {secondaryLinkProps && (
                         <Link
                           href={secondaryLinkProps.href}
                           className="group inline-flex items-center gap-2 px-5 py-3 rounded-full border border-ivory/30 text-ivory font-sans text-[11px] uppercase tracking-[0.22em] hover:bg-ivory/10 hover:border-ivory/60 transition-all duration-500"
@@ -344,15 +313,6 @@ export function HeroCarousel(): React.ReactElement {
                           <span>{activeSlide.ctaSecondary}</span>
                           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-0.5" />
                         </Link>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleCTAClick(activeSlide.ctaSecondary)}
-                          className="group inline-flex items-center gap-2 px-5 py-3 rounded-full border border-ivory/30 text-ivory font-sans text-[11px] uppercase tracking-[0.22em] hover:bg-ivory/10 hover:border-ivory/60 transition-all duration-500"
-                        >
-                          <span>{activeSlide.ctaSecondary}</span>
-                          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-0.5" />
-                        </button>
                       )}
                     </motion.div>
                   </div>
@@ -458,11 +418,6 @@ export function HeroCarousel(): React.ReactElement {
         </div>
       </section>
 
-      {/* Book Appointment Modal */}
-      <BookAppointmentModal
-        isOpen={showBookingModal}
-        onClose={() => setShowBookingModal(false)}
-      />
     </>
   );
 }

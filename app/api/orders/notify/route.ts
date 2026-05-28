@@ -50,9 +50,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const client = getClient();
+
+    // ── Save order to orders table ─────────────────────────────────
+    try {
+      await client.from("orders").insert([{
+        reference,
+        customer_name: customerName,
+        customer_email: customerEmail,
+        customer_phone: customerPhone ?? null,
+        items,
+        subtotal,
+        discount,
+        total,
+        coupon_code: couponCode ?? null,
+        status: "paid",
+        payment_gateway: "paystack",
+      }]);
+    } catch (orderErr) {
+      console.error("Order save failed:", orderErr);
+    }
+
     // ── Upsert customer record in Supabase ─────────────────────────
     try {
-      const client = getClient();
       const { data: existing } = await client
         .from("customers")
         .select("id, phone, total_orders, total_spent")
