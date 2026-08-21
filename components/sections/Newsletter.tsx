@@ -51,7 +51,10 @@ export function Newsletter(): React.ReactElement {
   };
 
   return (
-    <section className="relative py-24 sm:py-32 section-padding overflow-hidden">
+    <section
+      id="newsletter"
+      className="relative py-24 sm:py-32 section-padding overflow-hidden scroll-mt-24"
+    >
       <div
         className="absolute inset-0 pointer-events-none opacity-60"
         style={{ background: "radial-gradient(ellipse at center, rgba(138,111,136,0.15) 0%, transparent 60%)" }}

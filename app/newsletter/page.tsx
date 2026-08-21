@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Check } from "lucide-react";
+import { SubscribeForm } from "@/components/newsletter/SubscribeForm";
 
 export const metadata: Metadata = {
   title: "Letters from the Sanctuary — Our Newsletter",
@@ -282,13 +282,28 @@ export default function NewsletterPage(): React.ReactElement {
             ))}
           </div>
 
-          <div className="mt-12">
-            <Link
-              href="/#newsletter"
-              className="inline-flex items-center justify-center h-12 px-8 bg-deep text-ivory rounded-full text-[11px] uppercase tracking-[0.18em] transition-all duration-500 hover:bg-deep-dark"
-            >
-              Subscribe to the letters
-            </Link>
+        </div>
+      </section>
+
+      {/* Subscribe */}
+      <section
+        id="subscribe"
+        className="section-padding py-20 border-t border-deep-tint scroll-mt-24"
+      >
+        <div className="max-w-4xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-mauve font-medium">
+            Join us
+          </p>
+          <h2 className="mt-3 font-display text-3xl sm:text-4xl font-light text-deep leading-tight tracking-tight">
+            Subscribe to the letters
+          </h2>
+          <p className="mt-4 max-w-2xl text-base text-deep font-light text-balance">
+            Enter your email and the first letter arrives straight away, with
+            10% off your first order.
+          </p>
+
+          <div className="mt-8">
+            <SubscribeForm source="newsletter_page" />
           </div>
         </div>
       </section>
