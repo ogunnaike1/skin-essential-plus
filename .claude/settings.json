@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(curl -s -o /dev/null -w \"skinessentialplus.com -> HTTP %{http_code} \\(final: %{url_effective}\\)\\\\n\" -L --max-time 15 https://skinessentialplus.com)"
+    ]
+  }
+}
