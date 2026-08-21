@@ -22,7 +22,7 @@ export function Newsletter(): React.ReactElement {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, source: 'homepage_newsletter' }),
       });
 
       const data = await response.json();

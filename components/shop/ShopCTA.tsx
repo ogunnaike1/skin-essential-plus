@@ -49,7 +49,7 @@ export function ShopCTA(): React.ReactElement {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, source: 'shop_cta' }),
       });
 
       const data = await response.json();
