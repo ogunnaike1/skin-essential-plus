@@ -1,5 +1,6 @@
 import { pageMetadata } from "@/lib/seo";
 
+import { ProductLinks } from "@/components/seo/CatalogLinks";
 import { BestSellers } from "@/components/shop/BestSellers";
 import { NewArrivals } from "@/components/shop/NewArrivals";
 import { ProductsGrid } from "@/components/shop/ProductsGrid";
@@ -20,6 +21,7 @@ export default function ShopPage(): React.ReactElement {
         <ProductsGrid />
          <BestSellers />
          <NewArrivals />
+        <ProductLinks />
         <ShopCTA />
       </main>
     </>

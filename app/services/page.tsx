@@ -1,5 +1,6 @@
 import { pageMetadata } from "@/lib/seo";
 
+import { ServiceCategoryLinks } from "@/components/seo/CatalogLinks";
 import { ServicesCTA } from "@/components/services/ServicesCTA";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
 
@@ -15,6 +16,7 @@ export default function ServicesPage(): React.ReactElement {
     <>
       <main>
         <ServicesGrid />
+        <ServiceCategoryLinks />
         <ServicesCTA />
       </main>
     </>

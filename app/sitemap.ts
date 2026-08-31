@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { getProductsWithSlugs, getServiceCategories } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/constants";
 
 /**
@@ -23,13 +24,38 @@ const ROUTES: readonly {
   { path: "/cookies", changeFrequency: "yearly", priority: 0.3 },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 300;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
 
-  return ROUTES.map(({ path, changeFrequency, priority }) => ({
+  const staticEntries = ROUTES.map(({ path, changeFrequency, priority }) => ({
     url: `${SITE_URL}${path}`,
     lastModified,
     changeFrequency,
     priority,
   }));
+
+  // Catalogue pages are generated from the database, so a new service or
+  // product appears in the sitemap on the next revalidation without a deploy.
+  const [categories, products] = await Promise.all([
+    getServiceCategories(),
+    getProductsWithSlugs(),
+  ]);
+
+  const categoryEntries = categories.map((category) => ({
+    url: `${SITE_URL}/services/${category.slug}`,
+    lastModified,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
+  const productEntries = products.map((product) => ({
+    url: `${SITE_URL}/shop/${product.slug}`,
+    lastModified,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticEntries, ...categoryEntries, ...productEntries];
 }

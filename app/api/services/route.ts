@@ -16,8 +16,7 @@ export async function GET() {
       .from('services')
       .select('*')
       .eq('is_active', true)
-      .order('display_order', { ascending: true })
-      .limit(100);
+      .order('display_order', { ascending: true });
 
     if (error) {
       console.error('Supabase error:', error);
