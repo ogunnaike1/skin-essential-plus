@@ -6,7 +6,7 @@ import {
 } from "next/font/google";
 import Script from "next/script";
 
-import { SITE } from "@/lib/constants";
+import { SITE, SITE_URL } from "@/lib/constants";
 import { ConditionalLayout } from "@/components/shared/ConditionalLayout";
 import { CartProvider } from "@/app/contexts/CartContext";
 import { ServiceCartProvider } from "@/app/contexts/ServiceCartContext";
@@ -37,9 +37,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://skinessentialplus.com"
-  ),
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   title: {
     default: `${SITE.name} — ${SITE.tagline}`,
     template: `%s · ${SITE.name}`,

@@ -23,6 +23,11 @@ import type {
   TrustPoint,
 } from "@/lib/supabase/types"; 
 
+/** Canonical origin, no trailing slash. Used by sitemap, robots, canonicals & OG images. */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.skinessentialplus.com"
+).replace(/\/$/, "");
+
 export const SITE = {
   name: "Skin Essential Plus",
   tagline: "Where Science Meets Serenity",
