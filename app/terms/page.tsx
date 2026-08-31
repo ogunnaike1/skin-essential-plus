@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Terms of Service — Skin Essential Plus",
-  description: "Terms and conditions for using Skin Essential Plus services.",
-};
+export const metadata = pageMetadata({
+  title: "Terms of Service",
+  description:
+    "Terms and conditions for using the Skin Essential Plus website, shop and salon services.",
+  path: "/terms",
+});
 
 export default function TermsPage(): React.ReactElement {
   return (

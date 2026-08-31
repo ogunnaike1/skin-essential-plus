@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { AboutHero } from "../../components/about/AboutHero";
 import { FounderLetter } from "@/components/about/FounderLetter";
 import { JoinCTA } from "@/components/about/JoinCTA";
@@ -9,11 +9,12 @@ import { Philosophy } from "../../components/about/Philosophy";
 import { Values } from "@/components/about/Values";
 
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "About Us — Our Story, Philosophy & Team",
   description:
-    "The story, philosophy, and master artisans behind Skin Essential Plus — a sanctuary where science meets serenity.",
-};
+    "The story, philosophy and master artisans behind Skin Essential Plus — a skincare and spa sanctuary in Akobo, Ibadan where science meets serenity.",
+  path: "/about",
+});
 
 export default function AboutPage(): React.ReactElement {
   return (

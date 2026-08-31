@@ -1,4 +1,6 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+import { localBusinessSchema } from "@/lib/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 import { ContactHero } from "@/components/contact/ContactHero";
 import { ContactForm } from "@/components/contact/ContactForm";
@@ -6,15 +8,17 @@ import { LocationMap } from "@/components/contact/LocationMap";
 import { ContactFAQ } from "@/components/contact/ContactFAQ";
 import { ContactCTA } from "@/components/contact/ContactCTA";
 
-export const metadata: Metadata = {
-  title: "Contact Us — Skin Essential Plus",
+export const metadata = pageMetadata({
+  title: "Contact & Visit Us in Akobo, Ibadan",
   description:
-    "Get in touch with Skin Essential Plus. Book appointments, ask questions, or visit our Lekki spa. We're here to help with all your skincare needs.",
-};
+    "Find Skin Essential Plus at No 2 Alaafia Avenue, Akobo, Ibadan. Call, message or book an appointment — open Monday to Saturday, 10am to 6pm.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (
     <main>
+      <JsonLd schema={localBusinessSchema} />
       <ContactHero />
       <ContactForm />
       <LocationMap />

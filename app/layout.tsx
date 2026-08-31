@@ -45,12 +45,13 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   keywords: [
-    "luxury skincare",
-    "spa therapy",
-    "eyelash sketching",
-    "beauty Lagos",
-    "premium skincare",
-    "facial treatments",
+    "spa in Ibadan",
+    "skincare clinic Ibadan",
+    "facial treatment Ibadan",
+    "massage Ibadan",
+    "eyelash extensions Ibadan",
+    "beauty salon Akobo Ibadan",
+    "luxury skincare Nigeria",
   ],
   icons: {
     icon: "/images/skin-essential-transparent.png",
@@ -59,8 +60,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
+    url: SITE_URL,
+    siteName: SITE.name,
+    locale: "en_NG",
     type: "website",
     images: [{ url: "/images/skin-essential-transparent.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} — ${SITE.tagline}`,
+    description: SITE.description,
+    images: ["/images/skin-essential-transparent.png"],
   },
 };
 

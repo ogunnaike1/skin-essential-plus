@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Check } from "lucide-react";
 import { SubscribeForm } from "@/components/newsletter/SubscribeForm";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Letters from the Sanctuary — Our Newsletter",
   description:
-    "The Skin Essential Plus welcome sequence: three emails over five days, sent from an authenticated domain with consent and opt-out handled from the first message.",
-};
+    "Skincare guidance, ritual notes and early access to new treatments from Skin Essential Plus in Ibadan. Three welcome emails over five days, then monthly.",
+  path: "/newsletter",
+});
 
 interface Email {
   day: string;

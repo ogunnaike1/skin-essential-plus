@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
 import { ServicesCTA } from "@/components/services/ServicesCTA";
 import { ServicesGrid } from "@/components/services/ServicesGrid";
 
-export const metadata: Metadata = {
-  title: "Services — Rituals & Treatments",
+export const metadata = pageMetadata({
+  title: "Services — Facials, Massage, Lashes & Body Rituals",
   description:
-    "Browse the full menu of Skin Essential Plus services — facials, massage, lash, brow, waxing, IV drips, teeth whitening, and more.",
-};
+    "The full treatment menu at our Ibadan studio: facials, massage, lashes, brows, waxing, IV drips and teeth whitening. Book a session online.",
+  path: "/services",
+});
 
 export default function ServicesPage(): React.ReactElement {
   return (

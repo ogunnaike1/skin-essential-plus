@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy — Skin Essential Plus",
-  description: "How Skin Essential Plus collects, uses, and protects your personal information.",
-};
+export const metadata = pageMetadata({
+  title: "Privacy Policy",
+  description:
+    "How Skin Essential Plus collects, uses and protects your personal information.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage(): React.ReactElement {
   return (

@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Cookie Policy — Skin Essential Plus",
-  description: "How Skin Essential Plus uses cookies and similar technologies.",
-};
+export const metadata = pageMetadata({
+  title: "Cookie Policy",
+  description:
+    "How Skin Essential Plus uses cookies and similar technologies on our website.",
+  path: "/cookies",
+});
 
 export default function CookiesPage(): React.ReactElement {
   return (
