@@ -36,6 +36,15 @@ const nextConfig = {
         ],
       },
       {
+        // Keep the admin panel out of search results. Cloudflare's Managed
+        // robots.txt overrides app/robots.ts, so this header — which Cloudflare
+        // passes through untouched — is what actually enforces it.
+        source: "/admin/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
         // Cache public images/fonts for 7 days
         source: "/images/:path*",
         headers: [
