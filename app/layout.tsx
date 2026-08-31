@@ -12,6 +12,7 @@ import { CartProvider } from "@/app/contexts/CartContext";
 import { ServiceCartProvider } from "@/app/contexts/ServiceCartContext";
 
 import { RootLayoutClient } from "@/components/layout/RootLayoutClient";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 import "./globals.css";
 
@@ -53,6 +54,11 @@ export const metadata: Metadata = {
     "beauty salon Akobo Ibadan",
     "luxury skincare Nigeria",
   ],
+  // Set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION to the token Search Console gives
+  // you. Next omits the tag entirely when the variable is unset.
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: "/images/skin-essential-transparent.png",
     apple: "/images/skin-essential-transparent.png",
@@ -110,6 +116,8 @@ export default function RootLayout({
           }
         `}</Script>
         
+        <GoogleAnalytics />
+
         {/* Payment SDKs — loaded globally so they're ready before any modal opens */}
         <Script src="https://js.paystack.co/v1/inline.js" strategy="afterInteractive" />
 
